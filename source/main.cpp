@@ -1,7 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <ResourceHolder.hpp>
 
 int main() {
+    ResourceHolder<sf::Texture, Textures::ID> textures;
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
