@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RESOURCEHOLDER_HPP
+#define RESOURCEHOLDER_HPP
 
 #include <bits/stdc++.h>
 #include <SFML/Graphics.hpp>
@@ -11,6 +12,13 @@ namespace Textures {
 
 namespace Fonts {
     enum ID {
+        ComfortaaRegular,
+        FiraSansRegular,
+        GreatVibesRegular,
+        TiltWarpRegular,
+        RobotoRegular,
+        RobotoItalic,
+        FiraMonoRegular
     };
 };
 
@@ -25,3 +33,4 @@ private:
 };
 
 #include "ResourceHolder.inl"
+#endif
