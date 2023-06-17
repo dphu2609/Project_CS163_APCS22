@@ -8,7 +8,7 @@
 class State : private sf::NonCopyable {
 public:
     explicit State(sf::RenderWindow &window);
-    void update(sf::Time dt);
+    void update();
     void draw();
     void handleEvent(sf::Event &event);
 public:
@@ -20,7 +20,7 @@ public:
 private:
     virtual void loadTextures() = 0;
     virtual void loadFonts() = 0;
-    virtual void buildScence() = 0;
+    virtual void buildScene() = 0;
 };
 
 #endif

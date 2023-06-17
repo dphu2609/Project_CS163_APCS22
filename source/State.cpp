@@ -6,8 +6,8 @@ void State::draw() {
     mWindow.draw(mSceneGraph);
 }
 
-void State::update(sf::Time dt) {
-    mSceneGraph.update(dt);
+void State::update() {
+    mSceneGraph.update();
 } 
 
 void State::handleEvent(sf::Event &event) {

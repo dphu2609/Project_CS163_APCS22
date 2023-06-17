@@ -3,10 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <GlobalVar.hpp>
+#include <State/BST.hpp>
 
 class Program {
 private:
     sf::RenderWindow mWindow;
+    BST mBST;
 public:
     Program();
     void run();

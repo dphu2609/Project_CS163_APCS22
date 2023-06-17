@@ -8,8 +8,11 @@ private:
     sf::CircleShape mNode;
     sf::Text mText;
 public:
-    void setNode(const std::string &text, const sf::Font &font, const sf::Vector2f position);
+    void set(const std::string &text, const sf::Font &font, const sf::Vector2f position);
+    virtual void setPosition(const sf::Vector2f &position);
     sf::Vector2f getPosition();
+private:
+    virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
 #endif

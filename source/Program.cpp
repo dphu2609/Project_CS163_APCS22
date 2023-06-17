@@ -4,7 +4,7 @@ Program::Program() :
     mWindow(sf::VideoMode(
         sf::VideoMode::getDesktopMode().width - 35, sf::VideoMode::getDesktopMode().height - 70), 
         "Data Visual", sf::Style::Default 
-    ) 
+    ) , mBST(mWindow)
 {
     mWindow.setPosition(sf::Vector2i(0, 0));
     sf::Image icon;
@@ -30,8 +30,7 @@ void Program::run() {
             //update funciton here
         }
         mWindow.clear();
-        mWindow.draw(rect);
-        //draw function here
+        mBST.draw();
         mWindow.display();
     }
 }

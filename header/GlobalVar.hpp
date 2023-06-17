@@ -7,13 +7,15 @@ namespace Constant {
     extern const double scaleX;
     extern const double scaleY;
     extern const sf::Time TIME_PER_FRAME;
-
+    extern const int WINDOW_WIDTH;
+    extern const int WINDOW_HEIGHT;
 };
 
 namespace Color {
     extern sf::Color NODE_COLOR;
     extern sf::Color NODE_TEXT_COLOR;
-    extern sf::Color NODE_OUTLINE;
+    extern sf::Color NODE_OUTLINE_COLOR;
+    extern sf::Color NODE_EDGE_COLOR;
 }
 
 #endif
