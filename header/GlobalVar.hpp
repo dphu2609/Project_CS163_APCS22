@@ -4,8 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 namespace Constant {
-    extern const double scaleX;
-    extern const double scaleY;
+    extern const double SCALE_X;
+    extern const double SCALE_Y;
     extern const sf::Time TIME_PER_FRAME;
     extern const int WINDOW_WIDTH;
     extern const int WINDOW_HEIGHT;

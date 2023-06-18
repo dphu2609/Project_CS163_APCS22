@@ -32,6 +32,7 @@ public:
     enum AnimationType {
         Zoom, 
         Move,
+        MoveBy2Points,
         Rotate,
         ChangeColor,
         AnimationCount
@@ -44,6 +45,7 @@ public:
     void resetAnimation();
     virtual void zoom(const sf::Vector2f &sizeAfterZoom, const float speed = 1.f) {}
     virtual void move(const sf::Vector2f &positionAfterMove, const float speed = 1.f) {}
+    virtual void moveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed = 1.f) {}
     virtual void rotate(const float &angleAfterRotate, const float speed = 1.f) {}
     virtual void changeColor(const sf::Color &objectColorAfterChange, const float speed = 1.f) {}
     virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed = 1.f) {}
@@ -58,6 +60,16 @@ public: //var for animations
     sf::Vector2f mCurrentPosition;
     sf::Vector2f mDeltaPosition;
     sf::Vector2f mPositionJumpStep;
+
+    sf::Vector2f mStartPosition1;
+    sf::Vector2f mCurrentPosition1;
+    sf::Vector2f mDeltaPosition1;
+    sf::Vector2f mPositionJumpStep1;
+
+    sf::Vector2f mStartPosition2;
+    sf::Vector2f mCurrentPosition2;
+    sf::Vector2f mDeltaPosition2;
+    sf::Vector2f mPositionJumpStep2;
 
     float mAngleAfterRotate;
     float mDeltaAngle;

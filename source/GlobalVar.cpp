@@ -1,8 +1,8 @@
 #include <GlobalVar.hpp>
 
 namespace Constant {
-    const double scaleX = (double)(sf::VideoMode::getDesktopMode().width) / (2880);
-    const double scaleY = (double)(sf::VideoMode::getDesktopMode().height) / (1800);
+    const double SCALE_X = (double)(sf::VideoMode::getDesktopMode().width) / (2880);
+    const double SCALE_Y = (double)(sf::VideoMode::getDesktopMode().height) / (1800);
     const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 144.f);
     const int WINDOW_WIDTH = sf::VideoMode::getDesktopMode().width;
     const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height;
@@ -17,10 +17,10 @@ namespace Color {
 };
 
 namespace Size {
-    const float NODE_RADIUS = 35.f * Constant::scaleX;
-    const float EDGE_THICKNESS = 5.f * Constant::scaleY;
+    const float NODE_RADIUS = 35.f * Constant::SCALE_X;
+    const float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
 };
 
 namespace Animation {
-    float SPEED = 1.f;
+    float SPEED = 0.5;
 }

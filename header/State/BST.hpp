@@ -46,8 +46,11 @@ private:
     Node* insert(Node *&root, int height, bool isLeft, const sf::Vector2f &position, int data);
     void moveTree(Node* root, const sf::Vector2f &dis);
 private:
-    const float NODE_DISTANCE = 100.f * Constant::scaleX;
+    const float NODE_DISTANCE = 80.f * Constant::SCALE_X;
     const float NODE_RADIUS = Size::NODE_RADIUS;
+public:
+    void testAnimation();
+    bool repeat = false;
 };
 
 #endif
