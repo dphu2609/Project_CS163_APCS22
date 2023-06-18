@@ -28,8 +28,10 @@ void Program::run() {
         while(timeSinceLastUpdate > Constant::TIME_PER_FRAME) {
             timeSinceLastUpdate -= Constant::TIME_PER_FRAME;
             //update funciton here
+            mBST.testAnimation();
+            mBST.update();
         }
-        mWindow.clear();
+        mWindow.clear(Color::BACKGROUND_COLOR);
         mBST.draw();
         mWindow.display();
     }

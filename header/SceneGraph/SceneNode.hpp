@@ -26,6 +26,55 @@ private:
 public:
     virtual void setPosition(const sf::Vector2f &position) {}
     virtual void setPositionByPoints(const sf::Vector2f &position1, const sf::Vector2f &position2) {}
+    // virtual sf::Vector2f getPosition() {}
+//animations
+public:
+    enum AnimationType {
+        Zoom, 
+        Move,
+        Rotate,
+        ChangeColor,
+        AnimationCount
+    };
+    std::map<int, bool> mAnimationFinished;
+    std::map<int, bool> mAnimationExecuting;
+public:
+    bool isFinished();
+    bool isExecuting();
+    void resetAnimation();
+    virtual void zoom(const sf::Vector2f &sizeAfterZoom, const float speed = 1.f) {}
+    virtual void move(const sf::Vector2f &positionAfterMove, const float speed = 1.f) {}
+    virtual void rotate(const float &angleAfterRotate, const float speed = 1.f) {}
+    virtual void changeColor(const sf::Color &objectColorAfterChange, const float speed = 1.f) {}
+    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed = 1.f) {}
+    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed = 1.f) {}
+public: //var for animations
+    sf::Vector2f mStartSize;
+    sf::Vector2f mCurrentSize;
+    sf::Vector2f mDeltaSize;
+    sf::Vector2f mSizeJumpStep;
+
+    sf::Vector2f mStartPosition;
+    sf::Vector2f mCurrentPosition;
+    sf::Vector2f mDeltaPosition;
+    sf::Vector2f mPositionJumpStep;
+
+    float mAngleAfterRotate;
+    float mDeltaAngle;
+    float mAngleJumpStep;
+
+    struct RGB {
+        float red;
+        float green;
+        float blue;
+    };
+
+    sf::Color mObjectColorAfterChange;
+    RGB mObjectJumpStep;
+    sf::Color mTextColorAfterChange;
+    RGB mTextJumpStep;
+    sf::Color mObjectOutlineColorAfterChange;
+    RGB mOutlineJumpStep;
 };
 
 #endif

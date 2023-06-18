@@ -36,7 +36,7 @@ private:
         LayerCount
     };
 private:
-    std::vector<int> sampleData = { 10, 5, 15, 3, 7, 13, 18, 2, 4, 6, 8, 12, 14, 17, 1, 9, 11, 16, 20, 19, 21, 23, 22, 25, 30, -2, 42};
+    std::vector<int> sampleData = {44, 40, 76, 2, 75, 84, 19, 73, 9, 20, 53, 22, 68, 64, 69};
     Node* mRoot = nullptr;
 private:
     virtual void loadTextures();
@@ -45,6 +45,9 @@ private:
 private:
     Node* insert(Node *&root, int height, bool isLeft, const sf::Vector2f &position, int data);
     void moveTree(Node* root, const sf::Vector2f &dis);
+private:
+    const float NODE_DISTANCE = 100.f * Constant::scaleX;
+    const float NODE_RADIUS = Size::NODE_RADIUS;
 };
 
 #endif

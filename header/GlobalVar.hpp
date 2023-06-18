@@ -12,10 +12,20 @@ namespace Constant {
 };
 
 namespace Color {
+    extern sf::Color BACKGROUND_COLOR;
     extern sf::Color NODE_COLOR;
     extern sf::Color NODE_TEXT_COLOR;
     extern sf::Color NODE_OUTLINE_COLOR;
     extern sf::Color NODE_EDGE_COLOR;
-}
+};
+
+namespace Size {
+    extern const float NODE_RADIUS;
+    extern const float EDGE_THICKNESS;
+};
+
+namespace Animation {
+    extern float SPEED;
+};
 
 #endif

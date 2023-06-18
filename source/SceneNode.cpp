@@ -2,6 +2,10 @@
 
 SceneNode::SceneNode() {
     this->mParent = nullptr;
+    for (int i = 0; i < AnimationCount; i++) {
+        mAnimationExecuting[i] = false;
+        mAnimationFinished[i] = false;
+    }
 }
 
 void SceneNode::attachChild(Ptr child) {
@@ -30,4 +34,27 @@ void SceneNode::handleEvent(sf::Event &event) {
 
 std::vector<std::unique_ptr<SceneNode>>& SceneNode::getChildren() {
     return mChildren;
+}
+
+bool SceneNode::isExecuting() {
+    for (int i = 0; i < AnimationCount; i++) {
+        if (mAnimationExecuting[i]) return true;
+    }
+    return false;
+}
+
+bool SceneNode::isFinished() {
+    for (int i = 0; i < AnimationCount; i++) {
+        if (!mAnimationFinished[i]) return false;
+    }
+    return true;
+}
+
+void SceneNode::resetAnimation() {
+    for (int i = 0; i < AnimationCount; i++) {
+        mAnimationExecuting[i] = 0;
+    }
+    for (int i = 0; i < AnimationCount; i++) {
+        mAnimationFinished[i] = 0;
+    }
 }
