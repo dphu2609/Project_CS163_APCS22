@@ -17,10 +17,10 @@ namespace Color {
 };
 
 namespace Size {
-    const float NODE_RADIUS = 35.f * Constant::SCALE_X;
+    const float NODE_RADIUS = 30.f * Constant::SCALE_X;
     const float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
 };
 
 namespace Animation {
-    float SPEED = 0.5;
+    float SPEED = 1;
 }

@@ -14,12 +14,10 @@ public:
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
     virtual void updateCurrent();
-public:
-    virtual void zoom(const sf::Vector2f &sizeAfterZoom, const float speed = 1.f);
-    virtual void move(const sf::Vector2f &positionAfterMove, const float speed = 1.f);
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const float speed = 1.f) {}
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed = 1.f) {}
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed = 1.f) {}
+private: 
+    virtual void setVarForZoom(const sf::Vector2f &sizeAfterZoom, const float speed);
+    virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
+    virtual void setVarForChange3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed);
 };
 
 #endif

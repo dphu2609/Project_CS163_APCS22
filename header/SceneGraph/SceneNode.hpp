@@ -34,22 +34,36 @@ public:
         Move,
         MoveBy2Points,
         Rotate,
-        ChangeColor,
+        Change1Color,
+        Change2Color,
+        Change3Color,
         AnimationCount
     };
     std::map<int, bool> mAnimationFinished;
     std::map<int, bool> mAnimationExecuting;
 public:
-    bool isFinished();
-    bool isExecuting();
-    void resetAnimation();
-    virtual void zoom(const sf::Vector2f &sizeAfterZoom, const float speed = 1.f) {}
-    virtual void move(const sf::Vector2f &positionAfterMove, const float speed = 1.f) {}
-    virtual void moveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed = 1.f) {}
-    virtual void rotate(const float &angleAfterRotate, const float speed = 1.f) {}
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const float speed = 1.f) {}
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed = 1.f) {}
-    virtual void changeColor(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed = 1.f) {}
+    bool isZoomFinished();
+    bool isMoveFinished();
+    bool isMoveBy2PointsFinished();
+    bool isChange1ColorFinished();
+    bool isChange2ColorFinished();
+    bool isChange3ColorFinished();
+
+    void resetAnimationVar();
+
+    void zoom(const sf::Vector2f &sizeAfterZoom, const float speed = 1.f);
+    void move(const sf::Vector2f &positionAfterMove, const float speed = 1.f);
+    void moveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed = 1.f);    
+    void change1Color(const sf::Color &objectColorAfterChange, const float speed = 1.f);
+    void change2Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed = 1.f);
+    void change3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed = 1.f);
+private:
+    virtual void setVarForZoom(const sf::Vector2f &sizeAfterZoom, const float speed) {}
+    virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed) {}
+    virtual void setVarForMoveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed) {}
+    virtual void setVarForChange1Color(const sf::Color &objectColorAfterChange, const float speed) {}
+    virtual void setVarForChange2Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed) {}
+    virtual void setVarForChange3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed) {}
 public: //var for animations
     sf::Vector2f mStartSize;
     sf::Vector2f mCurrentSize;
@@ -71,22 +85,48 @@ public: //var for animations
     sf::Vector2f mDeltaPosition2;
     sf::Vector2f mPositionJumpStep2;
 
-    float mAngleAfterRotate;
-    float mDeltaAngle;
-    float mAngleJumpStep;
+    struct RGBA {
+        float r;
+        float g;
+        float b;
+        float a;
 
-    struct RGB {
-        float red;
-        float green;
-        float blue;
+        RGBA(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f)
+        : r(r), g(g), b(b), a(a) {}
+        RGBA& operator = (const sf::Color &color) {
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a;
+            return *this;
+        }
+        RGBA& operator = (const RGBA &color) {
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a;
+            return *this;
+        }
+
+        RGBA operator-(const RGBA& other) const {
+            return RGBA(r - other.r, g - other.g, b - other.b, a - other.a);
+        }
     };
 
-    sf::Color mObjectColorAfterChange;
-    RGB mObjectJumpStep;
-    sf::Color mTextColorAfterChange;
-    RGB mTextJumpStep;
-    sf::Color mObjectOutlineColorAfterChange;
-    RGB mOutlineJumpStep;
+    RGBA mStartObjectColor;
+    RGBA mCurrentObjectColor;
+    RGBA mDeltaObjectColor;
+    RGBA mObjectColorJumpStep;
+
+    RGBA mStartTextColor;
+    RGBA mCurrentTextColor;
+    RGBA mDeltaTextColor;
+    RGBA mTextColorJumpStep;
+
+    RGBA mStartOutlineColor;
+    RGBA mCurrentOutlineColor;
+    RGBA mDeltaOutlineColor;
+    RGBA mOutlineColorJumpStep;
 };
 
 #endif

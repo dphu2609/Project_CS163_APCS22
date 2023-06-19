@@ -94,7 +94,7 @@ void Edge::updateCurrent() {
     }
 }
 
-void Edge::move(const sf::Vector2f &positionAfterMove, const float speed) {
+void Edge::setVarForMove(const sf::Vector2f &positionAfterMove, const float speed) {
     mStartPosition = startPoint;
     mDeltaPosition = positionAfterMove - startPoint;
     mCurrentPosition = sf::Vector2f(std::sqrt(std::abs(mDeltaPosition.x)), std::sqrt(std::abs(mDeltaPosition.y)));
@@ -103,7 +103,7 @@ void Edge::move(const sf::Vector2f &positionAfterMove, const float speed) {
 
 
 
-void Edge::moveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed) {
+void Edge::setVarForMoveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed) {
     mStartPosition1 = startPoint;
     mDeltaPosition1 = position1AfterMove - startPoint;
     mCurrentPosition1 = sf::Vector2f(std::sqrt(std::abs(mDeltaPosition1.x)), std::sqrt(std::abs(mDeltaPosition1.y)));

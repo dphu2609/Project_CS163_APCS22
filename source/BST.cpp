@@ -25,6 +25,7 @@ void BST::buildScene() {
     for (int i = 0; i < sampleData.size(); i++) {
         insert(mRoot, 1, 0, sf::Vector2f(Constant::WINDOW_WIDTH/2 - NODE_RADIUS, 150 * Constant::SCALE_Y), sampleData[i]);
     }
+    std::cout << mRoot->widthLeft << ' ' << mRoot->widthRight << std::endl;
 }
 
 BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f &parentPos, int data) {
@@ -32,8 +33,8 @@ BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f 
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
         sf::Vector2f position = parentPos;
         if (height != 1) {
-            if (isLeft) position += sf::Vector2f(-NODE_DISTANCE, NODE_DISTANCE);
-            else position += sf::Vector2f(NODE_DISTANCE, NODE_DISTANCE);
+            if (isLeft) position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
+            else position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
         }
         node->set(std::to_string(data), mFontsHolder[Fonts::FiraSansRegular], position);
         mSceneLayers[Nodes]->attachChild(std::move(node));
@@ -49,24 +50,24 @@ BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f 
         root->widthLeft++;
         if (root->left == nullptr) {
             std::unique_ptr<Edge> edgeLeft = std::make_unique<Edge>();
-            edgeLeft->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), sf::Vector2f(root->position.x + NODE_DISTANCE * Constant::SCALE_X, root->position.y - NODE_DISTANCE) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
+            edgeLeft->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), sf::Vector2f(root->position.x + NODE_DISTANCE_HORIZONTAL * Constant::SCALE_X, root->position.y - NODE_DISTANCE_VERTICAL) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
             root->edgeLeftIndex = mSceneLayers[LeftEdges]->getChildren().size();
             mSceneLayers[LeftEdges]->attachChild(std::move(edgeLeft));
         } else if (data > root->left->val) {
-            mSceneLayers[LeftEdges]->getChildren()[root->edgeLeftIndex]->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), root->left->position + sf::Vector2f(-NODE_DISTANCE, 0) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
-            moveTree(root->left, sf::Vector2f(-NODE_DISTANCE, 0));
+            mSceneLayers[LeftEdges]->getChildren()[root->edgeLeftIndex]->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), root->left->position + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, 0) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
+            moveTree(root->left, sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, 0));
         }
         root->left = insert(root->left, height + 1, 1, root->position, data);
     } else if (data > root->val) {
         root->widthRight++;
         if (root->right == nullptr) {
             std::unique_ptr<Edge> edgeRight = std::make_unique<Edge>();
-            edgeRight->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), sf::Vector2f(root->position.x + NODE_DISTANCE, root->position.y + NODE_DISTANCE) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
+            edgeRight->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), sf::Vector2f(root->position.x + NODE_DISTANCE_HORIZONTAL, root->position.y + NODE_DISTANCE_VERTICAL) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
             root->edgeRightIndex = mSceneLayers[RightEdges]->getChildren().size();
             mSceneLayers[RightEdges]->attachChild(std::move(edgeRight));
         } else if (data < root->right->val) {
-            mSceneLayers[RightEdges]->getChildren()[root->edgeRightIndex]->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), root->right->position + sf::Vector2f(NODE_DISTANCE, 0) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
-            moveTree(root->right, sf::Vector2f(NODE_DISTANCE, 0));
+            mSceneLayers[RightEdges]->getChildren()[root->edgeRightIndex]->setPositionByPoints(root->position + sf::Vector2f(NODE_RADIUS, NODE_RADIUS), root->right->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, 0) + sf::Vector2f(NODE_RADIUS, NODE_RADIUS));
+            moveTree(root->right, sf::Vector2f(NODE_DISTANCE_HORIZONTAL, 0));
         }
         root->right = insert(root->right, height + 1, 0, root->position, data);
     }
@@ -93,14 +94,22 @@ void BST::clear(Node *&root) {
 }
 
 void BST::testAnimation() {
-    for (auto &child : mSceneLayers[LeftEdges]->getChildren()) {
-        if (!child->mAnimationExecuting[child->MoveBy2Points] && !child->mAnimationFinished[child->MoveBy2Points]) {
-            if (!repeat) child->moveBy2Points(sf::Vector2f(150, 150), sf::Vector2f(1000, 1000));
-            else child->moveBy2Points(sf::Vector2f(1000, 150), sf::Vector2f(150, 1000));
+    int index = 0;
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) {
+        if (!repeat) {
+            child->zoom(sf::Vector2f(200, 0));
+            child->change3Color(sf::Color(233, 102, 160), sf::Color(149, 117, 222), sf::Color(149, 117, 222));
         }
-        else if (!child->mAnimationExecuting[child->MoveBy2Points] && child->mAnimationFinished[child->MoveBy2Points])
-            repeat = !repeat;
-            child->mAnimationFinished[child->MoveBy2Points] = false;
-        break;
+        else {
+            child->zoom(sf::Vector2f(0, 0));
+            child->change3Color(Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR);
+        }
+        if (child->isZoomFinished()) {
+            child->resetAnimationVar();
+            if (index == mSceneLayers[Nodes]->getChildren().size() - 1) {
+                repeat = !repeat;
+            }
+        }
+        index++;
     }
 }

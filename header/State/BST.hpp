@@ -36,7 +36,9 @@ private:
         LayerCount
     };
 private:
-    std::vector<int> sampleData = {44, 40, 76, 2, 75, 84, 19, 73, 9, 20, 53, 22, 68, 64, 69};
+
+    //give data set for balanced binary search tree
+    std::vector<int> sampleData = { 50, 30, 20, 40, 70, 60, 80, 10, 25, 35, 45, 55, 65, 75, 85, 5, 15, 23, 28, 33 };
     Node* mRoot = nullptr;
 private:
     virtual void loadTextures();
@@ -46,7 +48,8 @@ private:
     Node* insert(Node *&root, int height, bool isLeft, const sf::Vector2f &position, int data);
     void moveTree(Node* root, const sf::Vector2f &dis);
 private:
-    const float NODE_DISTANCE = 80.f * Constant::SCALE_X;
+    const float NODE_DISTANCE_HORIZONTAL = 60.f * Constant::SCALE_X;
+    const float NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
     const float NODE_RADIUS = Size::NODE_RADIUS;
 public:
     void testAnimation();

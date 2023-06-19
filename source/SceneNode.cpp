@@ -36,25 +36,79 @@ std::vector<std::unique_ptr<SceneNode>>& SceneNode::getChildren() {
     return mChildren;
 }
 
-bool SceneNode::isExecuting() {
-    for (int i = 0; i < AnimationCount; i++) {
-        if (mAnimationExecuting[i]) return true;
-    }
+bool SceneNode::isZoomFinished() {
+    if (!mAnimationExecuting[Zoom] && mAnimationFinished[Zoom]) return true;
     return false;
 }
 
-bool SceneNode::isFinished() {
-    for (int i = 0; i < AnimationCount; i++) {
-        if (!mAnimationFinished[i]) return false;
-    }
-    return true;
+bool SceneNode::isMoveFinished() {
+    if (!mAnimationExecuting[Move] && mAnimationFinished[Move]) return true;
+    return false;
 }
 
-void SceneNode::resetAnimation() {
+bool SceneNode::isMoveBy2PointsFinished() {
+    if (!mAnimationExecuting[MoveBy2Points] && mAnimationFinished[MoveBy2Points]) return true;
+    return false;
+}
+
+bool SceneNode::isChange1ColorFinished() {
+    if (!mAnimationExecuting[Change1Color] && mAnimationFinished[Change1Color]) return true;
+    return false;
+}
+
+bool SceneNode::isChange2ColorFinished() {
+    if (!mAnimationExecuting[Change2Color] && mAnimationFinished[Change2Color]) return true;
+    return false;
+}
+
+bool SceneNode::isChange3ColorFinished() {
+    if (!mAnimationExecuting[Change3Color] && mAnimationFinished[Change3Color]) return true;
+    return false;
+}
+
+void SceneNode::resetAnimationVar() {
     for (int i = 0; i < AnimationCount; i++) {
-        mAnimationExecuting[i] = 0;
-    }
-    for (int i = 0; i < AnimationCount; i++) {
-        mAnimationFinished[i] = 0;
+        mAnimationExecuting[i] = false;
+        mAnimationFinished[i] = false;
     }
 }
+
+void SceneNode::zoom(const sf::Vector2f &sizeAfterZoom, const float speed) {
+    if (!mAnimationExecuting[Zoom] && !mAnimationFinished[Zoom]) {
+        setVarForZoom(sizeAfterZoom, speed);
+    }
+}
+
+void SceneNode::move(const sf::Vector2f &positionAfterMove, const float speed) {
+    if (!mAnimationExecuting[Move] && !mAnimationFinished[Move]) {
+        setVarForZoom(positionAfterMove, speed);
+    }
+}
+
+void SceneNode::moveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed) {
+    if (!mAnimationExecuting[MoveBy2Points] && !mAnimationFinished[MoveBy2Points]) {
+        setVarForMoveBy2Points(position1AfterMove, position2AfterMove, speed);
+    }
+}    
+
+void SceneNode::change1Color(const sf::Color &objectColorAfterChange, const float speed) {
+    if (!mAnimationExecuting[Change1Color] && !mAnimationFinished[Change1Color]) {
+        setVarForChange1Color(objectColorAfterChange, speed);
+    }
+}
+
+void SceneNode::change2Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed) {
+    if (!mAnimationExecuting[Change2Color] && !mAnimationFinished[Change2Color]) {
+        setVarForChange2Color(objectColorAfterChange, textColorAfterChange, speed);
+    }
+}
+
+void SceneNode::change3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed) {
+    if (!mAnimationExecuting[Change3Color] && !mAnimationFinished[Change3Color]) {
+        setVarForChange3Color(objectColorAfterChange, textColorAfterChange, objectOutlineColorAfterChange, speed);
+    }
+}
+
+
+
+
