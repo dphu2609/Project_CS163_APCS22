@@ -4,7 +4,7 @@ Program::Program() :
     mWindow(sf::VideoMode(
         sf::VideoMode::getDesktopMode().width - 35, sf::VideoMode::getDesktopMode().height - 70), 
         "Data Visual", sf::Style::Default 
-    ) , mBST(mWindow)
+    )
 {
     mWindow.setPosition(sf::Vector2i(0, 0));
     sf::Image icon;
@@ -12,9 +12,18 @@ Program::Program() :
     mWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     mWindow.setFramerateLimit(144);
     mWindow.setVerticalSyncEnabled(true);
+    loadFonts();
+    loadTextures();
 }
 
+void Program::loadFonts() {
+    ResourcesHolder::fontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
+}
+
+void Program::loadTextures() {}
+
 void Program::run() {
+    BST mBST(mWindow);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     sf::RectangleShape rect;

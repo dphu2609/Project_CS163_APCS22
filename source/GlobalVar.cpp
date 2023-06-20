@@ -17,10 +17,15 @@ namespace Color {
 };
 
 namespace Size {
-    const float NODE_RADIUS = 30.f * Constant::SCALE_X;
+    const float NODE_RADIUS = 40.f * Constant::SCALE_X;
     const float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
 };
 
 namespace Animation {
-    float SPEED = 1;
-}
+    float SPEED = 2;
+};
+
+namespace ResourcesHolder {
+    ResourceHolder<sf::Font, Fonts::ID> fontsHolder;
+    ResourceHolder<sf::Texture, Textures::ID> texturesHolder;
+};

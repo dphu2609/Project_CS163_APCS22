@@ -1,6 +1,6 @@
 #include <SceneGraph/TreeNode.hpp>
 
-void TreeNode::set(const std::string &text, const sf::Font &font, const sf::Vector2f position) {
+void TreeNode::set(const std::string &text, const sf::Vector2f position) {
     mNode.setRadius(Size::NODE_RADIUS);
     mNode.setPosition(position);
     mNode.setFillColor(Color::NODE_COLOR);
@@ -9,7 +9,7 @@ void TreeNode::set(const std::string &text, const sf::Font &font, const sf::Vect
 
     if (text.size() == 0) return;
 
-    mText.setFont(font);
+    mText.setFont(ResourcesHolder::fontsHolder[Fonts::FiraSansRegular]);
     mText.setString(text);
     if (text.size() <= 3) mText.setCharacterSize(Size::NODE_RADIUS);
     else if (text.size() <= 4) mText.setCharacterSize(Size::NODE_RADIUS * 0.8);

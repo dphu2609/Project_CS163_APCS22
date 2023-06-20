@@ -8,12 +8,14 @@
 class Program {
 private:
     sf::RenderWindow mWindow;
-    BST mBST;
 public:
     Program();
     void run();
 private:
     void processEvents();
+private:
+    void loadFonts();
+    void loadTextures();
 };
 
 #endif

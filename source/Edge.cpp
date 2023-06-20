@@ -92,6 +92,45 @@ void Edge::updateCurrent() {
             mAnimationFinished[MoveBy2Points] = true;
         }
     }
+
+    if (mAnimationExecuting[Change1Color]) {
+        sf::Color newColor = mEdge.getFillColor();
+        if (mCurrentObjectColor.r > 0) {
+            if (mDeltaObjectColor.r >= 0) 
+                newColor.r = mStartObjectColor.r - std::pow(mCurrentObjectColor.r, 2) + mDeltaObjectColor.r;
+            else 
+                newColor.r = mStartObjectColor.r + std::pow(mCurrentObjectColor.r, 2) + mDeltaObjectColor.r;
+        }
+        if (mCurrentObjectColor.g > 0) {
+            if (mDeltaObjectColor.g >= 0) 
+                newColor.g = mStartObjectColor.g - std::pow(mCurrentObjectColor.g, 2) + mDeltaObjectColor.g;
+            else 
+                newColor.g = mStartObjectColor.g + std::pow(mCurrentObjectColor.g, 2) + mDeltaObjectColor.g;
+        }
+        if (mCurrentObjectColor.b > 0) {
+            if (mDeltaObjectColor.b >= 0) 
+                newColor.b = mStartObjectColor.b - std::pow(mCurrentObjectColor.b, 2) + mDeltaObjectColor.b;
+            else 
+                newColor.b = mStartObjectColor.b + std::pow(mCurrentObjectColor.b, 2) + mDeltaObjectColor.b;
+        }
+        if (mCurrentObjectColor.a > 0) {
+            if (mDeltaObjectColor.a >= 0) 
+                newColor.a = mStartObjectColor.a - std::pow(mCurrentObjectColor.a, 2) + mDeltaObjectColor.a;
+            else 
+                newColor.a = mStartObjectColor.a + std::pow(mCurrentObjectColor.a, 2) + mDeltaObjectColor.a;
+        }
+        mEdge.setFillColor(newColor);
+        
+        if (mCurrentObjectColor.r > 0) mCurrentObjectColor.r -= mObjectColorJumpStep.r;
+        if (mCurrentObjectColor.g > 0) mCurrentObjectColor.g -= mObjectColorJumpStep.g;
+        if (mCurrentObjectColor.b > 0) mCurrentObjectColor.b -= mObjectColorJumpStep.b;
+        if (mCurrentObjectColor.a > 0) mCurrentObjectColor.a -= mObjectColorJumpStep.a;
+
+        if (mCurrentObjectColor.r <= 0 && mCurrentObjectColor.g <= 0 && mCurrentObjectColor.b <= 0 && mCurrentObjectColor.a <= 0) {
+            mAnimationExecuting[Change1Color] = false;
+            mAnimationFinished[Change1Color] = true;
+        }
+    }
 }
 
 void Edge::setVarForMove(const sf::Vector2f &positionAfterMove, const float speed) {
@@ -116,4 +155,18 @@ void Edge::setVarForMoveBy2Points(const sf::Vector2f &position1AfterMove, const 
 
     mAnimationExecuting[MoveBy2Points] = true;
     mAnimationFinished[MoveBy2Points] = false;
+}
+
+void Edge::setVarForChange1Color(const sf::Color &objectColorAfterChange, const float speed) {
+    mStartObjectColor = mEdge.getFillColor();
+    mDeltaObjectColor = RGBA(objectColorAfterChange.r, objectColorAfterChange.g, objectColorAfterChange.b, objectColorAfterChange.a) - RGBA(mStartObjectColor.r, mStartObjectColor.g, mStartObjectColor.b, mStartObjectColor.a);
+    mCurrentObjectColor = RGBA(std::sqrt(std::abs(mDeltaObjectColor.r)), std::sqrt(std::abs(mDeltaObjectColor.g)), std::sqrt(std::abs(mDeltaObjectColor.b)), std::sqrt(std::abs(mDeltaObjectColor.a)));
+    mObjectColorJumpStep = RGBA(mCurrentObjectColor.r * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed,
+                                    mCurrentObjectColor.g * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed,
+                                    mCurrentObjectColor.b * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed,
+                                    mCurrentObjectColor.a * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed);
+
+    this->mAnimationExecuting[Change1Color] = true;
+    this->mAnimationFinished[Change1Color] = false;
+
 }

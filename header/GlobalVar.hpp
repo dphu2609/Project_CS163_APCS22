@@ -2,6 +2,7 @@
 #define GLOBALVAR_HPP
 
 #include <SFML/Graphics.hpp>
+#include <ResourceHolder.hpp>
 
 namespace Constant {
     extern const double SCALE_X;
@@ -28,4 +29,8 @@ namespace Animation {
     extern float SPEED;
 };
 
+namespace ResourcesHolder {
+    extern ResourceHolder<sf::Font, Fonts::ID> fontsHolder;
+    extern ResourceHolder<sf::Texture, Textures::ID> texturesHolder;
+};
 #endif

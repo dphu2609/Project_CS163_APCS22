@@ -15,6 +15,7 @@ public:
 private:
     virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
     virtual void setVarForMoveBy2Points(const sf::Vector2f &position1AfterMove, const sf::Vector2f &position2AfterMove, const float speed);
+    virtual void setVarForChange1Color(const sf::Color &objectColorAfterChange, const float speed);
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
     virtual void updateCurrent();

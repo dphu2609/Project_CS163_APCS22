@@ -25,7 +25,6 @@ void BST::buildScene() {
     for (int i = 0; i < sampleData.size(); i++) {
         insert(mRoot, 1, 0, sf::Vector2f(Constant::WINDOW_WIDTH/2 - NODE_RADIUS, 150 * Constant::SCALE_Y), sampleData[i]);
     }
-    std::cout << mRoot->widthLeft << ' ' << mRoot->widthRight << std::endl;
 }
 
 BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f &parentPos, int data) {
@@ -36,7 +35,7 @@ BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f 
             if (isLeft) position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
             else position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
         }
-        node->set(std::to_string(data), mFontsHolder[Fonts::FiraSansRegular], position);
+        node->set(std::to_string(data), position);
         mSceneLayers[Nodes]->attachChild(std::move(node));
         root = new Node{data, height, 0, 0, position, mNodeCount, mEdgeLeftCount, mEdgeRightCount, isLeft, nullptr, nullptr};
         mNodeCount++;
@@ -93,23 +92,36 @@ void BST::clear(Node *&root) {
     root = nullptr;
 }
 
+std::vector<int> BST::getTravelPath(int data) {
+    std::vector<int> nodeIndex;
+    Node* root = mRoot;
+    while (root != nullptr) {
+        nodeIndex.push_back(root->nodeIndex);
+        if (data < root->val) root = root->left;
+        else if (data > root->val) root = root->right;
+        else break;
+    }
+    return nodeIndex;
+}
+
 void BST::testAnimation() {
-    int index = 0;
-    for (auto &child : mSceneLayers[Nodes]->getChildren()) {
-        if (!repeat) {
-            child->zoom(sf::Vector2f(200, 0));
-            child->change3Color(sf::Color(233, 102, 160), sf::Color(149, 117, 222), sf::Color(149, 117, 222));
+    if (path.empty()) path = getTravelPath(283);
+    if (!isNodeHighlight1) mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(250, 160, 42), sf::Color(255, 255, 255), sf::Color(250, 160, 42));
+    else {
+        mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(255, 255, 255), sf::Color(250, 160, 42), sf::Color(250, 160, 42));
+    }
+    
+    if (mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->isChange3ColorFinished()) {
+        if (!isNodeHighlight1) {
+            isNodeHighlight1 = true;
+            mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->resetAnimationVar();
         }
         else {
-            child->zoom(sf::Vector2f(0, 0));
-            child->change3Color(Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR);
+            isNodeHighlight1 = false;
+            if (indexTravel < path.size() - 1) indexTravel++;
         }
-        if (child->isZoomFinished()) {
-            child->resetAnimationVar();
-            if (index == mSceneLayers[Nodes]->getChildren().size() - 1) {
-                repeat = !repeat;
-            }
-        }
-        index++;
     }
 }
+
+// 283
+
