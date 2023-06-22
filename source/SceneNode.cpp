@@ -27,13 +27,25 @@ void SceneNode::update() {
     for (const auto& child : mChildren) child->update();
 }
 
-void SceneNode::handleEvent(sf::Event &event) {
-    handleCurrentEvent(event);
-    for (const auto& child : mChildren) child->handleEvent(event);
+void SceneNode::handleEvent(sf::RenderWindow &window, sf::Event &event) {
+    handleCurrentEvent(window, event);
+    for (const auto& child : mChildren) child->handleEvent(window, event);
+}
+
+void SceneNode::resetAnimationVar() {
+    for (int i = 0; i < AnimationCount; i++) {
+        mAnimationExecuting[i] = false;
+        mAnimationFinished[i] = false;
+    }
+    for (const auto& child : mChildren) child->resetAnimationVar();
 }
 
 std::vector<std::unique_ptr<SceneNode>>& SceneNode::getChildren() {
     return mChildren;
+}
+
+int SceneNode::getChildrenCount() {
+    return mChildren.size();
 }
 
 bool SceneNode::isZoomFinished() {
@@ -64,13 +76,6 @@ bool SceneNode::isChange2ColorFinished() {
 bool SceneNode::isChange3ColorFinished() {
     if (!mAnimationExecuting[Change3Color] && mAnimationFinished[Change3Color]) return true;
     return false;
-}
-
-void SceneNode::resetAnimationVar() {
-    for (int i = 0; i < AnimationCount; i++) {
-        mAnimationExecuting[i] = false;
-        mAnimationFinished[i] = false;
-    }
 }
 
 void SceneNode::zoom(const sf::Vector2f &sizeAfterZoom, const float speed) {
@@ -108,7 +113,3 @@ void SceneNode::change3Color(const sf::Color &objectColorAfterChange, const sf::
         setVarForChange3Color(objectColorAfterChange, textColorAfterChange, objectOutlineColorAfterChange, speed);
     }
 }
-
-
-
-

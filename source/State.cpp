@@ -1,15 +1,15 @@
-#include <State/State.hpp>
+#include <State/StateStack.hpp>
 
-State::State(sf::RenderWindow &window) : mWindow(window) {}
+State::State(StateStack& stack,sf::RenderWindow &window) : mStack(&stack), mWindow(window) {}
 
-void State::draw() {
-    mWindow.draw(mSceneGraph);
+void State::requestStackPush(States::ID stateID) {
+    mStack->pushState(stateID);
 }
 
-void State::update() {
-    mSceneGraph.update();
-} 
+void State::requestStackPop() {
+    mStack->popState();
+}
 
-void State::handleEvent(sf::Event &event) {
-    mSceneGraph.handleEvent(event);
+void State::requestStateClear() {
+    mStack->clearStates();
 }

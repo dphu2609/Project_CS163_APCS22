@@ -3,11 +3,16 @@
 
 #include <SFML/Graphics.hpp>
 #include <GlobalVar.hpp>
+#include <State/StateStack.hpp>
 #include <State/BST.hpp>
 
 class Program {
 private:
     sf::RenderWindow mWindow;
+private:
+    StateStack mStateStack;
+private:
+    void registerStates();
 public:
     Program();
     void run();

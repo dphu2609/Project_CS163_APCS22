@@ -1,8 +1,6 @@
 #include <State/BST.hpp>
 
-BST::BST(sf::RenderWindow &window) : State(window) {
-    loadTextures();
-    loadFonts();
+BST::BST(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
     buildScene();
 }
 
@@ -10,10 +8,17 @@ BST::~BST() {
     clear(mRoot);
 }
 
-void BST::loadTextures() {}
+void BST::draw() {
+    mWindow.draw(mSceneGraph);
+}
 
-void BST::loadFonts() {
-    mFontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
+void BST::update() {
+    mSceneGraph.update();
+    // testAnimation();
+}
+
+void BST::handleEvent(sf::Event &event) {
+    mSceneGraph.handleEvent(mWindow, event);
 }
 
 void BST::buildScene() {
@@ -25,6 +30,13 @@ void BST::buildScene() {
     for (int i = 0; i < sampleData.size(); i++) {
         insert(mRoot, 1, 0, sf::Vector2f(Constant::WINDOW_WIDTH/2 - NODE_RADIUS, 150 * Constant::SCALE_Y), sampleData[i]);
     }
+    std::unique_ptr<RectangleButton> createButton = std::make_unique<RectangleButton>();
+    createButton->set(
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(100, Constant::WINDOW_HEIGHT - 500), "Create", 
+        ResourcesHolder::fontsHolder[Fonts::FiraSansRegular], sf::Color(46, 196, 0), sf::Color::Black,
+        sf::Color(224, 134, 7), sf::Color::White
+    );
+    mSceneLayers[Buttons]->attachChild(std::move(createButton));
 }
 
 BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f &parentPos, int data) {
@@ -93,35 +105,67 @@ void BST::clear(Node *&root) {
 }
 
 std::vector<int> BST::getTravelPath(int data) {
-    std::vector<int> nodeIndex;
+    std::vector<int> nodeIndex = {};
+    getEdgeTravelPath.clear();
     Node* root = mRoot;
     while (root != nullptr) {
         nodeIndex.push_back(root->nodeIndex);
-        if (data < root->val) root = root->left;
-        else if (data > root->val) root = root->right;
-        else break;
+        if (data < root->val) {
+            getEdgeTravelPath.push_back({true, root->edgeLeftIndex});
+            root = root->left;
+        }
+        else if (data > root->val) {
+            getEdgeTravelPath.push_back({false, root->edgeRightIndex});
+            root = root->right;
+        }
+        else {
+            break;
+        }
     }
     return nodeIndex;
 }
 
-void BST::testAnimation() {
-    if (path.empty()) path = getTravelPath(283);
-    if (!isNodeHighlight1) mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(250, 160, 42), sf::Color(255, 255, 255), sf::Color(250, 160, 42));
-    else {
-        mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(255, 255, 255), sf::Color(250, 160, 42), sf::Color(250, 160, 42));
+void BST::testAnimation() { 
+    if (isReset) {
+        for (auto &child : mSceneLayers[Nodes]->getChildren()) child->change3Color(Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR, 3);
+        for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->change1Color(Color::NODE_EDGE_COLOR, 3);
+        for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->change1Color(Color::NODE_EDGE_COLOR, 3);
+        if (mSceneLayers[Nodes]->getChildren()[0]->isChange3ColorFinished()) {
+            isReset = false;
+            indexTravel = 0;
+            for (int i = 0; i < LayerCount; i++) mSceneLayers[i]->resetAnimationVar();
+        }
+        return;
     }
-    
+    if (path.empty()) path = getTravelPath(292);
+    if (!isNodeHighlight1) mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(250, 160, 42), sf::Color(255, 255, 255), sf::Color(250, 160, 42), 3);
+    else if (!isNodeHighlight2) mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->change3Color(sf::Color(255, 255, 255), sf::Color(250, 160, 42), sf::Color(250, 160, 42), 3);
+    else if (indexTravel < getEdgeTravelPath.size()) {
+        if (getEdgeTravelPath[indexTravel].first) mSceneLayers[LeftEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->change1Color(sf::Color(250, 160, 42), 3);
+        else mSceneLayers[RightEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->change1Color(sf::Color(250, 160, 42), 3);
+    }
     if (mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->isChange3ColorFinished()) {
         if (!isNodeHighlight1) {
             isNodeHighlight1 = true;
             mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->resetAnimationVar();
         }
+        else if (!isNodeHighlight2) {
+            isNodeHighlight2 = true;
+            mSceneLayers[Nodes]->getChildren()[path[indexTravel]]->resetAnimationVar();
+        }
+    }
+    else if (mSceneLayers[LeftEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->isChange1ColorFinished() || mSceneLayers[RightEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->isChange1ColorFinished()) {
+        isNodeHighlight1 = false;
+        isNodeHighlight2 = false;
+        if (getEdgeTravelPath[indexTravel].first) mSceneLayers[LeftEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->resetAnimationVar();
+        else mSceneLayers[RightEdges]->getChildren()[getEdgeTravelPath[indexTravel].second]->resetAnimationVar();
+        if (indexTravel < path.size() - 1) indexTravel++;
         else {
-            isNodeHighlight1 = false;
-            if (indexTravel < path.size() - 1) indexTravel++;
+            isReset = true;
         }
     }
 }
 
-// 283
+
+// optimize code later
 

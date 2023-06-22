@@ -4,7 +4,7 @@ Program::Program() :
     mWindow(sf::VideoMode(
         sf::VideoMode::getDesktopMode().width - 35, sf::VideoMode::getDesktopMode().height - 70), 
         "Data Visual", sf::Style::Default 
-    )
+    ) , mStateStack(mWindow)
 {
     mWindow.setPosition(sf::Vector2i(0, 0));
     sf::Image icon;
@@ -16,6 +16,10 @@ Program::Program() :
     loadTextures();
 }
 
+void Program::registerStates() {
+    mStateStack.registerState<BST>(States::BST);
+}
+
 void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
 }
@@ -23,25 +27,20 @@ void Program::loadFonts() {
 void Program::loadTextures() {}
 
 void Program::run() {
-    BST mBST(mWindow);
+    registerStates();
+    mStateStack.pushState(States::BST);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
-    sf::RectangleShape rect;
-    rect.setFillColor(Color::NODE_COLOR);
-    rect.setSize(sf::Vector2f(100, 100));
-    rect.setPosition(sf::Vector2f(100, 100));
     while(mWindow.isOpen()) {
         processEvents();
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;
         while(timeSinceLastUpdate > Constant::TIME_PER_FRAME) {
             timeSinceLastUpdate -= Constant::TIME_PER_FRAME;
-            //update funciton here
-            mBST.testAnimation();
-            mBST.update();
+            mStateStack.update();
         }
         mWindow.clear(Color::BACKGROUND_COLOR);
-        mBST.draw();
+        mStateStack.draw();
         mWindow.display();
     }
 }
@@ -49,6 +48,7 @@ void Program::run() {
 void Program::processEvents() {
     sf::Event event;
     while (mWindow.pollEvent(event)) {
+        mStateStack.handleEvent(event);
         if (event.type == sf::Event::Closed)
             mWindow.close();
     }

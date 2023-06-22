@@ -18,11 +18,15 @@ namespace Color {
     extern sf::Color NODE_TEXT_COLOR;
     extern sf::Color NODE_OUTLINE_COLOR;
     extern sf::Color NODE_EDGE_COLOR;
+
+    extern sf::Color SETTINGS_BUTTON_COLOR;
+    extern sf::Color SETTINGS_BUTTON_TEXT_COLOR;
 };
 
 namespace Size {
     extern const float NODE_RADIUS;
     extern const float EDGE_THICKNESS;
+    extern const sf::Vector2f SETTINGS_BUTTON_SIZE;
 };
 
 namespace Animation {
