@@ -15,7 +15,7 @@ void SceneNode::attachChild(Ptr child) {
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     states.transform *= getTransform();
-    drawCurrent(target, states);
+    if (mIsActive) drawCurrent(target, states);
     for (const auto& child : mChildren) {
         if (child) 
             child->draw(target, states);
@@ -23,12 +23,12 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void SceneNode::update() {
-    updateCurrent();
+    if (mIsActive) updateCurrent();
     for (const auto& child : mChildren) child->update();
 }
 
 void SceneNode::handleEvent(sf::RenderWindow &window, sf::Event &event) {
-    handleCurrentEvent(window, event);
+    if (mIsActive) handleCurrentEvent(window, event);
     for (const auto& child : mChildren) child->handleEvent(window, event);
 }
 
@@ -38,6 +38,14 @@ void SceneNode::resetAnimationVar() {
         mAnimationFinished[i] = false;
     }
     for (const auto& child : mChildren) child->resetAnimationVar();
+}
+
+void SceneNode::activate() {
+    mIsActive = true;
+}
+
+void SceneNode::deactivate() {
+    mIsActive = false;
 }
 
 std::vector<std::unique_ptr<SceneNode>>& SceneNode::getChildren() {

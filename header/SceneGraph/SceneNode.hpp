@@ -28,12 +28,18 @@ public:
     virtual void setPosition(const sf::Vector2f &position) {}
     virtual void setPositionByPoints(const sf::Vector2f &position1, const sf::Vector2f &position2) {}
 public:
-    virtual bool isLeftClicked(sf::RenderWindow &window) {return false;}
-    virtual bool isRightClicked(sf::RenderWindow &window) {return false;}
-    virtual bool isHovered(sf::RenderWindow &window) {return false;}
+    virtual bool isLeftClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
+    virtual bool isRightClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
+    virtual bool isHovered(sf::RenderWindow &window, sf::Event &event) {return false;}
     virtual bool isHolded(sf::RenderWindow &window, sf::Event &event) {return false;}
 public:
     virtual std::vector<int> getIntArrayData() {return {};} 
+private:
+    bool mIsActive = true;
+public:
+    void activate();
+    void deactivate();
+    bool isActive() {return mIsActive;}
 //animations
 public:
     enum AnimationType {

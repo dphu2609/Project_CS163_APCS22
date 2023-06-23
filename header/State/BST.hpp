@@ -12,24 +12,18 @@ private:
     virtual void draw();
     virtual void update();
     virtual void handleEvent(sf::Event &event);
-private:
+    virtual void buildScene();
+public:
     struct Node {
         int val;
         int height;
-        int widthLeft;
-        int widthRight;
-        sf::Vector2f position;
         int nodeIndex;
-        int edgeLeftIndex;
-        int edgeRightIndex;
         bool isLeft;
+        sf::Vector2f position;
         Node* left;
         Node* right;
+        Node* parent;
     };
-private:
-    int mNodeCount = 0;
-    int mEdgeLeftCount = 0;
-    int mEdgeRightCount = 0;
 public:
     explicit BST(StateStack& stack, sf::RenderWindow &window);
     ~BST();
@@ -40,33 +34,41 @@ private:
         RightEdges,
         Nodes,
         Buttons,
-        InputBoxes,
+        CreateOptions,
+        InsertOptions,
+        DeleteOptions,
+        UpdateOptions,
+        SearchOptions,
         LayerCount
     };
+    enum ButtonTypes {
+        Create,
+        Insert,
+        Delete,
+        Update,
+        Search
+    };
 private:
-    //give data set for balanced binary search tree
-    std::vector<int> sampleData = { 153, 73, 364, 271, 315, 292, 15, 27, 18, 20, 283, 549, 490, 64, 500 };
     Node* mRoot = nullptr;
+//Visulization
 private:
-    virtual void buildScene();
+    float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
+    float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
+    float NODE_RADIUS = Size::NODE_RADIUS;
 private:
-    Node* insert(Node *&root, int height, bool isLeft, const sf::Vector2f &position, int data);
-    void moveTree(Node* root, const sf::Vector2f &dis);
+    std::vector<Node*> mNodeList = {};
+    std::vector<Node*> mTravelPath = {};
+    std::vector<int> mNodeIndexList = {};
+    std::vector<std::pair<bool, int>> mEdgeIndexList = {};
 private:
-    const float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
-    const float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
-    const float NODE_RADIUS = Size::NODE_RADIUS;
+    Node* insert(Node *&root, Node* parent, int data);  
+    void moveTree(Node* root, bool isLeft);
 public:
-    void testAnimation();
-    std::vector<int> getTravelPath(int data);
-    std::vector<std::pair<bool, int>> getEdgeTravelPath = {};
-    std::vector<int> path = {};
-    int indexTravel = 0;
-    bool isNodeHighlight1 = false;
-    bool isNodeHighlight2 = false;
-    bool isEdgeHighlight = false;
-    bool repeat = false;
-    bool isReset = false;
+    void createTree();
+private:
+    std::vector<int> sampleData = { 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 55, 65, 75, 85, 5, 15, 23, 33, 43 };
+//settings
+private:  // create section
 };
 
 #endif

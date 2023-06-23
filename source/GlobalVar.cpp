@@ -19,7 +19,7 @@ namespace Color {
 namespace Size {
     const float NODE_RADIUS = 40.f * Constant::SCALE_X;
     const float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
-    const sf::Vector2f SETTINGS_BUTTON_SIZE = sf::Vector2f(300.f * Constant::SCALE_X, 100.f * Constant::SCALE_Y);
+    const sf::Vector2f SETTINGS_BUTTON_SIZE = sf::Vector2f(400.f * Constant::SCALE_X, 100.f * Constant::SCALE_Y);
 };
 
 namespace Animation {
