@@ -5,6 +5,7 @@
 #include <SceneGraph/TreeNode.hpp>
 #include <SceneGraph/Edge.hpp>
 #include <SceneGraph/RectangleButton.hpp>
+#include <SceneGraph/InputBox.hpp>
 
 class BST : public State {
 private:
@@ -39,6 +40,7 @@ private:
         RightEdges,
         Nodes,
         Buttons,
+        InputBoxes,
         LayerCount
     };
 private:

@@ -32,6 +32,8 @@ public:
     virtual bool isRightClicked(sf::RenderWindow &window) {return false;}
     virtual bool isHovered(sf::RenderWindow &window) {return false;}
     virtual bool isHolded(sf::RenderWindow &window, sf::Event &event) {return false;}
+public:
+    virtual std::vector<int> getIntArrayData() {return {};} 
 //animations
 public:
     enum AnimationType {

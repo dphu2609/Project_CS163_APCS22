@@ -37,6 +37,10 @@ void BST::buildScene() {
         sf::Color(224, 134, 7), sf::Color::White
     );
     mSceneLayers[Buttons]->attachChild(std::move(createButton));
+
+    std::unique_ptr<InputBox> inputBox = std::make_unique<InputBox>();
+    inputBox->set(sf::Vector2f(100, Constant::WINDOW_HEIGHT - 300));
+    mSceneLayers[InputBoxes]->attachChild(std::move(inputBox));
 }
 
 BST::Node* BST::insert(Node *&root, int height, bool isLeft, const sf::Vector2f &parentPos, int data) {
