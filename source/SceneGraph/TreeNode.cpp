@@ -1,11 +1,11 @@
 #include <SceneGraph/TreeNode.hpp>
 
-void TreeNode::set(const std::string &text, const sf::Vector2f position) {
-    mNode.setRadius(Size::NODE_RADIUS);
+void TreeNode::set(const std::string &text, const sf::Vector2f position, const float &radius, const sf::Color &nodeColor, const sf::Color &textColor, const sf::Color &outlineColor, const float &outlineThickness) {
+    mNode.setRadius(radius);
     mNode.setPosition(position);
-    mNode.setFillColor(Color::NODE_COLOR);
-    mNode.setOutlineThickness(Size::NODE_RADIUS / 8);
-    mNode.setOutlineColor(Color::NODE_OUTLINE_COLOR);
+    mNode.setFillColor(nodeColor);
+    mNode.setOutlineThickness(outlineThickness);
+    mNode.setOutlineColor(outlineColor);
 
     if (text.size() == 0) return;
 
@@ -15,9 +15,9 @@ void TreeNode::set(const std::string &text, const sf::Vector2f position) {
     else if (text.size() <= 4) mText.setCharacterSize(Size::NODE_RADIUS * 0.8);
     else if (text.size() <= 6) mText.setCharacterSize(Size::NODE_RADIUS * 0.6);
     else if (text.size() <= 9) mText.setCharacterSize(Size::NODE_RADIUS * 0.4);
-    else mText.setCharacterSize(Size::NODE_RADIUS * 0.3);
-    mText.setFillColor(Color::NODE_TEXT_COLOR);
-    mText.setPosition(position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
+    else mText.setCharacterSize(radius * 0.3);
+    mText.setFillColor(textColor);
+    mText.setPosition(position + sf::Vector2f(radius, radius) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
 }
 
 sf::Vector2f TreeNode::getPosition() {

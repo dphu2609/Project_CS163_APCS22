@@ -8,7 +8,11 @@ private:
     sf::CircleShape mNode;
     sf::Text mText;
 public:
-    void set(const std::string &text, const sf::Vector2f position);
+    void set(
+        const std::string &text, const sf::Vector2f position, 
+        const float &radius = Size::NODE_RADIUS, const sf::Color &nodeColor = Color::NODE_COLOR,
+        const sf::Color &textColor = Color::NODE_TEXT_COLOR,
+        const sf::Color &outlineColor = Color::NODE_OUTLINE_COLOR, const float &outlineThickness = Size::NODE_RADIUS / 8);
     virtual void setPosition(const sf::Vector2f &position);
     virtual sf::Vector2f getPosition();
 private:

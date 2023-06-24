@@ -69,7 +69,8 @@ private:
 private:
     std::vector<Node*> mNodeList = {};
 private: //Algorithms
-    Node* insert(Node *&root, Node* parent, int data);  
+    void insert(int data);
+    Node* insertNonDuplicateNode(Node *&root, Node* parent, int data);  
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
     void getTravelPath(Node* root, int data);
@@ -79,6 +80,8 @@ private: //Visualization
     void insertAnimation();
     void traverseAnimation();
     void moveTreeAnimation();
+    void nodeAppearAnimation();
+    void resetAnimation();
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
@@ -89,11 +92,10 @@ private:
     int mInputSize = 10;
     std::queue<int> mInputQueue = {};
     int mAnimationStep = 1;
-//settings
-private:  // create section
+private: 
     std::vector<Node*> mTravelPath = {};
     std::vector<bool> mIsLeftPath = {};
-    Node* mInsertNode = nullptr;
+    Node* mOperationNode = nullptr;
     bool mIsAnimation = false;
     int mTravelIndex = 0;
     std::pair<bool, bool> mTraverseControler = { false, false };

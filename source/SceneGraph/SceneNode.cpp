@@ -98,7 +98,7 @@ void SceneNode::zoom(const sf::Vector2f &sizeAfterZoom, const float speed) {
 
 void SceneNode::move(const sf::Vector2f &positionAfterMove, const float speed) {
     if (!mAnimationExecuting[Move] && !mAnimationFinished[Move]) {
-        setVarForZoom(positionAfterMove, speed);
+        setVarForMove(positionAfterMove, speed);
     }
 }
 

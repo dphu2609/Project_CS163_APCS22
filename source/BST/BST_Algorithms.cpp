@@ -1,6 +1,17 @@
 #include <State/BST.hpp>
 
-BST::Node* BST::insert(Node *&root, Node* parent, int data) {
+void BST::insert(int data) {
+    for (auto &node : mNodeList) {
+        if (node->val == data) {
+            node->duplicate++;
+            mOperationNode = node;
+            return;
+        }
+    }
+    insertNonDuplicateNode(mRoot, nullptr, data);
+}
+
+BST::Node* BST::insertNonDuplicateNode(Node *&root, Node* parent, int data) {
     if (root == nullptr) {
         if (parent == nullptr) {
             root = new Node{
@@ -18,18 +29,16 @@ BST::Node* BST::insert(Node *&root, Node* parent, int data) {
             };
         }
         mNodeList.push_back(root);
+        mOperationNode = root;
         return root;
     }
     if (data < root->val) {
         if (root->left != nullptr && data > root->left->val) moveTree(root->left, true);
-        root->left = insert(root->left, root, data);
+        root->left = insertNonDuplicateNode(root->left, root, data);
     }
     else if (data > root->val) {
         if (root->right != nullptr && data < root->right->val) moveTree(root->right, false);
-        root->right = insert(root->right, root, data);
-    }
-    else {
-        root->duplicate++;
+        root->right = insertNonDuplicateNode(root->right, root, data);
     }
     return root;
 }
@@ -71,21 +80,21 @@ void BST::createRandomTree() {
         Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
     }
     else if (mInputSize < 40) {
-        NODE_DISTANCE_HORIZONTAL = 40.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 38.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
     }
     else {
-        NODE_DISTANCE_HORIZONTAL = 30.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 35.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
+        Size::NODE_RADIUS = 28.f * Constant::SCALE_X;
     }
 
     clear(mRoot);
     mNodeList.clear();
 
     for (int i = 0; i < mInputData.size(); i++) {
-        insert(mRoot, nullptr, mInputData[i]);
+        insert(mInputData[i]);
     }
 
 
