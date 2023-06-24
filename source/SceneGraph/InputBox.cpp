@@ -157,10 +157,10 @@ std::vector<int> InputBox::getIntArrayData() {
         } else if (mData[i] == ',') {
             if (isValid && !(temp.size() == 1 && temp[0] == '-')) result.push_back(std::stoi(temp));
             temp = "";
-            isValid = false;
+            isValid = true;
         } else if (mData[i] != ' ' || (temp.size() == 1 && temp[0] == '-')) {
             isValid = false;
-        }
+        }   
     }
     return result;
 }

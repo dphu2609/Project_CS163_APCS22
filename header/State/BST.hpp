@@ -56,28 +56,47 @@ private:
         RamdomButton,
         FromFileButton
     };
+
+    enum InsertOptions {
+        InsertInput,
+        InsertStart
+    };
 private:
     Node* mRoot = nullptr;
-//Visulization
 private:
     float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
     float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
 private:
     std::vector<Node*> mNodeList = {};
-    std::vector<Node*> mTravelPath = {};
-    std::vector<int> mNodeIndexList = {};
-    std::vector<std::pair<bool, int>> mEdgeIndexList = {};
-private:
+private: //Algorithms
     Node* insert(Node *&root, Node* parent, int data);  
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
-public:
+    void getTravelPath(Node* root, int data);
+private: //Visualization
     void createTree();
+
+    void insertAnimation();
+    void traverseAnimation();
+    void moveTreeAnimation();
+private:
+    bool mInsertAnimation = false;
+    bool mDeleteAnimation = false;
+    bool mSearchAnimation = false;
+    bool mUpdateAnimation = false;
 private:
     std::vector<int> mInputData = {};
     int mInputSize = 10;
+    std::queue<int> mInputQueue = {};
+    int mAnimationStep = 1;
 //settings
 private:  // create section
+    std::vector<Node*> mTravelPath = {};
+    std::vector<bool> mIsLeftPath = {};
+    Node* mInsertNode = nullptr;
+    bool mIsAnimation = false;
+    int mTravelIndex = 0;
+    std::pair<bool, bool> mTraverseControler = { false, false };
 };
 
 #endif

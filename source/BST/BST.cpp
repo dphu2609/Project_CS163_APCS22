@@ -14,10 +14,12 @@ void BST::draw() {
 
 void BST::update() {
     mSceneGraph.update();
+    if (mInsertAnimation) insertAnimation();
 }
 
 void BST::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
+
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
             if (child->isActive()) {
@@ -28,29 +30,28 @@ void BST::handleEvent(sf::Event &event) {
         }
     }
 
+    if (mSceneLayers[Buttons]->getChildren()[Insert]->isLeftClicked(mWindow, event)) {
+        for (auto &child : mSceneLayers[InsertOptions]->getChildren()) {
+            if (child->isActive()) {
+                child->deactivate();
+            } else {
+                child->activate();
+            }
+        }
+    }
+
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
-        if (mInputSize < 15) {
-            NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
-            NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
-            Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
-        }
-        else if (mInputSize < 30) {
-            NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
-            NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-            Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
-        }
-        else if (mInputSize < 40) {
-            NODE_DISTANCE_HORIZONTAL = 40.f * Constant::SCALE_X;
-            NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-            Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
-        }
-        else {
-            NODE_DISTANCE_HORIZONTAL = 30.f * Constant::SCALE_X;
-            NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-            Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
-        }
         createRandomTree();
+    }
+
+    if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
+        std::vector<int> inputList = mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getIntArrayData();
+        while (!mInputQueue.empty()) mInputQueue.pop();
+        for (auto &input : inputList) {
+            mInputQueue.push(input);
+        }
+        mInsertAnimation = true;
     }
 }
 
@@ -133,6 +134,19 @@ void BST::buildScene() {
     fileButton->deactivate();
     mSceneLayers[CreateOptions]->attachChild(std::move(fileButton));
 
+    std::unique_ptr<InputBox> insertInput = std::make_unique<InputBox>();
+    insertInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 505));
+    insertInput->deactivate();
+    mSceneLayers[InsertOptions]->attachChild(std::move(insertInput));
+
+    std::unique_ptr<RectangleButton> startButton = std::make_unique<RectangleButton>();
+    startButton->set(
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 510), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
+        sf::Color(224, 134, 7), sf::Color::Black
+    );
+    startButton->deactivate();
+    mSceneLayers[InsertOptions]->attachChild(std::move(startButton));
 
     //---------------
     createRandomTree();

@@ -60,9 +60,45 @@ void BST::createRandomTree() {
         mInputData.push_back(dis(gen));
     }
 
+    if (mInputSize < 15) {
+        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
+    }
+    else if (mInputSize < 30) {
+        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
+    }
+    else if (mInputSize < 40) {
+        NODE_DISTANCE_HORIZONTAL = 40.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
+    }
+    else {
+        NODE_DISTANCE_HORIZONTAL = 30.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
+    }
+
+    clear(mRoot);
+    mNodeList.clear();
+
     for (int i = 0; i < mInputData.size(); i++) {
         insert(mRoot, nullptr, mInputData[i]);
     }
 
+
     createTree();
+}
+
+void BST::getTravelPath(Node* root, int data) {
+    Node* cur = root;
+    while (cur != nullptr) {
+        mTravelPath.push_back(cur);
+        mIsLeftPath.push_back(data < cur->val);
+        if (data < cur->val) cur = cur->left;
+        else if (data > cur->val) cur = cur->right;
+        else break;
+    }
 }
