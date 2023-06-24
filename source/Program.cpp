@@ -22,6 +22,7 @@ void Program::registerStates() {
 
 void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
+    ResourcesHolder::fontsHolder.load(Fonts::RobotoRegular, "resources/fonts/Roboto/Roboto-Regular.ttf");
 }
 
 void Program::loadTextures() {}

@@ -23,6 +23,7 @@ public:
         Node* left;
         Node* right;
         Node* parent;
+        int duplicate;
     };
 public:
     explicit BST(StateStack& stack, sf::RenderWindow &window);
@@ -48,13 +49,19 @@ private:
         Update,
         Search
     };
+
+    enum CreateOptions {
+        SizeLabel,
+        SizeInputBox,
+        RamdomButton,
+        FromFileButton
+    };
 private:
     Node* mRoot = nullptr;
 //Visulization
 private:
     float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
     float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
-    float NODE_RADIUS = Size::NODE_RADIUS;
 private:
     std::vector<Node*> mNodeList = {};
     std::vector<Node*> mTravelPath = {};
@@ -63,10 +70,12 @@ private:
 private:
     Node* insert(Node *&root, Node* parent, int data);  
     void moveTree(Node* root, bool isLeft);
+    void createRandomTree();
 public:
     void createTree();
 private:
-    std::vector<int> sampleData = { 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 55, 65, 75, 85, 5, 15, 23, 33, 43 };
+    std::vector<int> mInputData = {};
+    int mInputSize = 10;
 //settings
 private:  // create section
 };

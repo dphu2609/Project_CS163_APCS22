@@ -9,10 +9,17 @@ find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
 include(CTest)
 enable_testing()
 
-# Collect all source files in the source directory
-file(GLOB SOURCES "source/*.cpp")
+# Collect source files from multiple directories
+file(GLOB STATESTACK_SOURCES "source/StateStack/*.cpp")
+file(GLOB BST_SOURCES "source/BST/*.cpp")
+file(GLOB SCENEGRAPH_SOURCES "source/SceneGraph/*.cpp")
+file(GLOB MAIN_SOURCES "source/*.cpp")
+
+# Create a single list of all source files
+set(SOURCES ${STATESTACK_SOURCES} ${BST_SOURCES} ${SCENEGRAPH_SOURCES} ${MAIN_SOURCES})
 
 add_executable(Project_CS163_APCS22 ${SOURCES})
+
 
 # Add include directories
 target_include_directories(Project_CS163_APCS22 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/header")

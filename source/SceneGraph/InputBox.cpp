@@ -164,3 +164,9 @@ std::vector<int> InputBox::getIntArrayData() {
     }
     return result;
 }
+
+void InputBox::setContent(const std::string &content) {
+    mData = content;
+    mContent.setString(mData);
+    mCursor.setPosition(mBox.getPosition() + sf::Vector2f(7 * Constant::SCALE_X + mContent.getLocalBounds().width, mBox.getSize().y*0.05));
+}

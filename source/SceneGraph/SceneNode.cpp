@@ -13,6 +13,10 @@ void SceneNode::attachChild(Ptr child) {
     mChildren.emplace_back(std::move(child));
 }
 
+void SceneNode::clearChildren() {
+    mChildren.clear();
+}
+
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     states.transform *= getTransform();
     if (mIsActive) drawCurrent(target, states);

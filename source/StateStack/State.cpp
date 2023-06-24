@@ -1,6 +1,6 @@
 #include <State/StateStack.hpp>
 
-State::State(StateStack& stack,sf::RenderWindow &window) : mStack(&stack), mWindow(window) {}
+State::State(StateStack& stack, sf::RenderWindow &window) : mStack(&stack), mWindow(window) {}
 
 void State::requestStackPush(States::ID stateID) {
     mStack->pushState(stateID);

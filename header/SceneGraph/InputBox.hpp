@@ -36,6 +36,7 @@ public:
     virtual bool isLeftClicked(sf::RenderWindow &window, sf::Event &event);
 public:
     virtual std::vector<int> getIntArrayData();
+    virtual void setContent(const std::string &content);
 private: 
     virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
 };

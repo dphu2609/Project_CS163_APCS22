@@ -24,9 +24,9 @@ namespace Color {
 };
 
 namespace Size {
-    extern const float NODE_RADIUS;
-    extern const float EDGE_THICKNESS;
-    extern const sf::Vector2f SETTINGS_BUTTON_SIZE;
+    extern float NODE_RADIUS;
+    extern float EDGE_THICKNESS;
+    extern sf::Vector2f SETTINGS_BUTTON_SIZE;
 };
 
 namespace Animation {

@@ -13,6 +13,7 @@ public:
     void attachChild(Ptr child);
     std::vector<std::unique_ptr<SceneNode>>& getChildren();
     int getChildrenCount();
+    void clearChildren();
 
     void update();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -34,6 +35,7 @@ public:
     virtual bool isHolded(sf::RenderWindow &window, sf::Event &event) {return false;}
 public:
     virtual std::vector<int> getIntArrayData() {return {};} 
+    virtual void setContent(const std::string &content) {}
 private:
     bool mIsActive = true;
 public:
