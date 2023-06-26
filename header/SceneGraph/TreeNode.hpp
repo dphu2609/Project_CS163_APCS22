@@ -15,6 +15,7 @@ public:
         const sf::Color &outlineColor = Color::NODE_OUTLINE_COLOR, const float &outlineThickness = Size::NODE_RADIUS / 8);
     virtual void setPosition(const sf::Vector2f &position);
     virtual sf::Vector2f getPosition();
+    virtual void setContent(const std::string &text);
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
     virtual void updateCurrent();

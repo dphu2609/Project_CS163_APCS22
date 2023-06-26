@@ -11,10 +11,10 @@ void TreeNode::set(const std::string &text, const sf::Vector2f position, const f
 
     mText.setFont(ResourcesHolder::fontsHolder[Fonts::FiraSansRegular]);
     mText.setString(text);
-    if (text.size() <= 3) mText.setCharacterSize(Size::NODE_RADIUS);
-    else if (text.size() <= 4) mText.setCharacterSize(Size::NODE_RADIUS * 0.8);
-    else if (text.size() <= 6) mText.setCharacterSize(Size::NODE_RADIUS * 0.6);
-    else if (text.size() <= 9) mText.setCharacterSize(Size::NODE_RADIUS * 0.4);
+    if (text.size() <= 3) mText.setCharacterSize(radius);
+    else if (text.size() <= 4) mText.setCharacterSize(radius * 0.8);
+    else if (text.size() <= 6) mText.setCharacterSize(radius * 0.6);
+    else if (text.size() <= 9) mText.setCharacterSize(radius * 0.4);
     else mText.setCharacterSize(radius * 0.3);
     mText.setFillColor(textColor);
     mText.setPosition(position + sf::Vector2f(radius, radius) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
@@ -236,4 +236,14 @@ void TreeNode::setVarForChange3Color(const sf::Color &objectColorAfterChange, co
 
     this->mAnimationExecuting[Change3Color] = true;
     this->mAnimationFinished[Change3Color] = false;
+}
+
+void TreeNode::setContent(const std::string &text) {
+    mText.setString(text);
+    if (text.size() <= 3) mText.setCharacterSize(mNode.getRadius());
+    else if (text.size() <= 4) mText.setCharacterSize(mNode.getRadius() * 0.8);
+    else if (text.size() <= 6) mText.setCharacterSize(mNode.getRadius() * 0.6);
+    else if (text.size() <= 9) mText.setCharacterSize(mNode.getRadius() * 0.4);
+    else mText.setCharacterSize(mNode.getRadius() * 0.3);
+    mText.setPosition(mNode.getPosition() + sf::Vector2f(mNode.getRadius(), mNode.getRadius()) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
 }

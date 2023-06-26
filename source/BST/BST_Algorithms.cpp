@@ -111,3 +111,45 @@ void BST::getTravelPath(Node* root, int data) {
         else break;
     }
 }
+
+void BST::find2NodesForDelete(int data) {
+    Node* cur = mRoot;
+    while (cur != nullptr) {
+        if (data < cur->val) {
+            cur = cur->left;
+        }
+        else if (data > cur->val) {
+            cur = cur->right;
+        }
+        else {
+            mOperationNode = cur;
+            break;
+        }
+    }
+    if (cur == nullptr) return;
+    if (!cur->left && !cur->right) mReplaceNode = nullptr;
+    else if (!cur->left) {
+        mReplaceNode = cur->right;
+    }
+    else if (!cur->right) {
+        mReplaceNode = cur->left;
+    }
+    else {
+        mReplaceNode = cur->right;
+        while (mReplaceNode->left != nullptr) {
+            mReplaceNode = mReplaceNode->left;
+        }
+    }
+}
+
+void BST::swapNode(Node* &a, Node* &b) {
+    std::swap(a->val, b->val);
+    std::swap(a->height, b->height);
+    std::swap(a->duplicate, b->duplicate);
+    std::swap(a->position, b->position);
+    std::swap(a->nodeIndex, b->nodeIndex);
+    
+    std::swap(mSceneLayers[Nodes]->getChildren()[a->nodeIndex], mSceneLayers[Nodes]->getChildren()[b->nodeIndex]);
+    std::swap(mSceneLayers[LeftEdges]->getChildren()[a->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[b->nodeIndex]);
+    std::swap(mSceneLayers[RightEdges]->getChildren()[a->nodeIndex], mSceneLayers[RightEdges]->getChildren()[b->nodeIndex]);
+}

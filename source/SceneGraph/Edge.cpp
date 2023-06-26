@@ -1,21 +1,21 @@
 #include <SceneGraph/Edge.hpp>
 
-void Edge::set(const sf::Vector2f &position, const sf::Vector2f &size, const double &angle) {
-    mEdge.setSize(size);
-    mEdge.setFillColor(Color::NODE_EDGE_COLOR);
-    mEdge.setPosition(position);
-    mEdge.setRotation(angle);
+void Edge::set(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness, const sf::Color &edgeColor) {
+    setPositionByPoints(point1, point2);
+    mEdge.setFillColor(edgeColor);
 }
 
 void Edge::setPosition(const sf::Vector2f &position) {
     mEdge.setPosition(position);
 }
 
-void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2) {
-    sf::Vector2f size(Size::EDGE_THICKNESS, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)) * Constant::SCALE_X);
+void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness) {
+    sf::Vector2f size(edgeThickness, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)) * Constant::SCALE_X);
     sf::Vector2f position = point1;
-    double angle = std::atan((point2.x - point1.x)/(point2.y - point1.y)) * 180 / std::acos(-1);
-    set(position, size, -angle);
+    double angle = std::atan2(point2.x - point1.x, point2.y - point1.y) * 180 / std::acos(-1);
+    mEdge.setSize(size);
+    mEdge.setPosition(position);
+    mEdge.setRotation(-angle);
     startPoint = point1;
     endPoint = point2;
 }

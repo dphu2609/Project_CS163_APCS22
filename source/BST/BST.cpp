@@ -15,6 +15,7 @@ void BST::draw() {
 void BST::update() {
     mSceneGraph.update();
     if (mInsertAnimation) insertAnimation();
+    if (mDeleteAnimation) deleteAnimation();
 }
 
 void BST::handleEvent(sf::Event &event) {
@@ -40,6 +41,16 @@ void BST::handleEvent(sf::Event &event) {
         }
     }
 
+    if (mSceneLayers[Buttons]->getChildren()[Delete]->isLeftClicked(mWindow, event)) {
+        for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) {
+            if (child->isActive()) {
+                child->deactivate();
+            } else {
+                child->activate();
+            }
+        }
+    }
+
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
         createRandomTree();
@@ -52,6 +63,21 @@ void BST::handleEvent(sf::Event &event) {
             mInputQueue.push(input);
         }
         mInsertAnimation = true;
+        mDeleteAnimation = false;
+        mUpdateAnimation = false;
+        mSearchAnimation = false;
+    }
+
+    if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
+        std::vector<int> inputList = mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getIntArrayData();
+        while (!mInputQueue.empty()) mInputQueue.pop();
+        for (auto &input : inputList) {
+            mInputQueue.push(input);
+        }
+        mInsertAnimation = false;
+        mDeleteAnimation = true;
+        mUpdateAnimation = false;
+        mSearchAnimation = false;
     }
 }
 
@@ -139,15 +165,28 @@ void BST::buildScene() {
     insertInput->deactivate();
     mSceneLayers[InsertOptions]->attachChild(std::move(insertInput));
 
-    std::unique_ptr<RectangleButton> startButton = std::make_unique<RectangleButton>();
-    startButton->set(
+    std::unique_ptr<RectangleButton> startInsertButton = std::make_unique<RectangleButton>();
+    startInsertButton->set(
         sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 510), "Start",
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
         sf::Color(224, 134, 7), sf::Color::Black
     );
-    startButton->deactivate();
-    mSceneLayers[InsertOptions]->attachChild(std::move(startButton));
+    startInsertButton->deactivate();
+    mSceneLayers[InsertOptions]->attachChild(std::move(startInsertButton));
 
+    std::unique_ptr<InputBox> deleteInput = std::make_unique<InputBox>();
+    deleteInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 425));
+    deleteInput->deactivate();
+    mSceneLayers[DeleteOptions]->attachChild(std::move(deleteInput));
+
+    std::unique_ptr<RectangleButton> startDeleteButton = std::make_unique<RectangleButton>();
+    startDeleteButton->set(
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 430), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
+        sf::Color(224, 134, 7), sf::Color::Black
+    );
+    startDeleteButton->deactivate();
+    mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
     //---------------
     createRandomTree();
 }

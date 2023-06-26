@@ -61,6 +61,11 @@ private:
         InsertInput,
         InsertStart
     };
+
+      enum DeleteOptions {
+        DeleteInput,
+        DeleteStart
+    };
 private:
     Node* mRoot = nullptr;
 private:
@@ -71,16 +76,21 @@ private:
 private: //Algorithms
     void insert(int data);
     Node* insertNonDuplicateNode(Node *&root, Node* parent, int data);  
+    void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
     void getTravelPath(Node* root, int data);
+    void swapNode(Node* &node1, Node* &node2);
 private: //Visualization
     void createTree();
 
     void insertAnimation();
-    void traverseAnimation();
-    void moveTreeAnimation();
-    void nodeAppearAnimation();
+    void deleteAnimation();
+    void traverseAnimation(int animationStepAfterFinish = 0);
+    void moveTreeAnimation(int animationStepAfterFinish = 0);
+    void nodeAppearAnimation(int animationStepAfterFinish = 0);
+    void deleteNodeAnimation(int animationStepAfterFinish = 0);
+    void changeNodeAnimation(int animationStepAfterFinish = 0);
     void resetAnimation();
 private:
     bool mInsertAnimation = false;
@@ -96,6 +106,7 @@ private:
     std::vector<Node*> mTravelPath = {};
     std::vector<bool> mIsLeftPath = {};
     Node* mOperationNode = nullptr;
+    Node* mReplaceNode = nullptr;
     bool mIsAnimation = false;
     int mTravelIndex = 0;
     std::pair<bool, bool> mTraverseControler = { false, false };
