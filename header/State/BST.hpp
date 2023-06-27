@@ -73,6 +73,7 @@ private:
     float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
 private:
     std::vector<Node*> mNodeList = {};
+    std::vector<Node*> mNodeListForReplay = {};
 private: //Algorithms
     void insert(int data);
     Node* insertNonDuplicateNode(Node *&root, Node* parent, int data);  
