@@ -23,7 +23,7 @@ namespace Size {
 };
 
 namespace Animation {
-    float SPEED = 0.5;
+    float SPEED = 1;
 };
 
 namespace ResourcesHolder {

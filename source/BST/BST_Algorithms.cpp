@@ -156,7 +156,7 @@ void BST::deleteNode() {
     int data = (mReplaceNode == nullptr ? mOperationNode->val : mReplaceNode->val);
     while (cur != nullptr) { //move tree
         if (data < cur->val) {
-            if (cur->left != nullptr && data > cur->left->val) moveTree(cur->left, true);
+            if (cur->left != nullptr && data > cur->left->val) moveTree(cur->left, true); 
             cur = cur->left;
         }
         else if (data > cur->val) {
@@ -166,6 +166,14 @@ void BST::deleteNode() {
         else {
             break;
         }
+    }
+    if (mReplaceNode && mReplaceNode->parent == mOperationNode && mOperationNode->isLeft == mReplaceNode->isLeft) {
+        if (mOperationNode->isLeft) moveTree(mReplaceNode, true);
+        else moveTree(mReplaceNode, false);
+    }
+    else if (mReplaceNode && mReplaceNode->parent == mOperationNode && mOperationNode->isLeft != mReplaceNode->isLeft) {
+        if (mOperationNode->isLeft) moveTree(mReplaceNode, false);
+        else moveTree(mReplaceNode, true);
     }
 
     if (mOperationNode == nullptr) return;
@@ -199,7 +207,7 @@ void BST::deleteNode() {
                 else mOperationNode->parent->right = mReplaceNode;
             }
             mReplaceNode->isLeft = mOperationNode->isLeft;
-            mReplaceNode->position = mOperationNode->position;
+            // mReplaceNode->position = mOperationNode->position;
             mReplaceNode->height = mOperationNode->height;
             std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
             std::swap(mSceneLayers[LeftEdges]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[mReplaceNode->nodeIndex]);
@@ -242,7 +250,7 @@ void BST::deleteNode() {
     for (int i = mOperationNode->nodeIndex + 1; i < mNodeList.size(); i++) {
         mNodeList[i]->nodeIndex--;
     }
-    mNodeList.erase(std::find(mNodeList.begin(), mNodeList.end(), mOperationNode));
+    mNodeList.erase(mNodeList.begin() + mOperationNode->nodeIndex);
     mSceneLayers[Nodes]->getChildren().erase(mSceneLayers[Nodes]->getChildren().begin() + mOperationNode->nodeIndex);
     mSceneLayers[LeftEdges]->getChildren().erase(mSceneLayers[LeftEdges]->getChildren().begin() + mOperationNode->nodeIndex);
     mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mOperationNode->nodeIndex);
@@ -251,7 +259,7 @@ void BST::deleteNode() {
 }
 
 void BST::reduceHeight(Node* root) {
-    if (root == nullptr) return;
+    if (root == nullptr) return;    
     root->height--;
     reduceHeight(root->left);
     reduceHeight(root->right);

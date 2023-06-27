@@ -32,7 +32,7 @@ void BST::insertAnimation() {
             break;
         }
         case 3: {
-            traverseAnimation(4);
+            traverseAnimation(3, 4);
             break;
         }
 
@@ -44,13 +44,13 @@ void BST::insertAnimation() {
         }
 
         case 5: { //normal case
-            nodeAppearAnimation(7);
-            moveTreeAnimation();
+            nodeAppearAnimation(2, 7);
+            moveTreeAnimation(2);
             break;
         }
 
         case 6: {
-            changeNodeAnimation(7);
+            changeNodeAnimation(2, 7);
             break;
         }
 
@@ -79,7 +79,7 @@ void BST::deleteAnimation() {
         }
 
         case 3: {
-            traverseAnimation(4);
+            traverseAnimation(2, 4);
             break;
         }
 
@@ -97,12 +97,12 @@ void BST::deleteAnimation() {
         }
 
         case 5: {
-            traverseAnimation(6);
+            traverseAnimation(2, 6);
             break;
         }
 
         case 6: {
-            deleteNodeAnimation(7);
+            deleteNodeAnimation(1.5, 7);
             break;
         }
 
@@ -113,12 +113,12 @@ void BST::deleteAnimation() {
         }
 
         case 8: {
-            moveTreeAnimation(10);
+            moveTreeAnimation(1.5, 10);
             break;
         }
 
         case 9: {
-            changeNodeAnimation(10);
+            changeNodeAnimation(2, 10);
             break;
         }
 
@@ -132,7 +132,7 @@ void BST::deleteAnimation() {
     }
 }
 
-void BST::traverseAnimation(int animationStepAfterFinish) {
+void BST::traverseAnimation(float speed, int animationStepAfterFinish) {
     if (!mTraverseControler.first) 
         mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
             sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
@@ -203,7 +203,7 @@ void BST::traverseAnimation(int animationStepAfterFinish) {
     }
 }
 
-void BST::nodeAppearAnimation(int animationStepAfterFinish) {
+void BST::nodeAppearAnimation(float speed, int animationStepAfterFinish) {
     if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size()) {
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
         node->set(
@@ -213,17 +213,17 @@ void BST::nodeAppearAnimation(int animationStepAfterFinish) {
         mSceneLayers[Nodes]->attachChild(std::move(node));
     }
 
-    mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), 2);
+    mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
 
     if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished()) {
         mAnimationStep = animationStepAfterFinish;
     }
 }
 
-void BST::moveTreeAnimation(int animationStepAfterFinish) {
+void BST::moveTreeAnimation(float speed, int animationStepAfterFinish) {
     int index = 0;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) {
-        child->move(mNodeList[index]->position, 2);
+        child->move(mNodeList[index]->position, speed);
         index++;
     }
     index = 0;
@@ -231,7 +231,7 @@ void BST::moveTreeAnimation(int animationStepAfterFinish) {
         child->moveBy2Points(
             mNodeList[index]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
             (mNodeList[index]->left ? mNodeList[index]->left->position : mNodeList[index]->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            2
+            speed
         );
         index++;
     }
@@ -241,20 +241,27 @@ void BST::moveTreeAnimation(int animationStepAfterFinish) {
         child->moveBy2Points(
             mNodeList[index]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
             (mNodeList[index]->right ? mNodeList[index]->right->position : mNodeList[index]->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            2
+            speed
         );
         index++;
     }
 
     if (animationStepAfterFinish != 0) {
-        if (mDeleteAnimation && mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]->isMoveFinished()) {
-            mAnimationStep  = animationStepAfterFinish;
+        bool isFinishedAll = true;
+        for (auto &child : mSceneLayers[Nodes]->getChildren()) {
+            if (!child->isMoveFinished()) {
+                isFinishedAll = false;
+                break;
+            }
+        }
+        if (mDeleteAnimation && isFinishedAll) {
+            mAnimationStep = animationStepAfterFinish;
         }
     }
 }
 
 
-void BST::changeNodeAnimation(int animationStepAfterFinish) {
+void BST::changeNodeAnimation(float speed, int animationStepAfterFinish) {
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
         sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
     );
@@ -266,20 +273,20 @@ void BST::changeNodeAnimation(int animationStepAfterFinish) {
     }
 }
 
-void BST::deleteNodeAnimation(int animationStepAfterFinish) {
-    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 2);
+void BST::deleteNodeAnimation(float speed, int animationStepAfterFinish) {
+    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
 
     if (!mReplaceNode) {
         if (mOperationNode->isLeft) {
             mSceneLayers[LeftEdges]->getChildren()[mOperationNode->parent->nodeIndex]->moveBy2Points(
                 mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
             );
         }
         else {
             mSceneLayers[RightEdges]->getChildren()[mOperationNode->parent->nodeIndex]->moveBy2Points(
                 mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
             );
         }
     }
@@ -287,13 +294,13 @@ void BST::deleteNodeAnimation(int animationStepAfterFinish) {
         if (mOperationNode->left) {
             mSceneLayers[LeftEdges]->getChildren()[mOperationNode->nodeIndex]->moveBy2Points(
                 mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                mOperationNode->left->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                mOperationNode->left->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
             );
 
-            if (mReplaceNode->left) {
+            if (mReplaceNode->left && mReplaceNode->parent->right) {
                 mSceneLayers[RightEdges]->getChildren()[mReplaceNode->parent->nodeIndex]->moveBy2Points(
                     mReplaceNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                    mReplaceNode->left->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                    mReplaceNode->left->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
                 );
             }
         }
@@ -301,13 +308,13 @@ void BST::deleteNodeAnimation(int animationStepAfterFinish) {
         if (mOperationNode->right) {
             mSceneLayers[RightEdges]->getChildren()[mOperationNode->nodeIndex]->moveBy2Points( 
                 mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                mOperationNode->right->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                mOperationNode->right->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
             );
 
-            if (mReplaceNode->right) {
+            if (mReplaceNode->right && mReplaceNode->parent->left) {
                 mSceneLayers[LeftEdges]->getChildren()[mReplaceNode->parent->nodeIndex]->moveBy2Points(
                     mReplaceNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                    mReplaceNode->right->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                    mReplaceNode->right->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
                 );
             }
         }
@@ -316,13 +323,13 @@ void BST::deleteNodeAnimation(int animationStepAfterFinish) {
             if (mOperationNode->isLeft) {
                 mSceneLayers[LeftEdges]->getChildren()[mOperationNode->parent->nodeIndex]->moveBy2Points(
                     mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                    mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                    mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
                 );
             }
             else {
                 mSceneLayers[RightEdges]->getChildren()[mOperationNode->parent->nodeIndex]->moveBy2Points(
                     mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-                    mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 2
+                    mReplaceNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
                 );
             }
         }
@@ -340,4 +347,7 @@ void BST::resetAnimation() {
     mAnimationStep = 1;
     mOperationNode = nullptr;
     mReplaceNode = nullptr;
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
+    for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
+    for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
 }

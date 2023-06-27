@@ -88,11 +88,11 @@ private: //Visualization
 
     void insertAnimation();
     void deleteAnimation();
-    void traverseAnimation(int animationStepAfterFinish = 0);
-    void moveTreeAnimation(int animationStepAfterFinish = 0);
-    void nodeAppearAnimation(int animationStepAfterFinish = 0);
-    void deleteNodeAnimation(int animationStepAfterFinish = 0);
-    void changeNodeAnimation(int animationStepAfterFinish = 0);
+    void traverseAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
+    void moveTreeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
+    void nodeAppearAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
+    void deleteNodeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
+    void changeNodeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
     void resetAnimation();
 private:
     bool mInsertAnimation = false;
