@@ -45,8 +45,13 @@ BST::Node* BST::insertNonDuplicateNode(Node *&root, Node* parent, int data) {
 
 void BST::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
-    sf::Vector2f dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
+    sf::Vector2f dis;
+    if (!mDeleteAnimation)
+        dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
+    else
+        dis = sf::Vector2f(isLeft ? NODE_DISTANCE_HORIZONTAL : -NODE_DISTANCE_HORIZONTAL, 0);
     root->position += dis;
+    root->position.y = (root->height - mRoot->height) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     moveTree(root->left, isLeft);
     moveTree(root->right, isLeft);
 }
@@ -113,6 +118,8 @@ void BST::getTravelPath(Node* root, int data) {
 }
 
 void BST::find2NodesForDelete(int data) {
+    mOperationNode = nullptr;
+    mReplaceNode = nullptr;
     Node* cur = mRoot;
     while (cur != nullptr) {
         if (data < cur->val) {
@@ -126,13 +133,13 @@ void BST::find2NodesForDelete(int data) {
             break;
         }
     }
-    if (cur == nullptr) return;
+    if (cur == nullptr || mOperationNode->duplicate > 1) return;
     if (!cur->left && !cur->right) mReplaceNode = nullptr;
-    else if (!cur->left) {
-        mReplaceNode = cur->right;
-    }
     else if (!cur->right) {
         mReplaceNode = cur->left;
+        while (mReplaceNode->right != nullptr) {
+            mReplaceNode = mReplaceNode->right;
+        }
     }
     else {
         mReplaceNode = cur->right;
@@ -142,13 +149,121 @@ void BST::find2NodesForDelete(int data) {
     }
 }
 
+void BST::deleteNode() {
+    if (mOperationNode == nullptr) return;
+    if (mReplaceNode != nullptr) reduceHeight(mReplaceNode);
+    Node* cur = mRoot;
+    int data = (mReplaceNode == nullptr ? mOperationNode->val : mReplaceNode->val);
+    while (cur != nullptr) { //move tree
+        if (data < cur->val) {
+            if (cur->left != nullptr && data > cur->left->val) moveTree(cur->left, true);
+            cur = cur->left;
+        }
+        else if (data > cur->val) {
+            if (cur->right != nullptr && data < cur->right->val) moveTree(cur->right, false);
+            cur = cur->right;
+        }
+        else {
+            break;
+        }
+    }
+
+    if (mOperationNode == nullptr) return;
+    if (mReplaceNode == nullptr) {
+        if (mOperationNode->parent) {
+            if (mOperationNode->isLeft) mOperationNode->parent->left = nullptr;
+            else mOperationNode->parent->right = nullptr;
+        }
+    }
+    else if (mReplaceNode->parent == mOperationNode) {
+        if (mOperationNode->left && mOperationNode->right) {
+            mOperationNode->left->parent = mReplaceNode;
+            mReplaceNode->left = mOperationNode->left;
+            if (mOperationNode->parent) {
+                if (mOperationNode->isLeft) mOperationNode->parent->left = mReplaceNode;
+                else mOperationNode->parent->right = mReplaceNode;
+            }
+            mReplaceNode->parent = mOperationNode->parent;
+            mReplaceNode->isLeft = mOperationNode->isLeft;
+            mReplaceNode->position = mOperationNode->position;
+            mReplaceNode->height = mOperationNode->height;
+            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+            std::swap(mSceneLayers[RightEdges]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mReplaceNode->nodeIndex]);
+            std::swap(mNodeList[mOperationNode->nodeIndex], mNodeList[mReplaceNode->nodeIndex]);
+            std::swap(mOperationNode->nodeIndex, mReplaceNode->nodeIndex);
+        }
+        else {
+            mReplaceNode->parent = mOperationNode->parent;
+            if (mOperationNode->parent) {
+                if (mOperationNode->isLeft) mOperationNode->parent->left = mReplaceNode;
+                else mOperationNode->parent->right = mReplaceNode;
+            }
+            mReplaceNode->isLeft = mOperationNode->isLeft;
+            mReplaceNode->position = mOperationNode->position;
+            mReplaceNode->height = mOperationNode->height;
+            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+            std::swap(mSceneLayers[LeftEdges]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[mReplaceNode->nodeIndex]);
+            std::swap(mSceneLayers[RightEdges]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mReplaceNode->nodeIndex]);
+            std::swap(mNodeList[mOperationNode->nodeIndex], mNodeList[mReplaceNode->nodeIndex]);
+            std::swap(mOperationNode->nodeIndex, mReplaceNode->nodeIndex);
+        }
+    }
+    else {
+        if (mOperationNode->parent) {
+            if (mOperationNode->isLeft) mOperationNode->parent->left = mReplaceNode;
+            else mOperationNode->parent->right = mReplaceNode;
+        }
+        if (mReplaceNode->right) {
+            mReplaceNode->right->parent = mReplaceNode->parent;
+            mReplaceNode->parent->left = mReplaceNode->right;
+            mReplaceNode->right->isLeft = mReplaceNode->isLeft;
+        }
+        else if (mReplaceNode->left) {
+            mReplaceNode->left->parent = mReplaceNode->parent;
+            mReplaceNode->parent->right = mReplaceNode->left;
+            mReplaceNode->left->isLeft = mReplaceNode->isLeft;
+        }
+        else {
+            if (mReplaceNode->isLeft) mReplaceNode->parent->left = nullptr;
+            else mReplaceNode->parent->right = nullptr;
+        }
+        mReplaceNode->parent = mOperationNode->parent;
+        mReplaceNode->left = mOperationNode->left;
+        mReplaceNode->right = mOperationNode->right;
+        if (mOperationNode->left) mOperationNode->left->parent = mReplaceNode;
+        if (mOperationNode->right) mOperationNode->right->parent = mReplaceNode;
+        mReplaceNode->position = mOperationNode->position;
+        mReplaceNode->height = mOperationNode->height;
+        mReplaceNode->isLeft = mOperationNode->isLeft;
+        std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+        std::swap(mNodeList[mOperationNode->nodeIndex], mNodeList[mReplaceNode->nodeIndex]);
+        std::swap(mOperationNode->nodeIndex, mReplaceNode->nodeIndex);
+    }
+    for (int i = mOperationNode->nodeIndex + 1; i < mNodeList.size(); i++) {
+        mNodeList[i]->nodeIndex--;
+    }
+    mNodeList.erase(std::find(mNodeList.begin(), mNodeList.end(), mOperationNode));
+    mSceneLayers[Nodes]->getChildren().erase(mSceneLayers[Nodes]->getChildren().begin() + mOperationNode->nodeIndex);
+    mSceneLayers[LeftEdges]->getChildren().erase(mSceneLayers[LeftEdges]->getChildren().begin() + mOperationNode->nodeIndex);
+    mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mOperationNode->nodeIndex);
+    if (mOperationNode == mRoot) mRoot = mReplaceNode;
+    delete mOperationNode;
+}
+
+void BST::reduceHeight(Node* root) {
+    if (root == nullptr) return;
+    root->height--;
+    reduceHeight(root->left);
+    reduceHeight(root->right);
+}
+
 void BST::swapNode(Node* &a, Node* &b) {
     std::swap(a->val, b->val);
     std::swap(a->height, b->height);
     std::swap(a->duplicate, b->duplicate);
     std::swap(a->position, b->position);
     std::swap(a->nodeIndex, b->nodeIndex);
-    
+
     std::swap(mSceneLayers[Nodes]->getChildren()[a->nodeIndex], mSceneLayers[Nodes]->getChildren()[b->nodeIndex]);
     std::swap(mSceneLayers[LeftEdges]->getChildren()[a->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[b->nodeIndex]);
     std::swap(mSceneLayers[RightEdges]->getChildren()[a->nodeIndex], mSceneLayers[RightEdges]->getChildren()[b->nodeIndex]);

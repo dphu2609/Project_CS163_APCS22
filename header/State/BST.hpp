@@ -81,6 +81,8 @@ private: //Algorithms
     void createRandomTree();
     void getTravelPath(Node* root, int data);
     void swapNode(Node* &node1, Node* &node2);
+    void deleteNode();
+    void reduceHeight(Node* root);
 private: //Visualization
     void createTree();
 
