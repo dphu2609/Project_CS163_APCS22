@@ -66,6 +66,10 @@ void BST::handleEvent(sf::Event &event) {
         mDeleteAnimation = false;
         mUpdateAnimation = false;
         mSearchAnimation = false;
+        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+        mIsAnimationPaused = false;
+        mIsStepByStepMode = false;
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
@@ -78,6 +82,38 @@ void BST::handleEvent(sf::Event &event) {
         mDeleteAnimation = true;
         mUpdateAnimation = false;
         mSearchAnimation = false;
+        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+        mIsAnimationPaused = false;
+        mIsStepByStepMode = false;
+    }
+
+    //ControlBox
+    if (mSceneLayers[ControlBox]->getChildren()[Play]->isActive()) {
+        if (mSceneLayers[ControlBox]->getChildren()[Play]->isLeftClicked(mWindow, event)) {
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+        }
+    }
+    else if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
+        if (mSceneLayers[ControlBox]->getChildren()[Pause]->isLeftClicked(mWindow, event)) {
+            mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Play]->activate();
+            mIsAnimationPaused = true;
+            mIsStepByStepMode = true;
+        }
+    }
+
+    if (mSceneLayers[ControlBox]->getChildren()[Next]->isLeftClicked(mWindow, event)) {
+        if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
+            mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Play]->activate();
+            mIsAnimationPaused = true;
+            mIsStepByStepMode = true;
+        }
+        else mIsAnimationPaused = false;
     }
 }
 
@@ -187,6 +223,43 @@ void BST::buildScene() {
     );
     startDeleteButton->deactivate();
     mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
+
+    std::unique_ptr<ImageButton> playButton = std::make_unique<ImageButton>();
+    playButton->set(
+        ResourcesHolder::texturesHolder[Textures::PlayButton], ResourcesHolder::texturesHolder[Textures::PlayButtonHovered],
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+    );
+    mSceneLayers[ControlBox]->attachChild(std::move(playButton));
+
+    std::unique_ptr<ImageButton> pauseButton = std::make_unique<ImageButton>();
+    pauseButton->set(
+        ResourcesHolder::texturesHolder[Textures::PauseButton], ResourcesHolder::texturesHolder[Textures::PauseButtonHovered],
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+    );
+    pauseButton->deactivate();
+    mSceneLayers[ControlBox]->attachChild(std::move(pauseButton));
+
+    std::unique_ptr<ImageButton> nextButton = std::make_unique<ImageButton>();
+    nextButton->set(
+        ResourcesHolder::texturesHolder[Textures::NextButton], ResourcesHolder::texturesHolder[Textures::NextButtonHovered],
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200)
+    );
+    mSceneLayers[ControlBox]->attachChild(std::move(nextButton));
+
+    std::unique_ptr<ImageButton> prevButton = std::make_unique<ImageButton>();
+    prevButton->set(
+        ResourcesHolder::texturesHolder[Textures::PrevButton], ResourcesHolder::texturesHolder[Textures::PrevButtonHovered],
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200)
+    );
+    mSceneLayers[ControlBox]->attachChild(std::move(prevButton));
+
+    std::unique_ptr<ImageButton> replayButton = std::make_unique<ImageButton>();
+    replayButton->set(
+        ResourcesHolder::texturesHolder[Textures::ReplayButton], ResourcesHolder::texturesHolder[Textures::ReplayButtonHovered],
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+    );
+    replayButton->deactivate();
+    mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
     //---------------
     createRandomTree();
 }

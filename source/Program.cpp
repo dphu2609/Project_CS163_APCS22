@@ -25,7 +25,18 @@ void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::RobotoRegular, "resources/fonts/Roboto/Roboto-Regular.ttf");
 }
 
-void Program::loadTextures() {}
+void Program::loadTextures() {
+    ResourcesHolder::texturesHolder.load(Textures::PlayButton, "resources/img/playButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PlayButtonHovered, "resources/img/playButtonHovered.png");
+    ResourcesHolder::texturesHolder.load(Textures::PauseButton, "resources/img/pauseButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PauseButtonHovered, "resources/img/pauseButtonHovered.png");
+    ResourcesHolder::texturesHolder.load(Textures::NextButton, "resources/img/nextButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::NextButtonHovered, "resources/img/nextButtonHovered.png");
+    ResourcesHolder::texturesHolder.load(Textures::PrevButton, "resources/img/previousButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PrevButtonHovered, "resources/img/prevButtonHovered.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReplayButton, "resources/img/replayButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReplayButtonHovered, "resources/img/replayButtonHovered.png");
+}
 
 void Program::run() {
     registerStates();

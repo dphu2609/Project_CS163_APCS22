@@ -175,11 +175,11 @@ void RectangleButton::handleCurrentEvent(sf::RenderWindow &window, sf::Event &ev
     if (isHovered(window, event)) {
         if (!mIsHovered) {
             mIsHovered = true;
-            setVarForChange3Color(mButtonHoveredColor, mTextHoveredColor, mOutlineHoveredColor, 5);
+            setVarForChange3Color(mButtonHoveredColor, mTextHoveredColor, mOutlineHoveredColor, 5 * (1 / Animation::SPEED));
         }
     } 
     else if (mIsHovered) {
-        setVarForChange3Color(mButtonColor, mTextColor, mOutlineColor, 5);
+        setVarForChange3Color(mButtonColor, mTextColor, mOutlineColor, 5 * (1 / Animation::SPEED));
         mIsHovered = false;
     }
 }

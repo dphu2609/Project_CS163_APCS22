@@ -6,6 +6,7 @@
 #include <SceneGraph/Edge.hpp>
 #include <SceneGraph/RectangleButton.hpp>
 #include <SceneGraph/InputBox.hpp>
+#include <SceneGraph/ImageButton.hpp>
 
 class BST : public State {
 private:
@@ -40,6 +41,7 @@ private:
         DeleteOptions,
         UpdateOptions,
         SearchOptions,
+        ControlBox,
         LayerCount
     };
     enum ButtonTypes {
@@ -62,9 +64,17 @@ private:
         InsertStart
     };
 
-      enum DeleteOptions {
+    enum DeleteOptions {
         DeleteInput,
         DeleteStart
+    };
+
+    enum ControlBox {
+        Play,
+        Pause,
+        Next,
+        Previous,
+        Replay
     };
 private:
     Node* mRoot = nullptr;
@@ -113,6 +123,10 @@ private:
     bool mIsAnimation = false;
     int mTravelIndex = 0;
     std::pair<bool, bool> mTraverseControler = { false, false };
+private: //Control box
+    bool mIsAnimationPaused = false;
+    bool mIsStepByStepMode = false;
+    bool mIsReversed = false;
 };
 
 #endif

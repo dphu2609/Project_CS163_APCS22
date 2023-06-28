@@ -7,6 +7,16 @@
 
 namespace Textures {
     enum ID {
+        PlayButton,
+        PlayButtonHovered,
+        PauseButton,
+        PauseButtonHovered,
+        NextButton,
+        NextButtonHovered,
+        PrevButton,
+        PrevButtonHovered,
+        ReplayButton,
+        ReplayButtonHovered
     };
 };
 
