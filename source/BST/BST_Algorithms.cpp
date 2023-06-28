@@ -1,21 +1,21 @@
 #include <State/BST.hpp>
 
-void BST::insert(int data) {
-    for (auto &node : mNodeList) {
+void BST::insert(Node* &root, std::vector<Node*> &nodeList, int data) {
+    for (auto &node : nodeList) {
         if (node->val == data) {
             node->duplicate++;
             mOperationNode = node;
             return;
         }
     }
-    insertNonDuplicateNode(mRoot, nullptr, data);
+    insertNonDuplicateNode(root, nodeList, nullptr, data);
 }
 
-BST::Node* BST::insertNonDuplicateNode(Node *&root, Node* parent, int data) {
+BST::Node* BST::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data) {
     if (root == nullptr) {
         if (parent == nullptr) {
             root = new Node{
-                data, 1, (int)mNodeList.size(), false, 
+                data, 1, (int)nodeList.size(), false, 
                 sf::Vector2f(Constant::WINDOW_WIDTH/2 - Size::NODE_RADIUS, 150 * Constant::SCALE_Y), 
                 nullptr, nullptr, nullptr, 1
             };
@@ -23,22 +23,22 @@ BST::Node* BST::insertNonDuplicateNode(Node *&root, Node* parent, int data) {
         else {
             bool isLeft = data < parent->val;
             root = new Node{
-                data, parent->height + 1, (int)mNodeList.size(), isLeft, 
+                data, parent->height + 1, (int)nodeList.size(), isLeft, 
                 sf::Vector2f(parent->position.x + (isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL), parent->position.y + NODE_DISTANCE_VERTICAL), 
                 nullptr, nullptr, parent, 1
             };
         }
-        mNodeList.push_back(root);
+        nodeList.push_back(root);
         mOperationNode = root;
         return root;
     }
     if (data < root->val) {
         if (root->left != nullptr && data > root->left->val) moveTree(root->left, true);
-        root->left = insertNonDuplicateNode(root->left, root, data);
+        root->left = insertNonDuplicateNode(root->left, nodeList, root, data);
     }
     else if (data > root->val) {
         if (root->right != nullptr && data < root->right->val) moveTree(root->right, false);
-        root->right = insertNonDuplicateNode(root->right, root, data);
+        root->right = insertNonDuplicateNode(root->right, nodeList, root, data);
     }
     return root;
 }
@@ -46,10 +46,7 @@ BST::Node* BST::insertNonDuplicateNode(Node *&root, Node* parent, int data) {
 void BST::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
     sf::Vector2f dis;
-    if (!mDeleteAnimation)
-        dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
-    else
-        dis = sf::Vector2f(isLeft ? NODE_DISTANCE_HORIZONTAL : -NODE_DISTANCE_HORIZONTAL, 0);
+    dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
     root->position += dis;
     root->position.y = (root->height - mRoot->height) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     moveTree(root->left, isLeft);
@@ -99,7 +96,7 @@ void BST::createRandomTree() {
     mNodeList.clear();
 
     for (int i = 0; i < mInputData.size(); i++) {
-        insert(mInputData[i]);
+        insert(mRoot, mNodeList, mInputData[i]);
     }
 
 
@@ -156,11 +153,11 @@ void BST::deleteNode() {
     int data = (mReplaceNode == nullptr ? mOperationNode->val : mReplaceNode->val);
     while (cur != nullptr) { //move tree
         if (data < cur->val) {
-            if (cur->left != nullptr && data > cur->left->val) moveTree(cur->left, true); 
+            if (cur->left != nullptr && data > cur->left->val) moveTree(cur->left, false); 
             cur = cur->left;
         }
         else if (data > cur->val) {
-            if (cur->right != nullptr && data < cur->right->val) moveTree(cur->right, false);
+            if (cur->right != nullptr && data < cur->right->val) moveTree(cur->right, true);
             cur = cur->right;
         }
         else {
@@ -168,12 +165,12 @@ void BST::deleteNode() {
         }
     }
     if (mReplaceNode && mReplaceNode->parent == mOperationNode && mOperationNode->isLeft == mReplaceNode->isLeft) {
-        if (mOperationNode->isLeft) moveTree(mReplaceNode, true);
-        else moveTree(mReplaceNode, false);
-    }
-    else if (mReplaceNode && mReplaceNode->parent == mOperationNode && mOperationNode->isLeft != mReplaceNode->isLeft) {
         if (mOperationNode->isLeft) moveTree(mReplaceNode, false);
         else moveTree(mReplaceNode, true);
+    }
+    else if (mReplaceNode && mReplaceNode->parent == mOperationNode && mOperationNode->isLeft != mReplaceNode->isLeft) {
+        if (mOperationNode->isLeft) moveTree(mReplaceNode, true);
+        else moveTree(mReplaceNode, false);
     }
 
     if (mOperationNode == nullptr) return;
@@ -275,4 +272,23 @@ void BST::swapNode(Node* &a, Node* &b) {
     std::swap(mSceneLayers[Nodes]->getChildren()[a->nodeIndex], mSceneLayers[Nodes]->getChildren()[b->nodeIndex]);
     std::swap(mSceneLayers[LeftEdges]->getChildren()[a->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[b->nodeIndex]);
     std::swap(mSceneLayers[RightEdges]->getChildren()[a->nodeIndex], mSceneLayers[RightEdges]->getChildren()[b->nodeIndex]);
+}
+
+void BST::createBackupTree() {
+    clear(mRootForBackup);
+    for (int i = 0; i < mNodeList.size(); i++) {
+        insert(mRootForBackup, mNodeListForBackup, mNodeList[i]->val);
+    }
+}
+
+void BST::restoreTree() {
+    int indexOfOperationNode = (mOperationNode ? mOperationNode->nodeIndex : -1);
+    int indexOfReplaceNode = (mReplaceNode ? mReplaceNode->nodeIndex : -1);
+    clear(mRoot);
+    mNodeList.clear();
+    for (int i = 0; i < mNodeListForBackup.size(); i++) {
+        insert(mRoot, mNodeList, mNodeListForBackup[i]->val);
+    }
+    mOperationNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfOperationNode]);
+    mReplaceNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfReplaceNode]);
 }

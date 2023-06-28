@@ -23,6 +23,7 @@ void BST::insertAnimation() {
     switch(mAnimationStep) {
         case 1: {
             createTree();
+            createBackupTree();
             mAnimationStep++;
             break;
         }
@@ -32,35 +33,77 @@ void BST::insertAnimation() {
             break;
         }
         case 3: {
-            traverseAnimation(3, 4);
+            traverseAnimation(true, 3, 4);
             break;
         }
 
         case 4: {
-            insert(mInputQueue.front());
+            insert(mRoot, mNodeList, mInputQueue.front());
             if (mOperationNode->duplicate > 1) mAnimationStep = 6;
             else mAnimationStep = 5;
             break;
         }
 
         case 5: { //normal case
-            nodeAppearAnimation(2, 7);
-            moveTreeAnimation(2);
+            nodeAppearAnimation(false, 2, 7);
+            moveTreeAnimation(false, 2);
             break;
         }
 
         case 6: {
-            changeNodeAnimation(2, 7);
+            changeNodeAnimation(false, 2, 7);
             break;
         }
 
         case 7: {
-            if (mInputQueue.size() > 1) mInputQueue.pop();
-            else mInsertAnimation = false;
-            resetAnimation();
+            // if (!mIsStepByStepMode) {
+            //     if (mInputQueue.size() > 1) mInputQueue.pop();
+            //     else mInsertAnimation = false;
+            //     resetAnimation();
+            // }
             break;
         }
     };
+    mIsAnimationPaused = mIsStepByStepMode;
+}
+
+void BST::insertAnimationReversed() {
+    switch (mAnimationStep) {
+        case 7: {
+            mAnimationStep = 6;
+            break;
+        }
+        
+        case 6: {
+            restoreTree();
+            if (!mOperationNode) mAnimationStep = 4;
+            else mAnimationStep = 5;
+            break;
+        }
+
+        case 5: {   
+            changeNodeAnimation(true, 2, 3);
+            break;
+        }
+
+        case 4: {
+            nodeAppearAnimation(true, 2, 3);
+            moveTreeAnimation(true, 2);
+            break;
+        }
+
+        case 3: {
+            getTravelPath(mRoot, mInputQueue.front());
+            mTravelIndex = mTravelPath.size() - 1;
+            mAnimationStep--;
+            break;
+        }
+        
+        case 2: {
+            traverseAnimation(3, 1);
+            break;
+        }
+    }
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
@@ -80,7 +123,7 @@ void BST::deleteAnimation() {
         }
 
         case 3: {
-            traverseAnimation(2, 4);
+            traverseAnimation(true ,2, 4);
             break;
         }
 
@@ -98,12 +141,12 @@ void BST::deleteAnimation() {
         }
 
         case 5: {
-            traverseAnimation(2, 6);
+            traverseAnimation(true ,2, 6);
             break;
         }
 
         case 6: {
-            deleteNodeAnimation(1.5, 7);
+            deleteNodeAnimation(true, 1.5, 7);
             break;
         }
 
@@ -114,12 +157,12 @@ void BST::deleteAnimation() {
         }
 
         case 8: {
-            moveTreeAnimation(1.5, 10);
+            moveTreeAnimation(true, 1.5, 10);
             break;
         }
 
         case 9: {
-            changeNodeAnimation(2, 10);
+            changeNodeAnimation(true, 2, 10);
             break;
         }
 
@@ -133,24 +176,43 @@ void BST::deleteAnimation() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void BST::traverseAnimation(float speed, int animationStepAfterFinish) {
+void BST::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) 
         mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
             sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
         );
-    else if (!mTraverseControler.second) 
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
-            sf::Color::White, sf::Color(255, 171, 25), sf::Color(255, 171, 25), 3
-        );
+    else if (!mTraverseControler.second) {
+        if (!mIsReversed)
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+                sf::Color::White, sf::Color(255, 171, 25), sf::Color(255, 171, 25), 3
+            );
+        else   
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+                Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR, 3
+            );
+    }
     else {
-        if (mIsLeftPath[mTravelIndex]) 
-            mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
-                sf::Color(255, 171, 25), 3
-            );
-        else 
-            mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
-                sf::Color(255, 171, 25), 3
-            );
+        if (!mIsReversed) {
+            if (mIsLeftPath[mTravelIndex]) 
+                mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
+                    sf::Color(255, 171, 25), 3
+                );
+            else 
+                mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
+                    sf::Color(255, 171, 25), 3
+                );
+        }
+        else {
+            if (mIsLeftPath[mTravelIndex - 1]) 
+                mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->change1Color(
+                    Color::NODE_EDGE_COLOR, 3
+                );
+            else 
+                mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->change1Color(
+                    Color::NODE_EDGE_COLOR, 3
+                );
+        }
     }  
 
     if (!mTraverseControler.first) {
@@ -163,7 +225,7 @@ void BST::traverseAnimation(float speed, int animationStepAfterFinish) {
         if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange3ColorFinished()) {
             mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
             mTraverseControler.second = true;
-            if (mTravelIndex >= mTravelPath.size() - 1) {
+            if (!mIsReversed && mTravelIndex >= mTravelPath.size() - 1) {
                 for (auto &node : mNodeList) {
                     if (node->val == mInputQueue.front()) {
                         mTraverseControler = std::make_pair(false, false);
@@ -175,37 +237,65 @@ void BST::traverseAnimation(float speed, int animationStepAfterFinish) {
                     }
                 }
             }
+            else if (mIsReversed && mTravelIndex <= 0) {
+                mTraverseControler = std::make_pair(false, false);
+                mTravelPath.clear();
+                mIsLeftPath.clear();
+                mAnimationStep = animationStepAfterFinish;
+            }
         }
     } 
     else if (!mIsAnimationPaused) {
-        if (mIsLeftPath[mTravelIndex]) {
-            if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
-                mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
-                mTravelIndex++;
-                mTraverseControler = std::make_pair(false, false);
-                if (mTravelIndex >= mTravelPath.size()) {
-                    mAnimationStep = animationStepAfterFinish;
+        if (!mIsReversed) {
+            if (mIsLeftPath[mTravelIndex]) {
+                if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
+                    mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+                    mTravelIndex++;
+                    mTraverseControler = std::make_pair(false, false);
+                    if (mTravelIndex >= mTravelPath.size()) {
+                        mTravelIndex = 0;
+                        mTravelPath.clear();
+                        mIsLeftPath.clear();
+                        mAnimationStep = animationStepAfterFinish;
+                    }
+                }
+            }
+            else {
+                if (mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
+                    mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+                    mTravelIndex++;
+                    mTraverseControler = std::make_pair(false, false);
+                    if (mTravelIndex >= mTravelPath.size()) {
+                        mTravelIndex = 0;
+                        mTravelPath.clear();
+                        mIsLeftPath.clear();
+                        mAnimationStep = animationStepAfterFinish;
+                    }
                 }
             }
         }
         else {
-            if (mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
-                mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
-                mTravelIndex++;
-                mTraverseControler = std::make_pair(false, false);
-                if (mTravelIndex >= mTravelPath.size()) {
-                    mTravelIndex = 0;
-                    mTravelPath.clear();
-                    mIsLeftPath.clear();
-                    mAnimationStep = animationStepAfterFinish;
+            if (mIsLeftPath[mTravelIndex - 1]) {
+                if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->isChange1ColorFinished()) {
+                    mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->resetAnimationVar();
+                    mTravelIndex--;
+                    mTraverseControler = std::make_pair(false, false);
+                }
+            }
+            else {
+                if (mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->isChange1ColorFinished()) {
+                    mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex - 1]->nodeIndex]->resetAnimationVar();
+                    mTravelIndex--;
+                    mTraverseControler = std::make_pair(false, false);
                 }
             }
         }
     }
 }
 
-void BST::nodeAppearAnimation(float speed, int animationStepAfterFinish) {
-    if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size()) {
+void BST::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
+    if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size() && !mIsReversed) {
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
         node->set(
             std::to_string(mOperationNode->val), mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 0,
@@ -213,17 +303,21 @@ void BST::nodeAppearAnimation(float speed, int animationStepAfterFinish) {
         );
         mSceneLayers[Nodes]->attachChild(std::move(node));
     }
-
-    mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
+    
+    if (!mIsReversed) mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
+    else mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(0, 0), speed);
 
     if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished() && !mIsAnimationPaused) {
+        if (mIsReversed) mSceneLayers[Nodes]->getChildren().pop_back();
         mAnimationStep = animationStepAfterFinish;
     }
 }
 
-void BST::moveTreeAnimation(float speed, int animationStepAfterFinish) {
+void BST::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
     int index = 0;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) {
+        if (mInsertAnimation && mIsReversed && index == mNodeList.size()) break;
         child->move(mNodeList[index]->position, speed);
         index++;
     }
@@ -262,7 +356,8 @@ void BST::moveTreeAnimation(float speed, int animationStepAfterFinish) {
 }
 
 
-void BST::changeNodeAnimation(float speed, int animationStepAfterFinish) {
+void BST::changeNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
         sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
     );
@@ -274,7 +369,7 @@ void BST::changeNodeAnimation(float speed, int animationStepAfterFinish) {
     }
 }
 
-void BST::deleteNodeAnimation(float speed, int animationStepAfterFinish) {
+void BST::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
 
     if (!mReplaceNode) {
@@ -351,4 +446,32 @@ void BST::resetAnimation() {
     for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
+}
+
+bool BST::isProcessingAnimation() {
+    if (!mIsReversed && (mAnimationStep == 2 || mAnimationStep == 4)) return false;
+    if (mIsReversed && (mAnimationStep == 6 || mAnimationStep == 3)) return false;
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) 
+        if (child->isProcessing()) return true;
+    for (auto &child : mSceneLayers[LeftEdges]->getChildren())
+        if (child->isProcessing()) return true;
+    for (auto &child : mSceneLayers[RightEdges]->getChildren())
+        if (child->isProcessing()) return true;
+    return false;
+}
+
+void BST::resetNodeState() {
+    if (!mIsReversed) mTravelIndex = 0;
+    else mTravelIndex = mTravelPath.size() - 1;
+    mTravelPath.clear();
+    mIsLeftPath.clear();
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) {
+        child->resetAnimationVar();
+    }
+    for (auto &child : mSceneLayers[LeftEdges]->getChildren()) {
+        child->resetAnimationVar();
+    }
+    for (auto &child : mSceneLayers[RightEdges]->getChildren()) {
+        child->resetAnimationVar();
+    }
 }

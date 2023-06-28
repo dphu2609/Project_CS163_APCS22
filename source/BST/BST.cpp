@@ -14,7 +14,10 @@ void BST::draw() {
 
 void BST::update() {
     mSceneGraph.update();
-    if (mInsertAnimation) insertAnimation();
+    if (mInsertAnimation) {
+        if (!mIsReversed) insertAnimation();
+        else insertAnimationReversed();
+    }
     if (mDeleteAnimation) deleteAnimation();
 }
 
@@ -95,6 +98,18 @@ void BST::handleEvent(sf::Event &event) {
             mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
             mIsAnimationPaused = false;
             mIsStepByStepMode = false;
+            if (mIsPendingReversed && !isProcessingAnimation()) {
+                mIsReversed = false;
+                mIsPendingReversed = false;
+                resetNodeState();
+            }
+            if (mIsReversed) {
+                if (!isProcessingAnimation()) {
+                    mIsReversed = false;
+                    resetNodeState();
+                }
+                else mIsPendingReversed = true;
+            }
         }
     }
     else if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
@@ -114,6 +129,41 @@ void BST::handleEvent(sf::Event &event) {
             mIsStepByStepMode = true;
         }
         else mIsAnimationPaused = false;
+        if (mIsPendingReversed && !isProcessingAnimation()) {
+            mIsReversed = false;
+            mIsPendingReversed = false;
+            resetNodeState();
+        }
+        if (mIsReversed) {
+            if (!isProcessingAnimation()) {
+                mIsReversed = false;
+                resetNodeState();
+            }
+            else mIsPendingReversed = true;
+        }
+        std::cout << 1;
+    }
+
+    if (mSceneLayers[ControlBox]->getChildren()[Previous]->isLeftClicked(mWindow, event)) {
+        if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
+            mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Play]->activate();
+            mIsAnimationPaused = true;
+            mIsStepByStepMode = true;
+        }
+        else mIsAnimationPaused = false;
+        if (mIsPendingReversed && !isProcessingAnimation()) {
+            mIsReversed = true;
+            mIsPendingReversed = false;
+            resetNodeState();
+        }
+        if (!mIsReversed) {
+            if (!isProcessingAnimation()) {
+                mIsReversed = true;
+                resetNodeState();
+            }
+            else mIsPendingReversed = true;
+        }
     }
 }
 

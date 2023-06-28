@@ -57,6 +57,7 @@ public:
     std::map<int, bool> mAnimationFinished;
     std::map<int, bool> mAnimationExecuting;
 public:
+    bool isProcessing();
     bool isZoomFinished();
     bool isMoveFinished();
     bool isMoveBy2PointsFinished();

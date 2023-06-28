@@ -78,15 +78,16 @@ private:
     };
 private:
     Node* mRoot = nullptr;
+    Node* mRootForBackup = nullptr;
 private:
     float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
     float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
 private:
     std::vector<Node*> mNodeList = {};
-    std::vector<Node*> mNodeListForReplay = {};
+    std::vector<Node*> mNodeListForBackup = {};
 private: //Algorithms
-    void insert(int data);
-    Node* insertNonDuplicateNode(Node *&root, Node* parent, int data);  
+    void insert(Node* &root, std::vector<Node*> &nodeList, int data);
+    Node* insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data);  
     void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
@@ -94,16 +95,22 @@ private: //Algorithms
     void swapNode(Node* &node1, Node* &node2);
     void deleteNode();
     void reduceHeight(Node* root);
+    void createBackupTree();
+    void restoreTree();
 private: //Visualization
     void createTree();
 
     void insertAnimation();
+    void insertAnimationReversed();
     void deleteAnimation();
-    void traverseAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
-    void moveTreeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
-    void nodeAppearAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
-    void deleteNodeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
-    void changeNodeAnimation(float speed = 1.f, int animationStepAfterFinish = 0);
+    void deleteAnimationReversed();
+    void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void deleteNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    bool isProcessingAnimation();
+    void resetNodeState();
     void resetAnimation();
 private:
     bool mInsertAnimation = false;
@@ -127,6 +134,8 @@ private: //Control box
     bool mIsAnimationPaused = false;
     bool mIsStepByStepMode = false;
     bool mIsReversed = false;
+    bool mIsPendingReversed = false;
+    int mPrevAnimationStep = 1;
 };
 
 #endif

@@ -60,6 +60,13 @@ int SceneNode::getChildrenCount() {
     return mChildren.size();
 }
 
+bool SceneNode::isProcessing() {
+    for (int i = 0; i < AnimationCount; i++) {
+        if (mAnimationExecuting[i]) return true;
+    }
+    return false;
+}
+
 bool SceneNode::isZoomFinished() {
     if (!mAnimationExecuting[Zoom] && mAnimationFinished[Zoom]) return true;
     return false;
