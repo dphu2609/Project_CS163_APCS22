@@ -28,6 +28,7 @@ private:
 public:
     virtual void setPosition(const sf::Vector2f &position) {}
     virtual void setPositionByPoints(const sf::Vector2f &position1, const sf::Vector2f &position2) {}
+    virtual sf::Vector2f getPosition() {return sf::Vector2f(0, 0);}
 public:
     virtual bool isLeftClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
     virtual bool isRightClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
@@ -36,6 +37,7 @@ public:
 public:
     virtual std::vector<int> getIntArrayData() {return {};} 
     virtual void setContent(const std::string &content) {}
+    virtual std::string getContent() {return "";}
 private:
     bool mIsActive = true;
 public:

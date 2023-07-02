@@ -94,9 +94,13 @@ private: //Algorithms
     void getTravelPath(Node* root, int data);
     void swapNode(Node* &node1, Node* &node2);
     void deleteNode();
+    void deleteNodeReversed();
+    void changeLink();
+    void changeLinkReversed();
     void reduceHeight(Node* root);
     void createBackupTree();
     void restoreTree();
+    void balanceTree();
 private: //Visualization
     void createTree();
 
@@ -108,6 +112,7 @@ private: //Visualization
     void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void deleteNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void deleteNodeAnimationReversed(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     bool isProcessingAnimation();
     void resetNodeState();
@@ -127,15 +132,19 @@ private:
     std::vector<bool> mIsLeftPath = {};
     Node* mOperationNode = nullptr;
     Node* mReplaceNode = nullptr;
+    int mOperationValue = 0;
+    int mOperationIndex = -1;
+    int mReplaceValue = 0;
+    int mReplaceIndex = -1;
     bool mIsAnimation = false;
     int mTravelIndex = 0;
-    std::pair<bool, bool> mTraverseControler = { false, false };
+    std::pair<bool, bool> mTraverseControler = {false, false};
 private: //Control box
     bool mIsAnimationPaused = false;
     bool mIsStepByStepMode = false;
     bool mIsReversed = false;
     bool mIsPendingReversed = false;
-    int mPrevAnimationStep = 1;
+    bool mIsReplay = false;
 };
 
 #endif

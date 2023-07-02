@@ -22,8 +22,8 @@ void BST::createTree() {
 void BST::insertAnimation() {
     switch(mAnimationStep) {
         case 1: {
-            createTree();
             createBackupTree();
+            createTree();
             mAnimationStep++;
             break;
         }
@@ -45,22 +45,22 @@ void BST::insertAnimation() {
         }
 
         case 5: { //normal case
-            nodeAppearAnimation(false, 2, 7);
-            moveTreeAnimation(false, 2);
+            nodeAppearAnimation(true, 2, 7);
+            moveTreeAnimation(true, 2);
             break;
         }
 
         case 6: {
-            changeNodeAnimation(false, 2, 7);
+            changeNodeAnimation(true, 2, 7);
             break;
         }
 
         case 7: {
-            // if (!mIsStepByStepMode) {
-            //     if (mInputQueue.size() > 1) mInputQueue.pop();
-            //     else mInsertAnimation = false;
-            //     resetAnimation();
-            // }
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+                resetAnimation();
+            }
+            else mIsReplay = true;
             break;
         }
     };
@@ -76,8 +76,15 @@ void BST::insertAnimationReversed() {
         
         case 6: {
             restoreTree();
-            if (!mOperationNode) mAnimationStep = 4;
-            else mAnimationStep = 5;
+            mOperationNode = nullptr;
+            for (auto &child : mNodeList) {
+                if (child->val == mInputQueue.front()) {
+                    mOperationNode = child;
+                    break;
+                }
+            }
+            if (mOperationNode) mAnimationStep = 5;
+            else mAnimationStep = 4;
             break;
         }
 
@@ -87,20 +94,20 @@ void BST::insertAnimationReversed() {
         }
 
         case 4: {
+            if (!mIsAnimationPaused) std::cout << 1;
             nodeAppearAnimation(true, 2, 3);
-            moveTreeAnimation(true, 2);
+            moveTreeAnimation(true, 2, 3);
             break;
         }
 
         case 3: {
             getTravelPath(mRoot, mInputQueue.front());
-            mTravelIndex = mTravelPath.size() - 1;
             mAnimationStep--;
             break;
         }
         
         case 2: {
-            traverseAnimation(3, 1);
+            traverseAnimation(true, 3, 1);
             break;
         }
     }
@@ -111,6 +118,7 @@ void BST::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
             createTree();
+            createBackupTree();
             mAnimationStep++;
             break;
         }
@@ -123,7 +131,7 @@ void BST::deleteAnimation() {
         }
 
         case 3: {
-            traverseAnimation(true ,2, 4);
+            traverseAnimation(true, 2, 4);
             break;
         }
 
@@ -134,7 +142,7 @@ void BST::deleteAnimation() {
             }
             else if (mOperationNode->duplicate > 1) {
                 mOperationNode->duplicate--;
-                mAnimationStep = 9;
+                mAnimationStep = 10;
             }
             else mAnimationStep = 6;
             break;
@@ -146,33 +154,108 @@ void BST::deleteAnimation() {
         }
 
         case 6: {
-            deleteNodeAnimation(true, 1.5, 7);
+            changeLink();
+            mAnimationStep++;
             break;
         }
 
         case 7: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeListForBackup[mOperationNode->nodeIndex]->position, 1.5);
+            if (mReplaceNode) mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]->move(mNodeListForBackup[mReplaceNode->nodeIndex]->position, 1.5);
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
+            moveTreeAnimation(true, 1.5, 8);
+            break;
+        }
+
+        case 8: {
             deleteNode();
             mAnimationStep++;
             break;
         }
 
-        case 8: {
-            moveTreeAnimation(true, 1.5, 10);
-            break;
-        }
-
         case 9: {
-            changeNodeAnimation(true, 2, 10);
+            moveTreeAnimation(true, 1.5, 11);
             break;
         }
 
         case 10: {
-            if (mInputQueue.size() > 1) mInputQueue.pop();
-            else mDeleteAnimation = false;
-            resetAnimation();
+            changeNodeAnimation(true, 2, 11);
+            break;
+        }
+
+        case 11: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+                resetAnimation();
+            }
+            else mIsReplay = true;
             break;
         }
     };
+    mIsAnimationPaused = mIsStepByStepMode;
+}
+
+void BST::deleteAnimationReversed() {
+    switch (mAnimationStep) {
+        case 11: {
+            restoreTree();
+            if (mOperationNode->duplicate > 1) mAnimationStep = 10;
+            else mAnimationStep = 9;
+            break;
+        }
+
+        case 10: {
+            changeNodeAnimation(true, 2, 3);
+            break;
+        }
+
+        case 9: {
+            deleteNodeReversed();
+            mAnimationStep--;
+            break;
+        }
+
+        case 8: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeListForBackup[mOperationNode->nodeIndex]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 1.5);
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), 1.5);
+            if (mReplaceNode) moveTreeAnimation(true, 1.5, 7);
+            else moveTreeAnimation(true, 1.5, 3);
+            break;
+        }
+
+        case 7: {
+            changeLinkReversed();
+            mAnimationStep--;
+            break;
+        }
+
+        case 6: {
+            moveTreeAnimation(true, 1.5, 5);
+            break;
+        }
+        
+        case 5: {
+            getTravelPath(mOperationNode, mReplaceNode->val);
+            mAnimationStep--;
+            break;
+        }
+
+        case 4: {
+            traverseAnimation(true, 2, 3);
+            break;
+        }
+
+        case 3: {
+            getTravelPath(mRoot, mOperationNode->val);
+            mAnimationStep--;
+            break;
+        }
+
+        case 2: {
+            traverseAnimation(true, 2, 1);
+            break;
+        }
+    }
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
@@ -302,14 +385,45 @@ void BST::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepA
             sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25)
         );
         mSceneLayers[Nodes]->attachChild(std::move(node));
+
+        std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
+        leftEdge->set(
+            mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 
+            mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS)
+        );
+        mSceneLayers[LeftEdges]->attachChild(std::move(leftEdge));
+
+        std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
+        rightEdge->set(
+            mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 
+            mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS) 
+        );
+        mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
     }
     
     if (!mIsReversed) mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
-    else mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(0, 0), speed);
+    else {
+        mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(0, 0), speed);
+        mSceneLayers[Nodes]->getChildren().back()->move(mSceneLayers[Nodes]->getChildren().back()->getPosition() + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed);
+        mSceneLayers[LeftEdges]->getChildren().back()->moveBy2Points(
+            mSceneLayers[Nodes]->getChildren().back()->getPosition() + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            mSceneLayers[Nodes]->getChildren().back()->getPosition() + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            speed
+        );
+        mSceneLayers[RightEdges]->getChildren().back()->moveBy2Points(
+            mSceneLayers[Nodes]->getChildren().back()->getPosition() + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            mSceneLayers[Nodes]->getChildren().back()->getPosition() + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            speed
+        );
+    }
 
     if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished() && !mIsAnimationPaused) {
-        if (mIsReversed) mSceneLayers[Nodes]->getChildren().pop_back();
-        mAnimationStep = animationStepAfterFinish;
+        if (mIsReversed) {
+            mSceneLayers[Nodes]->getChildren().pop_back();
+            mSceneLayers[LeftEdges]->getChildren().pop_back();
+            mSceneLayers[RightEdges]->getChildren().pop_back();
+        }
+        if (animationStepAfterFinish != 0) mAnimationStep = animationStepAfterFinish;
     }
 }
 
@@ -317,7 +431,6 @@ void BST::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAft
     if (!isAllowPause) mIsAnimationPaused = false;
     int index = 0;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) {
-        if (mInsertAnimation && mIsReversed && index == mNodeList.size()) break;
         child->move(mNodeList[index]->position, speed);
         index++;
     }
@@ -349,8 +462,21 @@ void BST::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAft
                 break;
             }
         }
-        if (mDeleteAnimation && isFinishedAll) {
+        for (auto &child : mSceneLayers[LeftEdges]->getChildren()) {
+            if (!child->isMoveBy2PointsFinished()) {
+                isFinishedAll = false;
+                break;
+            }
+        }
+        for (auto &child : mSceneLayers[RightEdges]->getChildren()) {
+            if (!child->isMoveBy2PointsFinished()) {
+                isFinishedAll = false;
+                break;
+            }
+        }
+        if (isFinishedAll) {
             mAnimationStep = animationStepAfterFinish;
+            resetNodeState();
         }
     }
 }
@@ -370,7 +496,8 @@ void BST::changeNodeAnimation(bool isAllowPause, float speed, int animationStepA
 }
 
 void BST::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
-    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
+    if (!mIsReversed) mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
+    else mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
 
     if (!mReplaceNode) {
         if (mOperationNode->isLeft) {
@@ -432,17 +559,21 @@ void BST::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepA
     }
 
     if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isZoomFinished() && !mIsAnimationPaused) {
-        mAnimationStep = animationStepAfterFinish;
-        for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
-        for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
-        for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
+        if (animationStepAfterFinish != 0) mAnimationStep = animationStepAfterFinish;
+        resetNodeState();
     }
+}
+
+void BST::deleteNodeAnimationReversed(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
 }
 
 void BST::resetAnimation() {
     mAnimationStep = 1;
     mOperationNode = nullptr;
     mReplaceNode = nullptr;
+    mOperationIndex = -1;
+    mReplaceIndex = -1;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();

@@ -6,6 +6,7 @@ BST::BST(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
 
 BST::~BST() {
     clear(mRoot);
+    clear(mRootForBackup);
 }
 
 void BST::draw() {
@@ -18,12 +19,14 @@ void BST::update() {
         if (!mIsReversed) insertAnimation();
         else insertAnimationReversed();
     }
-    if (mDeleteAnimation) deleteAnimation();
+    if (mDeleteAnimation) {
+        if (!mIsReversed) deleteAnimation();
+        else deleteAnimationReversed();
+    }
 }
 
 void BST::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
-
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
             if (child->isActive()) {
@@ -54,6 +57,7 @@ void BST::handleEvent(sf::Event &event) {
         }
     }
 
+
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
         createRandomTree();
@@ -73,6 +77,8 @@ void BST::handleEvent(sf::Event &event) {
         mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;
+        mIsReplay = false;
+        mAnimationStep = 1;
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
@@ -89,6 +95,8 @@ void BST::handleEvent(sf::Event &event) {
         mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;
+        mIsReplay = false;
+        mAnimationStep = 1;
     }
 
     //ControlBox
@@ -125,10 +133,7 @@ void BST::handleEvent(sf::Event &event) {
         if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
             mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Play]->activate();
-            mIsAnimationPaused = true;
-            mIsStepByStepMode = true;
         }
-        else mIsAnimationPaused = false;
         if (mIsPendingReversed && !isProcessingAnimation()) {
             mIsReversed = false;
             mIsPendingReversed = false;
@@ -141,30 +146,53 @@ void BST::handleEvent(sf::Event &event) {
             }
             else mIsPendingReversed = true;
         }
-        std::cout << 1;
+        mIsAnimationPaused = true;
+        mIsStepByStepMode = true;
     }
 
     if (mSceneLayers[ControlBox]->getChildren()[Previous]->isLeftClicked(mWindow, event)) {
         if (mSceneLayers[ControlBox]->getChildren()[Pause]->isActive()) {
             mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Play]->activate();
-            mIsAnimationPaused = true;
-            mIsStepByStepMode = true;
         }
-        else mIsAnimationPaused = false;
+        if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive()) {
+            mIsReplay = false;
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Play]->activate();
+        }
         if (mIsPendingReversed && !isProcessingAnimation()) {
             mIsReversed = true;
             mIsPendingReversed = false;
+            mIsStepByStepMode = true;
             resetNodeState();
         }
         if (!mIsReversed) {
             if (!isProcessingAnimation()) {
                 mIsReversed = true;
+                mIsStepByStepMode = true;
                 resetNodeState();
             }
             else mIsPendingReversed = true;
         }
+        mIsAnimationPaused = false;
     }
+
+    if (!mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mIsReplay) {
+        mSceneLayers[ControlBox]->getChildren()[Replay]->activate();
+        mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+    } 
+
+    if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
+        resetNodeState();
+        mAnimationStep = 1;
+        restoreTree();
+        mIsReplay = false;
+        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+        mIsAnimationPaused = false;
+        mIsStepByStepMode = false;
+    } 
 }
 
 void BST::buildScene() {

@@ -247,3 +247,7 @@ void TreeNode::setContent(const std::string &text) {
     else mText.setCharacterSize(mNode.getRadius() * 0.3);
     mText.setPosition(mNode.getPosition() + sf::Vector2f(mNode.getRadius(), mNode.getRadius()) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
 }
+
+std::string TreeNode::getContent() {
+    return mText.getString();
+}
