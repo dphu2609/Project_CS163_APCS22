@@ -1,6 +1,6 @@
-#include <State/BST.hpp>
+#include <State/AVL.hpp>
 
-void BST::insert(Node* &root, std::vector<Node*> &nodeList, int data) {
+void AVL::insert(Node* &root, std::vector<Node*> &nodeList, int data, bool isNeedRotating) {
     for (auto &node : nodeList) {
         if (node->val == data) {
             node->duplicate++;
@@ -8,14 +8,14 @@ void BST::insert(Node* &root, std::vector<Node*> &nodeList, int data) {
             return;
         }
     }
-    insertNonDuplicateNode(root, nodeList, nullptr, data);
+    insertNonDuplicateNode(root, nodeList, nullptr, data, isNeedRotating);
 }
 
-BST::Node* BST::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data) {
+AVL::Node* AVL::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data, bool isNeedRotating) {
     if (root == nullptr) {
         if (parent == nullptr) {
             root = new Node{
-                data, 1, (int)nodeList.size(), false, 
+                data, 1, 1, 0,(int)nodeList.size(), false, 
                 sf::Vector2f(Constant::WINDOW_WIDTH/2 - Size::NODE_RADIUS, 150 * Constant::SCALE_Y), 
                 nullptr, nullptr, nullptr, 1
             };
@@ -23,7 +23,7 @@ BST::Node* BST::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList
         else {
             bool isLeft = data < parent->val;
             root = new Node{
-                data, parent->height + 1, (int)nodeList.size(), isLeft, 
+                data, parent->depth + 1, 1, 0,(int)nodeList.size(), isLeft, 
                 sf::Vector2f(parent->position.x + (isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL), parent->position.y + NODE_DISTANCE_VERTICAL), 
                 nullptr, nullptr, parent, 1
             };
@@ -33,36 +33,123 @@ BST::Node* BST::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList
         return root;
     }
     if (data < root->val) {
-        if (root->left != nullptr && data > root->left->val) moveTree(root->left, true);
-        root->left = insertNonDuplicateNode(root->left, nodeList, root, data);
+        root->left = insertNonDuplicateNode(root->left, nodeList, root, data, isNeedRotating);
     }
     else if (data > root->val) {
-        if (root->right != nullptr && data < root->right->val) moveTree(root->right, false);
-        root->right = insertNonDuplicateNode(root->right, nodeList, root, data);
+        root->right = insertNonDuplicateNode(root->right, nodeList, root, data, isNeedRotating);
+    }
+    
+    if (isNeedRotating) {
+        root->balanceFactor = getHeight(root->right) - getHeight(root->left);
+        root->height = std::max(getHeight(root->left), getHeight(root->right)) + 1;
+        if (root->balanceFactor > 1) {
+            if (data > root->right->val) {
+                return root = rotateLeft(root);
+            } else {
+                root->right = rotateRight(root->right);
+                return root = rotateLeft(root);
+            }
+        }
+        else if (root->balanceFactor < -1) {
+            if (data < root->left->val) {
+                return root = rotateRight(root);
+            } else {
+                root->left = rotateLeft(root->left);
+                return root = rotateRight(root);
+            }
+        }
     }
     return root;
 }
 
-void BST::moveTree(Node* root, bool isLeft) {
+int AVL::getHeight(Node* root) {
+    if (root == nullptr) return 0;
+    return root->height;
+}
+
+AVL::Node* AVL::rotateLeft(Node* &root) {
+    Node* newRoot = root->right;
+    Node* newChild = newRoot->left;
+
+    newRoot->parent = root->parent;
+
+    newRoot->left = root;
+    root->parent = newRoot;
+
+    root->right = newChild;
+    if (newChild) newChild->parent = root;
+
+    newRoot->isLeft = root->isLeft;
+    if (newChild) newChild->isLeft = false;
+    root->isLeft = true;
+    
+    root->height = std::max(getHeight(root->left), getHeight(root->right)) + 1;
+    newRoot->height = std::max(getHeight(newRoot->left), getHeight(newRoot->right)) + 1;
+
+    std::swap(mNodeList[root->nodeIndex], mNodeList[newRoot->nodeIndex]);
+    for (int i = 0; i < mNodeList.size(); i++) mNodeList[i]->nodeIndex = i;
+
+    return newRoot;
+}
+
+AVL::Node* AVL::rotateRight(Node* &root) {
+    Node* newRoot = root->left;
+    Node* newChild = newRoot->right;
+
+    newRoot->parent = root->parent;
+
+    root->left = newChild;
+    if (newChild) newChild->parent = root;
+
+    newRoot->right = root;
+    root->parent = newRoot;
+
+    newRoot->isLeft = root->isLeft;
+    if (newChild) newChild->isLeft = true;
+    root->isLeft = false;
+
+    // Update heights and balance factors
+    root->height = std::max(getHeight(root->left), getHeight(root->right)) + 1;
+    newRoot->height = std::max(getHeight(newRoot->left), getHeight(newRoot->right)) + 1;
+
+    std::swap(mNodeList[root->nodeIndex], mNodeList[newRoot->nodeIndex]);
+    for (int i = 0; i < mNodeList.size(); i++) mNodeList[i]->nodeIndex = i;
+
+    return newRoot;
+}
+
+void AVL::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
     sf::Vector2f dis;
     dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
     root->position += dis;
-    root->position.y = (root->height - mRoot->height) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
+    root->position.y = (root->depth - mRoot->depth) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     moveTree(root->left, isLeft);
     moveTree(root->right, isLeft);
 }
 
-void BST::balanceTree() {
-    for (auto &node : mNodeList) {
+void AVL::balanceTree() {
+    std::vector<Node*> nodeList;
+    std::queue<Node*> q;
+    q.push(mRoot);
+    while (!q.empty()) {
+        Node* temp = q.front();
+        q.pop();
+        nodeList.push_back(temp);
+        if (temp->left) q.push(temp->left);
+        if (temp->right) q.push(temp->right);
+    }
+
+    for (auto &node : nodeList) {
         if (node == mRoot) {
             node->position = sf::Vector2f(Constant::WINDOW_WIDTH/2 - Size::NODE_RADIUS, 150 * Constant::SCALE_Y);
-            node->height = 1;
+            node->depth = 1;
         }
         else {
             Node* cur = mRoot;
-            int height = 1;
+            int depth = 1;
             while (cur) {
+                if (node->val != cur->val) node->depth = ++depth;
                 if (node->val < cur->val) {
                     if (cur->left && node->val > cur->left->val) moveTree(cur->left, true);
                     cur = cur->left;
@@ -76,13 +163,12 @@ void BST::balanceTree() {
                     else node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL); 
                     break;
                 }
-                node->height = ++height;
             }
         }
     }
 }
 
-void BST::clear(Node *&root) {
+void AVL::clear(Node *&root) {
     if (root == nullptr) return;
     clear(root->left);
     clear(root->right);
@@ -90,7 +176,7 @@ void BST::clear(Node *&root) {
     root = nullptr;
 }
 
-void BST::createRandomTree() {
+void AVL::createRandomTree() {
     mInputData.clear();
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -128,11 +214,12 @@ void BST::createRandomTree() {
         insert(mRoot, mNodeList, mInputData[i]);
     }
 
+    balanceTree();
 
     createTree();
 }
 
-void BST::getTravelPath(Node* root, int data) {
+void AVL::getTravelPath(Node* root, int data) {
     mTravelPath.clear();
     mIsLeftPath.clear();
     Node* cur = root;
@@ -147,7 +234,7 @@ void BST::getTravelPath(Node* root, int data) {
     else mTravelIndex = mTravelPath.size() - 1;
 }
 
-void BST::find2NodesForDelete(int data) {
+void AVL::find2NodesForDelete(int data) {
     mOperationNode = nullptr;
     mReplaceNode = nullptr;
     Node* cur = mRoot;
@@ -189,7 +276,7 @@ void BST::find2NodesForDelete(int data) {
     }
 }
 
-void BST::deleteNode() {
+void AVL::deleteNode() {
     if (mOperationNode == nullptr) return;
     if (mReplaceNode) {
         mOperationNode->val = mReplaceNode->val;
@@ -249,7 +336,30 @@ void BST::deleteNode() {
     balanceTree();
 }
 
-void BST::changeLink() {
+AVL::Node* AVL::getRotateNode() {
+    updateHeightAndBalanceFactor(mRoot);
+    Node* result = nullptr;
+    int maxDepth = 0;
+    for (auto &child : mNodeList) {
+        if (child->balanceFactor > 1 || child->balanceFactor < -1) {
+            if (child->depth > maxDepth) {
+                maxDepth = child->depth;
+                result = child;
+            }
+        }
+    }
+    return result;
+}
+
+void AVL::updateHeightAndBalanceFactor(Node*& root) {
+    if (root == nullptr) return;
+    updateHeightAndBalanceFactor(root->left);
+    updateHeightAndBalanceFactor(root->right);
+    root->height = std::max(getHeight(root->left), getHeight(root->right)) + 1;
+    root->balanceFactor = getHeight(root->right) - getHeight(root->left);
+}
+
+void AVL::changeLink() {
     if (mReplaceNode) {
         mOperationNode->position = mReplaceNode->position;
         if (mReplaceNode->isLeft && mReplaceNode->right) {
@@ -262,18 +372,18 @@ void BST::changeLink() {
     else if (mOperationNode->parent) mOperationNode->position = mOperationNode->parent->position;
 }
 
-void BST::changeLinkReversed() {
+void AVL::changeLinkReversed() {
     if (mReplaceNode) {
         mOperationNode->position = mNodeListForBackup[mOperationIndex]->position;
     }
 }
 
-void BST::deleteNodeReversed() {
+void AVL::deleteNodeReversed() {
     restoreTree();
     std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
     node->set(
         std::to_string(mOperationNode->val), mOperationNode->position, 0,
-        sf::Color::White, sf::Color(255, 171, 25), sf::Color(255, 171, 25)
+        Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR
     );
     std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
     if (mReplaceNode)
@@ -300,27 +410,7 @@ void BST::deleteNodeReversed() {
     }
 }
 
-void BST::reduceHeight(Node* root) {
-    if (root == nullptr) return;    
-    root->height--;
-    reduceHeight(root->left);
-    reduceHeight(root->right);
-}
-
-void BST::swapNode(Node* &a, Node* &b) {
-    std::swap(a->val, b->val);
-    std::swap(a->height, b->height);
-    std::swap(a->duplicate, b->duplicate);
-    std::swap(a->position, b->position);
-    std::swap(a->nodeIndex, b->nodeIndex);
-
-    std::swap(mSceneLayers[Nodes]->getChildren()[a->nodeIndex], mSceneLayers[Nodes]->getChildren()[b->nodeIndex]);
-    std::swap(mSceneLayers[LeftEdges]->getChildren()[a->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[b->nodeIndex]);
-    std::swap(mSceneLayers[RightEdges]->getChildren()[a->nodeIndex], mSceneLayers[RightEdges]->getChildren()[b->nodeIndex]);
-    
-}
-
-void BST::createBackupTree() {
+void AVL::createBackupTree() {
     mNodeListForBackup.clear();
     clear(mRootForBackup);
     for (int i = 0; i < mNodeList.size(); i++) {
@@ -328,7 +418,7 @@ void BST::createBackupTree() {
     }
 }
 
-void BST::restoreTree() {
+void AVL::restoreTree() {
     int indexOfOperationNode = mOperationIndex;
     int indexOfReplaceNode = mReplaceIndex;
     clear(mRoot);
@@ -338,4 +428,5 @@ void BST::restoreTree() {
     }
     mOperationNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfOperationNode]);
     mReplaceNode = ((indexOfReplaceNode == -1 || indexOfReplaceNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfReplaceNode]);
+    balanceTree();
 }

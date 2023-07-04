@@ -14,6 +14,9 @@ namespace Color {
     sf::Color NODE_TEXT_COLOR = sf::Color(133, 163, 137, 255);
     sf::Color NODE_OUTLINE_COLOR = sf::Color(133, 163, 137, 255);
     sf::Color NODE_EDGE_COLOR = sf::Color::Black;
+    sf::Color NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
+    sf::Color NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
+    sf::Color NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
 };
 
 namespace Size {

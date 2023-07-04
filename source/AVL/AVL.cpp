@@ -1,19 +1,19 @@
-#include <State/BST.hpp>
+#include <State/AVL.hpp>
 
-BST::BST(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
+AVL::AVL(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
     buildScene();
 }
 
-BST::~BST() {
+AVL::~AVL() {
     clear(mRoot);
     clear(mRootForBackup);
 }
 
-void BST::draw() {
+void AVL::draw() {
     mWindow.draw(mSceneGraph);
 }
 
-void BST::update() {
+void AVL::update() {
     mSceneGraph.update();
     if (mInsertAnimation) {
         if (!mIsReversed) insertAnimation();
@@ -25,7 +25,7 @@ void BST::update() {
     }
 }
 
-void BST::handleEvent(sf::Event &event) {
+void AVL::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
@@ -146,7 +146,7 @@ void BST::handleEvent(sf::Event &event) {
             }
             else mIsPendingReversed = true;
         }
-        mIsAnimationPaused = true;
+        mIsAnimationPaused = false;
         mIsStepByStepMode = true;
     }
 
@@ -195,7 +195,7 @@ void BST::handleEvent(sf::Event &event) {
     } 
 }
 
-void BST::buildScene() {
+void AVL::buildScene() {
     for (int i = 0; i < LayerCount; i++) {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();

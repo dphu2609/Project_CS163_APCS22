@@ -11,12 +11,12 @@ enable_testing()
 
 # Collect source files from multiple directories
 file(GLOB STATESTACK_SOURCES "source/StateStack/*.cpp")
-file(GLOB BST_SOURCES "source/BST/*.cpp")
+file(GLOB AVL_SOURCES "source/AVL/*.cpp")
 file(GLOB SCENEGRAPH_SOURCES "source/SceneGraph/*.cpp")
 file(GLOB MAIN_SOURCES "source/*.cpp")
 
 # Create a single list of all source files
-set(SOURCES ${STATESTACK_SOURCES} ${BST_SOURCES} ${SCENEGRAPH_SOURCES} ${MAIN_SOURCES})
+set(SOURCES ${STATESTACK_SOURCES} ${AVL_SOURCES} ${SCENEGRAPH_SOURCES} ${MAIN_SOURCES})
 
 add_executable(Project_CS163_APCS22 ${SOURCES})
 

@@ -19,6 +19,10 @@ namespace Color {
     extern sf::Color NODE_OUTLINE_COLOR;
     extern sf::Color NODE_EDGE_COLOR;
 
+    extern sf::Color NODE_HIGHLIGHT_COLOR;
+    extern sf::Color NODE_HIGHLIGHT_TEXT_COLOR;
+    extern sf::Color NODE_HIGHLIGHT_OUTLINE_COLOR;
+
     extern sf::Color SETTINGS_BUTTON_COLOR;
     extern sf::Color SETTINGS_BUTTON_TEXT_COLOR;
 };

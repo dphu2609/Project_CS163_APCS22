@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <GlobalVar.hpp>
 #include <State/StateStack.hpp>
-#include <State/BST.hpp>
+#include <State/AVL.hpp>
 
 class Program {
 private:

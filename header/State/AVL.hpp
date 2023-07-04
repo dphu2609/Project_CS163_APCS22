@@ -1,5 +1,5 @@
-#ifndef BST_HPP
-#define BST_HPP
+#ifndef AVL_HPP
+#define AVL_HPP
 
 #include <State/StateStack.hpp>
 #include <SceneGraph/TreeNode.hpp>
@@ -8,7 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 
-class BST : public State {
+class AVL : public State {
 private:
     virtual void draw();
     virtual void update();
@@ -17,7 +17,9 @@ private:
 public:
     struct Node {
         int val;
+        int depth;
         int height;
+        int balanceFactor;
         int nodeIndex;
         bool isLeft;
         sf::Vector2f position;
@@ -27,8 +29,8 @@ public:
         int duplicate;
     };
 public:
-    explicit BST(StateStack& stack, sf::RenderWindow &window);
-    ~BST();
+    explicit AVL(StateStack& stack, sf::RenderWindow &window);
+    ~AVL();
     void clear(Node *&root);
 private:
     enum SceneLayer {
@@ -86,18 +88,21 @@ private:
     std::vector<Node*> mNodeList = {};
     std::vector<Node*> mNodeListForBackup = {};
 private: //Algorithms
-    void insert(Node* &root, std::vector<Node*> &nodeList, int data);
-    Node* insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data);  
+    void insert(Node* &root, std::vector<Node*> &nodeList, int data, bool isNeedRotating = true);
+    Node* insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data, bool isNeedRotating);  
+    Node* rotateLeft(Node *&root);
+    Node* rotateRight(Node *&root);
+    Node* getRotateNode();
+    void updateHeightAndBalanceFactor(Node *&root);
+    int getHeight(Node* root);
     void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
     void getTravelPath(Node* root, int data);
-    void swapNode(Node* &node1, Node* &node2);
     void deleteNode();
     void deleteNodeReversed();
     void changeLink();
     void changeLinkReversed();
-    void reduceHeight(Node* root);
     void createBackupTree();
     void restoreTree();
     void balanceTree();
@@ -114,6 +119,7 @@ private: //Visualization
     void deleteNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void deleteNodeAnimationReversed(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void checkBalanceFactorAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     bool isProcessingAnimation();
     void resetNodeState();
     void resetAnimation();
@@ -132,6 +138,7 @@ private:
     std::vector<bool> mIsLeftPath = {};
     Node* mOperationNode = nullptr;
     Node* mReplaceNode = nullptr;
+    Node* mNodeForRotate = nullptr;
     int mOperationValue = 0;
     int mOperationIndex = -1;
     int mReplaceValue = 0;

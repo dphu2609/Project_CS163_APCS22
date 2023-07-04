@@ -10,7 +10,7 @@ namespace States {
     enum ID {
         None,
         MainMenu, 
-        BST,
+        AVL,
         StateCount
     };
 };
@@ -79,6 +79,6 @@ private:
     std::map<States::ID, std::function<State::Ptr()>> mFactories;
 };
 
-#include <State/BST.hpp>
+#include <State/AVL.hpp>
 
 #endif

@@ -1,6 +1,6 @@
-#include <State/BST.hpp>
+#include <State/AVL.hpp>
 
-void BST::createTree() {
+void AVL::createTree() {
     mSceneLayers[Nodes]->clearChildren();
     mSceneLayers[LeftEdges]->clearChildren();
     mSceneLayers[RightEdges]->clearChildren();
@@ -19,7 +19,7 @@ void BST::createTree() {
     }
 }
 
-void BST::insertAnimation() {
+void AVL::insertAnimation() {
     switch(mAnimationStep) {
         case 1: {
             createBackupTree();
@@ -38,7 +38,9 @@ void BST::insertAnimation() {
         }
 
         case 4: {
-            insert(mRoot, mNodeList, mInputQueue.front());
+            insert(mRoot, mNodeList, mInputQueue.front(), false);
+            mNodeForRotate = getRotateNode();
+            balanceTree();
             if (mOperationNode->duplicate > 1) mAnimationStep = 6;
             else mAnimationStep = 5;
             break;
@@ -46,16 +48,93 @@ void BST::insertAnimation() {
 
         case 5: { //normal case
             nodeAppearAnimation(true, 2, 7);
-            moveTreeAnimation(true, 2);
+            moveTreeAnimation(true, 2, 7);
             break;
         }
 
         case 6: {
-            changeNodeAnimation(true, 2, 7);
+            changeNodeAnimation(true, 2, 11);
             break;
         }
 
         case 7: {
+            if (mNodeForRotate == nullptr) {
+                mAnimationStep = 11;
+                break;
+            }
+            if (mNodeForRotate->balanceFactor > 1) {
+                if (mOperationNode->val > mNodeForRotate->right->val) {
+                    if (mNodeForRotate->parent) {
+                        if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateLeft(mNodeForRotate);
+                        else mNodeForRotate->parent->right = rotateLeft(mNodeForRotate);
+                    }
+                    else mRoot = rotateLeft(mNodeForRotate);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->parent->nodeIndex]);
+                    mAnimationStep = 10;
+                } else {
+                    mNodeForRotate->right = rotateRight(mNodeForRotate->right);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
+                    mAnimationStep = 8;
+                }
+            }
+            else if (mNodeForRotate->balanceFactor < -1) {
+                if (mOperationNode->val < mNodeForRotate->left->val) {
+                    if (mNodeForRotate->parent) {
+                        if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateRight(mNodeForRotate);
+                        else mNodeForRotate->parent->right = rotateRight(mNodeForRotate);
+                    }
+                    else mRoot = rotateRight(mNodeForRotate);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->parent->nodeIndex]);
+                    mAnimationStep = 10;
+                } else {
+                    mNodeForRotate->left = rotateLeft(mNodeForRotate->left);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
+                    mAnimationStep = 8;
+                }
+            }
+            if (mAnimationStep == 10) {
+                updateHeightAndBalanceFactor(mRoot);
+            }
+            // resetNodeState();
+            balanceTree();
+            break;
+        }
+
+        case 8: {
+            moveTreeAnimation(true, 1, 9);
+            break;
+        }
+
+        case 9: {
+            if (mNodeForRotate->balanceFactor > 1) {
+                if (mNodeForRotate->parent) {
+                    if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateLeft(mNodeForRotate);
+                    else mNodeForRotate->parent->right = rotateLeft(mNodeForRotate);
+                }
+                else mRoot = rotateLeft(mNodeForRotate);
+                std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->parent->nodeIndex]);
+            }
+            else if (mNodeForRotate->balanceFactor < -1) {
+                if (mNodeForRotate->parent) {
+                    if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateRight(mNodeForRotate);
+                    else mNodeForRotate->parent->right = rotateRight(mNodeForRotate);
+                }
+                else mRoot = rotateRight(mNodeForRotate);
+                std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->parent->nodeIndex]);
+            }
+            // resetNodeState();
+            updateHeightAndBalanceFactor(mRoot);
+            balanceTree();
+            mAnimationStep = 10;
+            break;
+        }
+
+        case 10: {
+            moveTreeAnimation(true, 1, 11);
+            break;
+        }
+
+        case 11: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
                 resetAnimation();
@@ -67,7 +146,7 @@ void BST::insertAnimation() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void BST::insertAnimationReversed() {
+void AVL::insertAnimationReversed() {
     switch (mAnimationStep) {
         case 7: {
             mAnimationStep = 6;
@@ -114,7 +193,7 @@ void BST::insertAnimationReversed() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void BST::deleteAnimation() {
+void AVL::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
             createTree();
@@ -195,7 +274,7 @@ void BST::deleteAnimation() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void BST::deleteAnimationReversed() {
+void AVL::deleteAnimationReversed() {
     switch (mAnimationStep) {
         case 11: {
             restoreTree();
@@ -259,16 +338,16 @@ void BST::deleteAnimationReversed() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void BST::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) 
         mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
-            sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
+            Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 3
         );
     else if (!mTraverseControler.second) {
         if (!mIsReversed)
             mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
-                sf::Color::White, sf::Color(255, 171, 25), sf::Color(255, 171, 25), 3
+                Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 3
             );
         else   
             mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
@@ -376,13 +455,13 @@ void BST::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
     }
 }
 
-void BST::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size() && !mIsReversed) {
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
         node->set(
             std::to_string(mOperationNode->val), mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 0,
-            sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25)
+            Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
         );
         mSceneLayers[Nodes]->attachChild(std::move(node));
 
@@ -423,11 +502,18 @@ void BST::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepA
             mSceneLayers[LeftEdges]->getChildren().pop_back();
             mSceneLayers[RightEdges]->getChildren().pop_back();
         }
-        if (animationStepAfterFinish != 0) mAnimationStep = animationStepAfterFinish;
+        if (animationStepAfterFinish != 0) {
+            mAnimationStep = animationStepAfterFinish;
+            resetNodeState();
+        }
     }
 }
 
-void BST::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::checkBalanceFactorAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
+}
+
+void AVL::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     int index = 0;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) {
@@ -482,10 +568,10 @@ void BST::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAft
 }
 
 
-void BST::changeNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::changeNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
-        sf::Color(255, 171, 25), sf::Color::White,  sf::Color(255, 171, 25), 3
+        Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 3
     );
 
     if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished() && !mIsAnimationPaused) {
@@ -495,7 +581,7 @@ void BST::changeNodeAnimation(bool isAllowPause, float speed, int animationStepA
     }
 }
 
-void BST::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!mIsReversed) mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
     else mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
 
@@ -564,11 +650,11 @@ void BST::deleteNodeAnimation(bool isAllowPause, float speed, int animationStepA
     }
 }
 
-void BST::deleteNodeAnimationReversed(bool isAllowPause, float speed, int animationStepAfterFinish) {
+void AVL::deleteNodeAnimationReversed(bool isAllowPause, float speed, int animationStepAfterFinish) {
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), speed);
 }
 
-void BST::resetAnimation() {
+void AVL::resetAnimation() {
     mAnimationStep = 1;
     mOperationNode = nullptr;
     mReplaceNode = nullptr;
@@ -579,7 +665,7 @@ void BST::resetAnimation() {
     for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
 }
 
-bool BST::isProcessingAnimation() {
+bool AVL::isProcessingAnimation() {
     if (!mIsReversed && (mAnimationStep == 2 || mAnimationStep == 4)) return false;
     if (mIsReversed && (mAnimationStep == 6 || mAnimationStep == 3)) return false;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) 
@@ -591,7 +677,7 @@ bool BST::isProcessingAnimation() {
     return false;
 }
 
-void BST::resetNodeState() {
+void AVL::resetNodeState() {
     if (!mIsReversed) mTravelIndex = 0;
     else mTravelIndex = mTravelPath.size() - 1;
     mTravelPath.clear();
