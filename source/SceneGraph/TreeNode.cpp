@@ -1,6 +1,6 @@
 #include <SceneGraph/TreeNode.hpp>
 
-void TreeNode::set(const std::string &text, const sf::Vector2f position, const float &radius, const sf::Color &nodeColor, const sf::Color &textColor, const sf::Color &outlineColor, const float &outlineThickness) {
+void TreeNode::set(const std::string &text, const sf::Vector2f position, const float &radius, const sf::Color &nodeColor, const sf::Color &textColor, const sf::Color &outlineColor, const float &outlineThickness, const std::string &labelContent, const sf::Color &labelColor) {
     mNode.setRadius(radius);
     mNode.setPosition(position);
     mNode.setFillColor(nodeColor);
@@ -18,6 +18,12 @@ void TreeNode::set(const std::string &text, const sf::Vector2f position, const f
     else mText.setCharacterSize(radius * 0.3);
     mText.setFillColor(textColor);
     mText.setPosition(position + sf::Vector2f(radius, radius) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
+
+    mLabel.setFont(ResourcesHolder::fontsHolder[Fonts::RobotoRegular]);
+    mLabel.setString(labelContent);
+    mLabel.setCharacterSize(radius * 0.8);
+    mLabel.setFillColor(labelColor);
+    mLabel.setPosition(position + sf::Vector2f(radius, 3 * radius) - sf::Vector2f(mLabel.getGlobalBounds().width/2, mLabel.getGlobalBounds().height));
 }
 
 sf::Vector2f TreeNode::getPosition() {
@@ -27,6 +33,7 @@ sf::Vector2f TreeNode::getPosition() {
 void TreeNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(mNode);
     target.draw(mText);
+    target.draw(mLabel);
 }
 
 void TreeNode::updateCurrent() {
@@ -40,8 +47,14 @@ void TreeNode::updateCurrent() {
         mNode.setRadius(newRadius);
         mNode.setOutlineThickness(newRadius / 8);
         mNode.setPosition(oldPosition - sf::Vector2f(newRadius, newRadius));
-        mText.setCharacterSize(newRadius);
+        std::string text = mText.getString();
+        if (text.size() <= 3) mText.setCharacterSize(newRadius);
+        else if (text.size() <= 4) mText.setCharacterSize(newRadius * 0.8);
+        else if (text.size() <= 6) mText.setCharacterSize(newRadius * 0.6);
+        else if (text.size() <= 9) mText.setCharacterSize(newRadius * 0.4);
         mText.setPosition(mNode.getPosition() + sf::Vector2f(newRadius, newRadius) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
+        mLabel.setCharacterSize(newRadius * 0.8);
+        mLabel.setPosition(mNode.getPosition() + sf::Vector2f(newRadius, 3 * newRadius) - sf::Vector2f(mLabel.getGlobalBounds().width/2, mLabel.getGlobalBounds().height));
         if (this->mCurrentSize.x > 0) this->mCurrentSize -= this->mSizeJumpStep;
         else {
             this->mAnimationExecuting[Zoom] = false;
@@ -188,7 +201,13 @@ void TreeNode::updateCurrent() {
 
 void TreeNode::setPosition(const sf::Vector2f &position) {
     mNode.setPosition(position);
-    mText.setPosition(position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
+    mText.setPosition(position + sf::Vector2f(mNode.getRadius(), mNode.getRadius()) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
+    mLabel.setPosition(position + sf::Vector2f(mNode.getRadius(), 3 * mNode.getRadius()) - sf::Vector2f(mLabel.getGlobalBounds().width/2, mLabel.getGlobalBounds().height));
+}
+
+void TreeNode::setLabel(const std::string &label) {
+    mLabel.setString(label);
+    mLabel.setPosition(mNode.getPosition() + sf::Vector2f(mNode.getRadius(), 3 * mNode.getRadius()) - sf::Vector2f(mLabel.getGlobalBounds().width/2, mLabel.getGlobalBounds().height));
 }
 
 void TreeNode::setVarForZoom(const sf::Vector2f &sizeAfterZoom, const float speed) {

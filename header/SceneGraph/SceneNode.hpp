@@ -37,6 +37,7 @@ public:
 public:
     virtual std::vector<int> getIntArrayData() {return {};} 
     virtual void setContent(const std::string &content) {}
+    virtual void setLabel(const std::string &label) {}
     virtual std::string getContent() {return "";}
 private:
     bool mIsActive = true;

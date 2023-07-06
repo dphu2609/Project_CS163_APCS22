@@ -7,15 +7,20 @@ class TreeNode : public SceneNode {
 private:
     sf::CircleShape mNode;
     sf::Text mText;
+    sf::Text mLabel;
 public:
     void set(
         const std::string &text, const sf::Vector2f position, 
         const float &radius = Size::NODE_RADIUS, const sf::Color &nodeColor = Color::NODE_COLOR,
         const sf::Color &textColor = Color::NODE_TEXT_COLOR,
-        const sf::Color &outlineColor = Color::NODE_OUTLINE_COLOR, const float &outlineThickness = Size::NODE_RADIUS / 8);
+        const sf::Color &outlineColor = Color::NODE_OUTLINE_COLOR, const float &outlineThickness = Size::NODE_RADIUS / 8,
+        const std::string &labelContent = "",
+        const sf::Color &labelColor = Color::NODE_LABEL_COLOR
+    );
     virtual void setPosition(const sf::Vector2f &position);
     virtual sf::Vector2f getPosition();
     virtual void setContent(const std::string &text);
+    virtual void setLabel(const std::string &label);
     virtual std::string getContent();
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;

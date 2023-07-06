@@ -165,8 +165,6 @@ void Edge::setVarForChange1Color(const sf::Color &objectColorAfterChange, const 
                                     mCurrentObjectColor.g * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed,
                                     mCurrentObjectColor.b * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed,
                                     mCurrentObjectColor.a * Constant::TIME_PER_FRAME.asSeconds() * Animation::SPEED * speed);
-
     this->mAnimationExecuting[Change1Color] = true;
     this->mAnimationFinished[Change1Color] = false;
-
 }

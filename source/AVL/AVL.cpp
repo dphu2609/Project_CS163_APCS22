@@ -7,6 +7,11 @@ AVL::AVL(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
 AVL::~AVL() {
     clear(mRoot);
     clear(mRootForBackup);
+    while (!mTreeForBackward.empty()) {
+        clear(mTreeForBackward.top()->root);
+        delete mTreeForBackward.top();
+        mTreeForBackward.pop();
+    }
 }
 
 void AVL::draw() {
@@ -15,14 +20,8 @@ void AVL::draw() {
 
 void AVL::update() {
     mSceneGraph.update();
-    if (mInsertAnimation) {
-        if (!mIsReversed) insertAnimation();
-        else insertAnimationReversed();
-    }
-    if (mDeleteAnimation) {
-        if (!mIsReversed) deleteAnimation();
-        else deleteAnimationReversed();
-    }
+    if (mInsertAnimation && !mIsReversed) insertAnimation();
+    if (mDeleteAnimation && !mIsReversed) deleteAnimation();
 }
 
 void AVL::handleEvent(sf::Event &event) {
@@ -160,21 +159,10 @@ void AVL::handleEvent(sf::Event &event) {
             mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Play]->activate();
         }
-        if (mIsPendingReversed && !isProcessingAnimation()) {
-            mIsReversed = true;
-            mIsPendingReversed = false;
-            mIsStepByStepMode = true;
-            resetNodeState();
-        }
-        if (!mIsReversed) {
-            if (!isProcessingAnimation()) {
-                mIsReversed = true;
-                mIsStepByStepMode = true;
-                resetNodeState();
-            }
-            else mIsPendingReversed = true;
-        }
-        mIsAnimationPaused = false;
+        mIsAnimationPaused = true;
+        mIsStepByStepMode = true;
+        mIsReversed = true;
+        returnToPreviousStep();
     }
 
     if (!mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mIsReplay) {
@@ -189,6 +177,7 @@ void AVL::handleEvent(sf::Event &event) {
         restoreTree();
         mIsReplay = false;
         mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;

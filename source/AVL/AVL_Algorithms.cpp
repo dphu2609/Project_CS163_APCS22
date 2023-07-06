@@ -17,7 +17,7 @@ AVL::Node* AVL::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList
             root = new Node{
                 data, 1, 1, 0,(int)nodeList.size(), false, 
                 sf::Vector2f(Constant::WINDOW_WIDTH/2 - Size::NODE_RADIUS, 150 * Constant::SCALE_Y), 
-                nullptr, nullptr, nullptr, 1
+                nullptr, nullptr, nullptr, 1, false, false, false, false
             };
         }
         else {
@@ -25,7 +25,7 @@ AVL::Node* AVL::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList
             root = new Node{
                 data, parent->depth + 1, 1, 0,(int)nodeList.size(), isLeft, 
                 sf::Vector2f(parent->position.x + (isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL), parent->position.y + NODE_DISTANCE_VERTICAL), 
-                nullptr, nullptr, parent, 1
+                nullptr, nullptr, parent, 1, false, false, false, false
             };
         }
         nodeList.push_back(root);
@@ -126,6 +126,38 @@ void AVL::moveTree(Node* root, bool isLeft) {
     root->position.y = (root->depth - mRoot->depth) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     moveTree(root->left, isLeft);
     moveTree(root->right, isLeft);
+}
+
+AVL::Node* AVL::copyAVL(Node* root) {
+    if (root == nullptr) {
+        return nullptr;
+    }
+    
+    Node* newNode = new Node;
+    newNode->val = root->val;
+    newNode->depth = root->depth;
+    newNode->height = root->height;
+    newNode->balanceFactor = root->balanceFactor;
+    newNode->nodeIndex = root->nodeIndex;
+    newNode->isLeft = root->isLeft;
+    newNode->position = root->position;
+    newNode->duplicate = root->duplicate;
+    newNode->isNodeHighlighted = root->isNodeHighlighted;
+    newNode->isLeftEdgeHighlighted = root->isLeftEdgeHighlighted;
+    newNode->isRightEdgeHighlighted = root->isRightEdgeHighlighted;
+    newNode->isInsertNode = root->isInsertNode;
+
+    newNode->left = copyAVL(root->left);
+    if (newNode->left != nullptr) {
+        newNode->left->parent = newNode;
+    }
+
+    newNode->right = copyAVL(root->right);
+    if (newNode->right != nullptr) {
+        newNode->right->parent = newNode;
+    }
+
+    return newNode;
 }
 
 void AVL::balanceTree() {
@@ -234,6 +266,21 @@ void AVL::getTravelPath(Node* root, int data) {
     else mTravelIndex = mTravelPath.size() - 1;
 }
 
+void AVL::getBalanceFactorPath(Node* start, Node* end) {
+    mTravelPath.clear();
+    mIsLeftPath.clear();
+    mTraverseControler = {false, false};
+    Node* cur = start;
+    while (cur) {
+        mTravelPath.push_back(cur);
+        mIsLeftPath.push_back(cur->isLeft);
+        if (cur == end) break;
+        cur = cur->parent;
+    }
+    if (!mIsReversed) mTravelIndex = 0;
+    else mTravelIndex = mTravelPath.size() - 1;
+}
+
 void AVL::find2NodesForDelete(int data) {
     mOperationNode = nullptr;
     mReplaceNode = nullptr;
@@ -317,9 +364,11 @@ void AVL::deleteNode() {
         mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mReplaceIndex);
         mNodeList.erase(mNodeList.begin() + mReplaceIndex);
         for (int i = 0; i < mNodeList.size(); i++) {
-            mNodeList[i]->nodeIndex = i;
+            if (mNodeList[i]->nodeIndex > mReplaceIndex) mNodeList[i]->nodeIndex--;
         }
+        mNodeStartChecking = mReplaceNode->parent;
         delete mReplaceNode;
+        mReplaceNode = nullptr;
     }
     else {
         if (mOperationNode->isLeft) mOperationNode->parent->left = nullptr;
@@ -329,9 +378,11 @@ void AVL::deleteNode() {
         mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mOperationIndex);
         mNodeList.erase(mNodeList.begin() + mOperationIndex);
         for (int i = 0; i < mNodeList.size(); i++) {
-            mNodeList[i]->nodeIndex = i;
+            if (mNodeList[i]->nodeIndex > mOperationIndex) mNodeList[i]->nodeIndex--;
         }
+        mNodeStartChecking = mOperationNode->parent;
         delete mOperationNode;
+        mOperationNode = nullptr;
     }
     balanceTree();
 }
@@ -372,49 +423,12 @@ void AVL::changeLink() {
     else if (mOperationNode->parent) mOperationNode->position = mOperationNode->parent->position;
 }
 
-void AVL::changeLinkReversed() {
-    if (mReplaceNode) {
-        mOperationNode->position = mNodeListForBackup[mOperationIndex]->position;
-    }
-}
-
-void AVL::deleteNodeReversed() {
-    restoreTree();
-    std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-    node->set(
-        std::to_string(mOperationNode->val), mOperationNode->position, 0,
-        Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR
-    );
-    std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
-    if (mReplaceNode)
-        leftEdge->set(mReplaceNode->position, mReplaceNode->position);
-    else 
-        leftEdge->set(mOperationNode->position, mOperationNode->position);
-
-    std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
-    if (mReplaceNode)
-        rightEdge->set(mReplaceNode->position, mReplaceNode->position);
-    else 
-        rightEdge->set(mOperationNode->position, mOperationNode->position);
-    if (mReplaceNode != nullptr) {
-        mSceneLayers[Nodes]->getChildren().insert(mSceneLayers[Nodes]->getChildren().begin() + mReplaceIndex, std::move(node));
-        mSceneLayers[LeftEdges]->getChildren().insert(mSceneLayers[LeftEdges]->getChildren().begin() + mReplaceIndex, std::move(leftEdge));
-        mSceneLayers[RightEdges]->getChildren().insert(mSceneLayers[RightEdges]->getChildren().begin() + mReplaceIndex, std::move(rightEdge));
-        std::swap(mSceneLayers[Nodes]->getChildren()[mOperationIndex], mSceneLayers[Nodes]->getChildren()[mReplaceIndex]); 
-        mOperationNode->position = mReplaceNode->position;
-    }
-    else {
-        mSceneLayers[Nodes]->getChildren().insert(mSceneLayers[Nodes]->getChildren().begin() + mOperationIndex, std::move(node));
-        mSceneLayers[LeftEdges]->getChildren().insert(mSceneLayers[LeftEdges]->getChildren().begin() + mOperationIndex, std::move(leftEdge));
-        mSceneLayers[RightEdges]->getChildren().insert(mSceneLayers[RightEdges]->getChildren().begin() + mOperationIndex, std::move(rightEdge));
-    }
-}
-
 void AVL::createBackupTree() {
     mNodeListForBackup.clear();
     clear(mRootForBackup);
-    for (int i = 0; i < mNodeList.size(); i++) {
-        insert(mRootForBackup, mNodeListForBackup, mNodeList[i]->val);
+    mRootForBackup = copyAVL(mRoot);
+    for (auto &child : mNodeList) {
+        mNodeListForBackup.push_back(findNode(mRootForBackup, child->val));
     }
 }
 
@@ -423,10 +437,49 @@ void AVL::restoreTree() {
     int indexOfReplaceNode = mReplaceIndex;
     clear(mRoot);
     mNodeList.clear();
-    for (int i = 0; i < mNodeListForBackup.size(); i++) {
-        insert(mRoot, mNodeList, mNodeListForBackup[i]->val);
-    }
+    
+    mNodeList = mNodeListForBackup;
+    mRoot = mRootForBackup;
+
     mOperationNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfOperationNode]);
     mReplaceNode = ((indexOfReplaceNode == -1 || indexOfReplaceNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfReplaceNode]);
     balanceTree();
+}
+
+AVL::Node* AVL::findNode(Node* root, int data) {
+    if (root == nullptr) return nullptr;
+    else if (data == root->val) return root;
+    if (data < root->val) return findNode(root->left, data);
+    else if (data > root->val) return findNode(root->right, data);
+    return nullptr;
+}
+
+AVL::TreeState* AVL::createTreeState(int animationIndex) {
+    Node* newRoot = copyAVL(mRoot);
+    Node* nodeForRotate = nullptr;
+    Node* nodeForOperation = nullptr;
+    Node* nodeForReplace = nullptr;
+    if (mNodeForRotate) nodeForRotate = findNode(newRoot, mNodeForRotate->val);
+    if (mOperationNode) nodeForOperation = findNode(newRoot, mOperationNode->val);
+    if (mReplaceNode) nodeForReplace = findNode(newRoot, mReplaceNode->val);
+    std::vector<Node*> newNodeList;
+    for (auto &child : mNodeList) {
+        newNodeList.push_back(findNode(newRoot, child->val));
+    }
+    TreeState* newTreeState = new TreeState{newRoot, nodeForRotate, nodeForOperation, nodeForReplace, newNodeList, animationIndex};
+    return newTreeState;
+}
+
+void AVL::returnToPreviousStep() {
+    resetNodeState();
+    clear(mRoot);
+    mNodeList.clear();
+    mRoot = mTreeForBackward.top()->root;
+    mNodeForRotate = mTreeForBackward.top()->nodeForRotate;
+    mOperationNode = mTreeForBackward.top()->nodeForOperation;
+    mReplaceNode = mTreeForBackward.top()->nodeForReplace;
+    mNodeList = mTreeForBackward.top()->nodeList;
+    mAnimationStep = mTreeForBackward.top()->animationIndex;
+    mTreeForBackward.pop();
+    createTree();
 }
