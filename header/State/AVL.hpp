@@ -75,6 +75,11 @@ private:
         DeleteStart
     };
 
+    enum SearchOptions {
+        SearchInput,
+        SearchStart
+    };
+
     enum ControlBox {
         Play,
         Pause,
@@ -126,6 +131,7 @@ private: //Visualization
 
     void insertAnimation();
     void deleteAnimation();
+    void searchAnimation();
     void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void checkBalanceFactorAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);

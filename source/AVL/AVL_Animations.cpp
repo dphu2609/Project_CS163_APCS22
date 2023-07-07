@@ -277,7 +277,12 @@ void AVL::deleteAnimation() {
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             getTravelPath(mRoot, mInputQueue.front());
+            if (mTravelPath.back()->val != mInputQueue.front()) {
+                mAnimationStep = 23;
+                break;
+            }
             mAnimationStep++;
             break;
         }
@@ -288,6 +293,7 @@ void AVL::deleteAnimation() {
         }
 
         case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
             find2NodesForDelete(mInputQueue.front());
             if (mReplaceNode) {
                 getTravelPath(mOperationNode, mReplaceNode->val);
@@ -308,6 +314,7 @@ void AVL::deleteAnimation() {
 
         case 6: {
             changeLink();
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(7));
             mAnimationStep++;
             break;
         }
@@ -321,6 +328,7 @@ void AVL::deleteAnimation() {
         case 8: {
             deleteNode();
             mNodeForRotate = getRotateNode();
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(9));
             mAnimationStep++;
             break;
         }
@@ -332,7 +340,7 @@ void AVL::deleteAnimation() {
 
         case 10: {
             if (!mNodeForRotate) {
-                mAnimationStep = 23; ///////
+                mAnimationStep = 20; 
                 break;
             }
             getBalanceFactorPath(mNodeStartChecking, mNodeForRotate);
@@ -386,7 +394,9 @@ void AVL::deleteAnimation() {
             }
             if (mAnimationStep == 17) {
                 updateHeightAndBalanceFactor(mRoot);
+                if (!mIsReversed) mTreeForBackward.push(createTreeState(17));
             }
+            else if (!mIsReversed) mTreeForBackward.push(createTreeState(13));
             resetNodeState();
             break;
         }
@@ -399,6 +409,7 @@ void AVL::deleteAnimation() {
         case 14: {
             balanceTree();
             resetNodeState();
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(15));
             mAnimationStep = 15;
             break;
         }
@@ -431,6 +442,7 @@ void AVL::deleteAnimation() {
             }
             resetNodeState();
             updateHeightAndBalanceFactor(mRoot);
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(17));
             mAnimationStep = 17;
             break;
         }
@@ -443,6 +455,7 @@ void AVL::deleteAnimation() {
         case 18: {
             balanceTree();
             resetNodeState();
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(19));
             mAnimationStep = 19;
             break;
         }
@@ -454,7 +467,9 @@ void AVL::deleteAnimation() {
 
 
         case 20: {
-            getBalanceFactorPath(mNodeForRotate, mRoot);
+            if (mNodeForRotate) getBalanceFactorPath(mNodeForRotate, mRoot);
+            else if (mOperationNode) getBalanceFactorPath(mOperationNode, mRoot);
+            else mAnimationStep = 23;
             resetNodeState();
             mAnimationStep = 21;
             break;
@@ -479,6 +494,57 @@ void AVL::deleteAnimation() {
             break;
         }
     };
+    mIsAnimationPaused = mIsStepByStepMode;
+}
+
+void AVL::searchAnimation() {
+    switch(mAnimationStep) {
+        case 1: {
+            createTree();
+            createBackupTree();
+            mAnimationStep++;
+            break;
+        }
+
+        case 2: {
+            getTravelPath(mRoot, mInputQueue.front());
+            mOperationNode = findNode(mRoot, mInputQueue.front());
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
+            mAnimationStep++;
+            break;
+        }
+
+        case 3: {
+            traverseAnimation(true, 3, 4);
+            break;
+        }
+
+        case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mOperationNode) mAnimationStep = 5;
+            else mAnimationStep = 6;
+            break;
+        }
+
+        case 5: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
+                Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2
+            );
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                mAnimationStep = 6;
+            }
+            break;
+        }
+
+        case 6: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+                resetAnimation();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
     mIsAnimationPaused = mIsStepByStepMode;
 }
 

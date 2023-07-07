@@ -22,6 +22,8 @@ void AVL::update() {
     mSceneGraph.update();
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
+    // if (mUpdateAnimation && !mIsReversed) updateAnimation();
+    if (mSearchAnimation && !mIsReversed) searchAnimation();
 }
 
 void AVL::handleEvent(sf::Event &event) {
@@ -48,6 +50,16 @@ void AVL::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[Buttons]->getChildren()[Delete]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) {
+            if (child->isActive()) {
+                child->deactivate();
+            } else {
+                child->activate();
+            }
+        }
+    }
+
+    if (mSceneLayers[Buttons]->getChildren()[Search]->isLeftClicked(mWindow, event)) {
+        for (auto &child : mSceneLayers[SearchOptions]->getChildren()) {
             if (child->isActive()) {
                 child->deactivate();
             } else {
@@ -90,6 +102,24 @@ void AVL::handleEvent(sf::Event &event) {
         mDeleteAnimation = true;
         mUpdateAnimation = false;
         mSearchAnimation = false;
+        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+        mIsAnimationPaused = false;
+        mIsStepByStepMode = false;
+        mIsReplay = false;
+        mAnimationStep = 1;
+    }
+
+    if (mSceneLayers[SearchOptions]->getChildren()[SearchStart]->isLeftClicked(mWindow, event)) {
+        std::vector<int> inputList = mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getIntArrayData();
+        while (!mInputQueue.empty()) mInputQueue.pop();
+        for (auto &input : inputList) {
+            mInputQueue.push(input);
+        }
+        mInsertAnimation = false;
+        mDeleteAnimation = false;
+        mUpdateAnimation = false;
+        mSearchAnimation = true;
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
         mIsAnimationPaused = false;
@@ -290,6 +320,20 @@ void AVL::buildScene() {
     );
     startDeleteButton->deactivate();
     mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
+
+    std::unique_ptr<InputBox> searchInput = std::make_unique<InputBox>();
+    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 265));
+    searchInput->deactivate();
+    mSceneLayers[SearchOptions]->attachChild(std::move(searchInput));
+
+    std::unique_ptr<RectangleButton> startSearchButton = std::make_unique<RectangleButton>();
+    startSearchButton->set(
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 270), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
+        sf::Color(224, 134, 7), sf::Color::Black
+    );
+    startSearchButton->deactivate();
+    mSceneLayers[SearchOptions]->attachChild(std::move(startSearchButton));
 
     std::unique_ptr<ImageButton> playButton = std::make_unique<ImageButton>();
     playButton->set(
