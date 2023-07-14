@@ -18,6 +18,7 @@ Program::Program() :
 
 void Program::registerStates() {
     mStateStack.registerState<AVL>(States::AVL);
+    mStateStack.registerState<Tree234>(States::Tree234);
 }
 
 void Program::loadFonts() {
@@ -40,7 +41,7 @@ void Program::loadTextures() {
 
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::AVL);
+    mStateStack.pushState(States::Tree234);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(mWindow.isOpen()) {

@@ -120,9 +120,7 @@ AVL::Node* AVL::rotateRight(Node* &root) {
 
 void AVL::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
-    sf::Vector2f dis;
-    dis = sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
-    root->position += dis;
+    root->position += sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
     root->position.y = (root->depth - mRoot->depth) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     moveTree(root->left, isLeft);
     moveTree(root->right, isLeft);
@@ -253,11 +251,9 @@ void AVL::createRandomTree() {
 
 void AVL::getTravelPath(Node* root, int data) {
     mTravelPath.clear();
-    mIsLeftPath.clear();
     Node* cur = root;
     while (cur != nullptr) {
         mTravelPath.push_back(cur);
-        mIsLeftPath.push_back(data < cur->val);
         if (data < cur->val) cur = cur->left;
         else if (data > cur->val) cur = cur->right;
         else break;
@@ -268,12 +264,10 @@ void AVL::getTravelPath(Node* root, int data) {
 
 void AVL::getBalanceFactorPath(Node* start, Node* end) {
     mTravelPath.clear();
-    mIsLeftPath.clear();
     mTraverseControler = {false, false};
     Node* cur = start;
     while (cur) {
         mTravelPath.push_back(cur);
-        mIsLeftPath.push_back(cur->isLeft);
         if (cur == end) break;
         cur = cur->parent;
     }
@@ -437,9 +431,11 @@ void AVL::restoreTree() {
     int indexOfReplaceNode = mReplaceIndex;
     clear(mRoot);
     mNodeList.clear();
-    
-    mNodeList = mNodeListForBackup;
-    mRoot = mRootForBackup;
+
+    mRoot = copyAVL(mRootForBackup);
+    for (auto &child : mNodeListForBackup) {
+        mNodeList.push_back(findNode(mRoot, child->val));
+    }
 
     mOperationNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfOperationNode]);
     mReplaceNode = ((indexOfReplaceNode == -1 || indexOfReplaceNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfReplaceNode]);

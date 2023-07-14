@@ -4,63 +4,57 @@ void AVL::createTree() {
     mSceneLayers[Nodes]->clearChildren();
     mSceneLayers[LeftEdges]->clearChildren();
     mSceneLayers[RightEdges]->clearChildren();
-    int index = 0;
-    while (index < mNodeList.size()) {
-        for (int i = 0; i < mNodeList.size(); i++) {
-            if (mNodeList[i]->nodeIndex == index) {
-                if (mNodeList[i]->isInsertNode) {
-                    std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-                    node->set(
-                        std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
-                        mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
-                    );
-                    mSceneLayers[Nodes]->attachChild(std::move(node));
-                }
-                else if (!mNodeList[i]->isNodeHighlighted) {
-                    std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-                    node->set(std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), mNodeList[i]->position);
-                    mSceneLayers[Nodes]->attachChild(std::move(node));
-                }
-                else {
-                    std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-                    node->set(
-                        std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
-                        mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
-                    );
-                    mSceneLayers[Nodes]->attachChild(std::move(node));
-                }
+    for (int i = 0; i < mNodeList.size(); i++) {
+        if (mNodeList[i]->isInsertNode) {
+            std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+            node->set(
+                std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
+                mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+            );
+            mSceneLayers[Nodes]->attachChild(std::move(node));
+        }
+        else if (!mNodeList[i]->isNodeHighlighted) {
+            std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+            node->set(std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), mNodeList[i]->position);
+            mSceneLayers[Nodes]->attachChild(std::move(node));
+        }
+        else {
+            std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+            node->set(
+                std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
+                mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+            );
+            mSceneLayers[Nodes]->attachChild(std::move(node));
+        }
 
-                if (!mNodeList[i]->isLeftEdgeHighlighted) {
-                    std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
-                    leftEdge->set(sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS), (mNodeList[i]->left ? sf::Vector2f(mNodeList[i]->left->position.x + Size::NODE_RADIUS, mNodeList[i]->left->position.y + Size::NODE_RADIUS) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS)));
-                    mSceneLayers[LeftEdges]->attachChild(std::move(leftEdge));
-                }
-                else {
-                    std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
-                    leftEdge->set(
-                        sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS), 
-                        (mNodeList[i]->left ? sf::Vector2f(mNodeList[i]->left->position.x + Size::NODE_RADIUS, mNodeList[i]->left->position.y + Size::NODE_RADIUS) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS)),
-                        Size::EDGE_THICKNESS, Color::NODE_HIGHLIGHT_COLOR
-                    );
-                    mSceneLayers[LeftEdges]->attachChild(std::move(leftEdge));
-                }
+        if (!mNodeList[i]->isLeftEdgeHighlighted) {
+            std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
+            leftEdge->set(sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y), (mNodeList[i]->left ? sf::Vector2f(mNodeList[i]->left->position.x + Size::NODE_RADIUS_X, mNodeList[i]->left->position.y + Size::NODE_RADIUS_Y) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y)));
+            mSceneLayers[LeftEdges]->attachChild(std::move(leftEdge));
+        }
+        else {
+            std::unique_ptr<Edge> leftEdge = std::make_unique<Edge>();
+            leftEdge->set(
+                sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y), 
+                (mNodeList[i]->left ? sf::Vector2f(mNodeList[i]->left->position.x + Size::NODE_RADIUS_X, mNodeList[i]->left->position.y + Size::NODE_RADIUS_Y) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y)),
+                Size::EDGE_THICKNESS, Color::NODE_HIGHLIGHT_COLOR
+            );
+            mSceneLayers[LeftEdges]->attachChild(std::move(leftEdge));
+        }
 
-                if (!mNodeList[i]->isRightEdgeHighlighted) {
-                    std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
-                    rightEdge->set(sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS), (mNodeList[i]->right ? sf::Vector2f(mNodeList[i]->right->position.x + Size::NODE_RADIUS, mNodeList[i]->right->position.y + Size::NODE_RADIUS) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS)));
-                    mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
-                }
-                else {
-                    std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
-                    rightEdge->set(
-                        sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS), 
-                        (mNodeList[i]->right ? sf::Vector2f(mNodeList[i]->right->position.x + Size::NODE_RADIUS, mNodeList[i]->right->position.y + Size::NODE_RADIUS) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS, mNodeList[i]->position.y + Size::NODE_RADIUS)),
-                        Size::EDGE_THICKNESS, Color::NODE_HIGHLIGHT_COLOR
-                    );
-                    mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
-                }
-                index++;
-            }
+        if (!mNodeList[i]->isRightEdgeHighlighted) {
+            std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
+            rightEdge->set(sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y), (mNodeList[i]->right ? sf::Vector2f(mNodeList[i]->right->position.x + Size::NODE_RADIUS_X, mNodeList[i]->right->position.y + Size::NODE_RADIUS_Y) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y)));
+            mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
+        }
+        else {
+            std::unique_ptr<Edge> rightEdge = std::make_unique<Edge>();
+            rightEdge->set(
+                sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y), 
+                (mNodeList[i]->right ? sf::Vector2f(mNodeList[i]->right->position.x + Size::NODE_RADIUS_X, mNodeList[i]->right->position.y + Size::NODE_RADIUS_Y) : sf::Vector2f(mNodeList[i]->position.x + Size::NODE_RADIUS_X, mNodeList[i]->position.y + Size::NODE_RADIUS_Y)),
+                Size::EDGE_THICKNESS, Color::NODE_HIGHLIGHT_COLOR
+            );
+            mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
         }
     }
 }
@@ -68,6 +62,13 @@ void AVL::createTree() {
 void AVL::insertAnimation() {
     switch(mAnimationStep) {
         case 1: {
+            while (!mTreeForBackward.empty()) mTreeForBackward.pop();
+            for (auto &child : mNodeList) {
+                child->isNodeHighlighted = false;
+                child->isLeftEdgeHighlighted = false;
+                child->isRightEdgeHighlighted = false;
+                child->isInsertNode = false;
+            }
             createBackupTree();
             createTree();
             mAnimationStep++;
@@ -270,6 +271,13 @@ void AVL::insertAnimation() {
 void AVL::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
+            while (!mTreeForBackward.empty()) mTreeForBackward.pop();
+            for (auto &child : mNodeList) {
+                child->isNodeHighlighted = false;
+                child->isLeftEdgeHighlighted = false;
+                child->isRightEdgeHighlighted = false;
+                child->isInsertNode = false;
+            }
             createTree();
             createBackupTree();
             mAnimationStep++;
@@ -327,7 +335,6 @@ void AVL::deleteAnimation() {
 
         case 8: {
             deleteNode();
-            mNodeForRotate = getRotateNode();
             if (!mIsReversed) mTreeForBackward.push(createTreeState(9));
             mAnimationStep++;
             break;
@@ -339,6 +346,7 @@ void AVL::deleteAnimation() {
         }
 
         case 10: {
+            mNodeForRotate = getRotateNode();
             if (!mNodeForRotate) {
                 mAnimationStep = 20; 
                 break;
@@ -563,7 +571,7 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
         );
     }
     else {
-        if (mIsLeftPath[mTravelIndex]) {
+        if (mTravelPath[mTravelIndex]->isLeft) {
             mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
                 sf::Color(255, 171, 25), speed
             );
@@ -591,9 +599,6 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
                 for (auto &node : mNodeList) {
                     if (node->val == mInputQueue.front()) {
                         mTraverseControler = std::make_pair(false, false);
-                        mTravelIndex = 0;
-                        mTravelPath.clear();
-                        mIsLeftPath.clear();
                         resetNodeState();
                         mAnimationStep = animationStepAfterFinish;
                         break;
@@ -603,15 +608,12 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
         }
     } 
     else if (!mIsAnimationPaused) {
-        if (mIsLeftPath[mTravelIndex]) {
+        if (mTravelPath[mTravelIndex]->isLeft) {
             if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
                 mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
                 mTravelIndex++;
                 mTraverseControler = std::make_pair(false, false);
                 if (mTravelIndex >= mTravelPath.size()) {
-                    mTravelIndex = 0;
-                    mTravelPath.clear();
-                    mIsLeftPath.clear();
                     mAnimationStep = animationStepAfterFinish;
                 }
             }
@@ -622,9 +624,6 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
                 mTravelIndex++;
                 mTraverseControler = std::make_pair(false, false);
                 if (mTravelIndex >= mTravelPath.size()) {
-                    mTravelIndex = 0;
-                    mTravelPath.clear();
-                    mIsLeftPath.clear();
                     resetNodeState();
                     mAnimationStep = animationStepAfterFinish;
                 }
@@ -660,8 +659,6 @@ void AVL::checkBalanceFactorAnimation(bool isAllowPause, float speed, int animat
             mTraverseControler.first = false;
             if (!mIsReversed && mTravelIndex >= mTravelPath.size() - 1) {
                 mTraverseControler = std::make_pair(false, false);
-                mTravelPath.clear();
-                mIsLeftPath.clear();
                 resetNodeState();
                 mAnimationStep = animationStepAfterFinish;
             }
@@ -696,7 +693,7 @@ void AVL::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepA
         mSceneLayers[RightEdges]->attachChild(std::move(rightEdge));
     }
     
-    if (!mIsReversed) mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
+    mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
 
     if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished() && !mIsAnimationPaused) {
         if (animationStepAfterFinish != 0) {
@@ -786,8 +783,6 @@ void AVL::resetAnimation() {
 }
 
 bool AVL::isProcessingAnimation() {
-    if (!mIsReversed && (mAnimationStep == 2 || mAnimationStep == 4)) return false;
-    if (mIsReversed && (mAnimationStep == 6 || mAnimationStep == 3)) return false;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) 
         if (child->isProcessing()) return true;
     for (auto &child : mSceneLayers[LeftEdges]->getChildren())

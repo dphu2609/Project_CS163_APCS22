@@ -22,6 +22,8 @@ namespace Color {
 
 namespace Size {
     float NODE_RADIUS = 40.f * Constant::SCALE_X;
+    float NODE_RADIUS_X = 40.f * Constant::SCALE_X;
+    float NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
     float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
     sf::Vector2f SETTINGS_BUTTON_SIZE = sf::Vector2f(400.f * Constant::SCALE_X, 80.f * Constant::SCALE_Y);
 };

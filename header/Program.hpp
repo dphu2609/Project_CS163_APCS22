@@ -5,6 +5,7 @@
 #include <GlobalVar.hpp>
 #include <State/StateStack.hpp>
 #include <State/AVL.hpp>
+#include <State/Tree234.hpp>
 
 class Program {
 private:

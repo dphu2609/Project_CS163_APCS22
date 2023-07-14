@@ -11,6 +11,7 @@ namespace States {
         None,
         MainMenu, 
         AVL,
+        Tree234,
         StateCount
     };
 };
@@ -80,5 +81,6 @@ private:
 };
 
 #include <State/AVL.hpp>
+#include <State/Tree234.hpp>
 
 #endif

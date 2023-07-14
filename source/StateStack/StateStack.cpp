@@ -10,6 +10,7 @@ void StateStack::registerState(States::ID stateID) {
 }
 
 template void StateStack::registerState<AVL>(States::ID stateID);
+template void StateStack::registerState<Tree234>(States::ID stateID);
 
 State::Ptr StateStack::createState(States::ID stateID) {
     auto found = mFactories.find(stateID);

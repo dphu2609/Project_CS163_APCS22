@@ -10,7 +10,7 @@ void Edge::setPosition(const sf::Vector2f &position) {
 }
 
 void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness) {
-    sf::Vector2f size(edgeThickness, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)) * Constant::SCALE_X);
+    sf::Vector2f size(edgeThickness, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)));
     sf::Vector2f position = point1;
     double angle = std::atan2(point2.x - point1.x, point2.y - point1.y) * 180 / std::acos(-1);
     mEdge.setSize(size);

@@ -30,6 +30,8 @@ namespace Color {
 
 namespace Size {
     extern float NODE_RADIUS;
+    extern float NODE_RADIUS_X;
+    extern float NODE_RADIUS_Y;
     extern float EDGE_THICKNESS;
     extern sf::Vector2f SETTINGS_BUTTON_SIZE;
 };

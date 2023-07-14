@@ -1,10 +1,10 @@
-#include <State/AVL.hpp>
+#include <State/Tree234.hpp>
 
-AVL::AVL(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
+Tree234::Tree234(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
     buildScene();
 }
 
-AVL::~AVL() {
+Tree234::~Tree234() {
     clear(mRoot);
     clear(mRootForBackup);
     while (!mTreeForBackward.empty()) {
@@ -14,19 +14,19 @@ AVL::~AVL() {
     }
 }
 
-void AVL::draw() {
+void Tree234::draw() {
     mWindow.draw(mSceneGraph);
 }
 
-void AVL::update() {
+void Tree234::update() {
     mSceneGraph.update();
-    if (mInsertAnimation && !mIsReversed) insertAnimation();
-    if (mDeleteAnimation && !mIsReversed) deleteAnimation();
-    // if (mUpdateAnimation && !mIsReversed) updateAnimation();
-    if (mSearchAnimation && !mIsReversed) searchAnimation();
+    // if (mInsertAnimation && !mIsReversed) insertAnimation();
+    // if (mDeleteAnimation && !mIsReversed) deleteAnimation();
+    // // if (mUpdateAnimation && !mIsReversed) updateAnimation();
+    // if (mSearchAnimation && !mIsReversed) searchAnimation();
 }
 
-void AVL::handleEvent(sf::Event &event) {
+void Tree234::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
@@ -194,7 +194,7 @@ void AVL::handleEvent(sf::Event &event) {
         mIsAnimationPaused = true;
         mIsStepByStepMode = true;
         mIsReversed = true;
-        returnToPreviousStep();
+        // returnToPreviousStep();
     }
 
     if (!mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mIsReplay) {
@@ -206,7 +206,7 @@ void AVL::handleEvent(sf::Event &event) {
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
         resetNodeState();
         mAnimationStep = 1;
-        restoreTree();
+        // restoreTree();
         mIsReplay = false;
         mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
@@ -216,7 +216,7 @@ void AVL::handleEvent(sf::Event &event) {
     } 
 }
 
-void AVL::buildScene() {
+void Tree234::buildScene() {
     for (int i = 0; i < LayerCount; i++) {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();
