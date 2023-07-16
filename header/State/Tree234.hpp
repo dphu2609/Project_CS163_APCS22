@@ -180,6 +180,7 @@ private:
     int mReplaceIndex = -1;
     bool mIsAnimation = false;
     int mTravelIndex = 0;
+    int mMovedValue = 0;
     std::pair<bool, bool> mTraverseControler = {false, false};
 private: //Control box
     bool mIsAnimationPaused = false;

@@ -48,6 +48,7 @@ void Tree234::createTree() {
 void Tree234::insertAnimation() {
     switch (mAnimationStep) {
         case 1: {
+            resetAnimation();
             createTree();
             getSplitCheckpoint(mRoot, mInputQueue.front());
             mAnimationStep = 2;
@@ -73,6 +74,7 @@ void Tree234::insertAnimation() {
         }
 
         case 4: {
+            mMovedValue = mSplitCheckpoint[mSplitCheckpointIndex]->val;
             splitNode(mRoot, mNodeList, mSplitCheckpoint[mSplitCheckpointIndex++]);
             mAnimationStep = 5;
             break;
@@ -84,6 +86,21 @@ void Tree234::insertAnimation() {
         }
         
         case 6: {
+            Node* splitedNode = mSplitCheckpoint[mSplitCheckpointIndex - 1];
+            if (splitedNode->numKeys == 2) {
+                if (mMovedValue == splitedNode->val) {
+                    std::swap(mSceneLayers[Nodes]->getChildren()[splitedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[splitedNode->tempLeft->nodeIndex]);
+                }
+            }
+            else if (splitedNode->numKeys == 3) {
+                if (mMovedValue == splitedNode->val) {
+                    std::swap(mSceneLayers[Nodes]->getChildren()[splitedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[splitedNode->tempRight->nodeIndex]);
+                }
+                else if (mMovedValue == splitedNode->tempLeft->val) {
+                    std::swap(mSceneLayers[Nodes]->getChildren()[splitedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[splitedNode->tempRight->nodeIndex]);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[splitedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[splitedNode->tempLeft->nodeIndex]);
+                }
+            }
             balanceTree();
             mAnimationStep = 7;
             break;
@@ -124,7 +141,7 @@ void Tree234::insertAnimation() {
         case 12: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
-                resetAnimation();
+                resetNodeState();
             }
             else mIsReplay = true;
             break;
@@ -273,9 +290,26 @@ void Tree234::nodeAppearAnimation(bool isAllowPause, float speed, int animationS
             );
             mSceneLayers[Edges]->attachChild(std::move(edge));
         }
+
+        if (mOperationNode->isAttached) {
+            if (mOperationNode->parent->numKeys == 3) {
+                if (mInputQueue.front() < mOperationNode->parent->val) {
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->tempRight->nodeIndex]);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex]);
+                }
+            }
+        }
+        else {
+            if (mOperationNode->numKeys == 3) {
+                std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->tempRight->nodeIndex]);
+            }
+            else if (mOperationNode->numKeys == 2) {
+                std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->tempLeft->nodeIndex]);
+            }
+        }
     }
     
-    mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
+    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(Size::NODE_RADIUS, 0), speed);
 
     if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished() && !mIsAnimationPaused) {
         if (animationStepAfterFinish != 0) {
@@ -293,6 +327,11 @@ void Tree234::resetAnimation() {
     mReplaceIndex = -1;
     for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[Edges]->getChildren()) child->resetAnimationVar();
+    for (auto &child : mNodeList) {
+        child->isNodeHighlighted = false;
+        child->isInsertNode = false;
+        for (int i = 0; i < 4; i++) child->isEdgeHighlighted[i] = false;
+    }
 }
 
 bool Tree234::isProcessingAnimation() {

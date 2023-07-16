@@ -11,24 +11,6 @@ void AVL::insert(Node* &root, std::vector<Node*> &nodeList, int data, bool isNee
     insertNonDuplicateNode(root, nodeList, nullptr, data, isNeedRotating);
 }
 
-AVL::Node::operator=(const AVL::Node &node) {
-    val = node.val;
-    depth = node.depth;
-    height = node.height;
-    balanceFactor = node.balanceFactor;
-    nodeIndex = node.nodeIndex;
-    isLeft = node.isLeft;
-    position = node.position;
-    left = node.left;
-    right = node.right;
-    parent = node.parent;
-    duplicate = node.duplicate;
-    isNodeHighlighted = node.isNodeHighlighted;
-    isLeftEdgeHighlighted = node.isLeftEdgeHighlighted;
-    isRightEdgeHighlighted = node.isRightEdgeHighlighted;
-    isInsertNode = node.isInsertNode;
-}
-
 AVL::Node* AVL::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, Node* parent, int data, bool isNeedRotating) {
     if (root == nullptr) {
         if (parent == nullptr) {

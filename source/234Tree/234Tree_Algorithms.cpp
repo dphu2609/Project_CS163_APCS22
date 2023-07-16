@@ -94,14 +94,14 @@ Tree234::Node* Tree234::insertInternalNode(Node* &root, std::vector<Node*> &node
     if (root->numKeys == 2) {
         root->tempRight = newNode;
         if (newNode->val > root->val) {
-            mOperationNode = root;
+            mOperationNode = root->tempRight;
         }
         else if (newNode->val > root->tempLeft->val) {
             mOperationNode = root;
             std::swap(newNode->val, root->val);
         }
         else {
-            mOperationNode = newNode;
+            mOperationNode = root->tempLeft;
             std::swap(newNode->val, root->val);
             std::swap(root->val, root->tempLeft->val);
         }
@@ -341,6 +341,7 @@ void Tree234::balanceTree() {
                 node->position = node->parent->position + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
                 if (node->parent->numKeys == 3 || node->parent->numKeys == 2) {
                     if (node->numKeys == 3) node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 3, 0);
+                    else if (node->numKeys == 2) node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 6, 0);
                 }
             }
             else if (node->orderOfNode[1]) {
@@ -373,14 +374,18 @@ void Tree234::balanceTree() {
                 }
                 else if (node->parent->numKeys == 2) {
                     node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
-                    if (node->numKeys == 3 || node->numKeys == 2) {
+                    if (node->numKeys == 3) {
                         node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, 0);
+                    }
+                    else if (node->numKeys == 2) {
+                        node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
                     }
                 }
             }
             else if (node->orderOfNode[3]) {
                 node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
                 if (node->numKeys == 3) node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, 0);
+                else if (node->numKeys == 2) node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
             }
         }
     }
@@ -396,7 +401,7 @@ void Tree234::createRandomTree() {
         mInputData.push_back(dis(gen));
     }
     if (mInputSize < 20) {
-        NODE_DISTANCE_HORIZONTAL = 250.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 270.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 200.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
     }

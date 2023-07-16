@@ -31,8 +31,6 @@ public:
         bool isLeftEdgeHighlighted;
         bool isRightEdgeHighlighted;
         bool isInsertNode;
-
-        operator =(const Node& node);
     };
 public:
     explicit AVL(StateStack& stack, sf::RenderWindow &window);
