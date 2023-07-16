@@ -63,7 +63,6 @@ void Tree234::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, 
     while (cur) {
         if (cur->numKeys == 3) {
             splitNode(root, nodeList, cur);
-            if (cur->parent) cur = cur->parent;
         }
         if (cur->isLeaf()) {
             break;
@@ -73,37 +72,53 @@ void Tree234::insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, 
     }
 
     if (cur) {
-        Node* newNode = new Node(data, nodeList);
-        newNode->isAttached = true;
-        nodeList.push_back(newNode);
-        if (cur->numKeys == 2) {
-            cur->tempRight = newNode;
-            if (newNode->val > cur->val) {
-                mOperationNode = cur;
-            }
-            else if (newNode->val > cur->tempLeft->val) {
-                mOperationNode = cur;
-                std::swap(newNode->val, cur->val);
-            }
-            else {
-                mOperationNode = newNode;
-                std::swap(newNode->val, cur->val);
-                std::swap(cur->val, cur->tempLeft->val);
-            }
-        }
-        else if (cur->numKeys == 1) {
-            cur->tempLeft = newNode;
-            if (newNode->val > cur->val) {
-                mOperationNode = cur;
-                std::swap(newNode->val, cur->val);
-            }
-            else {
-                mOperationNode = newNode;
-            }
-        }
-        cur->numKeys++;
-        newNode->parent = cur;
+        insertInternalNode(cur, nodeList, data);
     }
+}
+
+Tree234::Node* Tree234::getInternalNode(Node* root, int data) {
+    Node* cur = root;
+    while (cur) {
+        if (cur->isLeaf()) {
+            return cur;
+        }
+        cur = cur->child[getIndexNextMove(cur, data)];
+    }
+    return nullptr;
+}
+
+Tree234::Node* Tree234::insertInternalNode(Node* &root, std::vector<Node*> &nodeList, int data) {
+    Node* newNode = new Node(data, nodeList);
+    newNode->isAttached = true;
+    nodeList.push_back(newNode);
+    if (root->numKeys == 2) {
+        root->tempRight = newNode;
+        if (newNode->val > root->val) {
+            mOperationNode = root;
+        }
+        else if (newNode->val > root->tempLeft->val) {
+            mOperationNode = root;
+            std::swap(newNode->val, root->val);
+        }
+        else {
+            mOperationNode = newNode;
+            std::swap(newNode->val, root->val);
+            std::swap(root->val, root->tempLeft->val);
+        }
+    }
+    else if (root->numKeys == 1) {
+        root->tempLeft = newNode;
+        if (newNode->val > root->val) {
+            mOperationNode = root;
+            std::swap(newNode->val, root->val);
+        }
+        else {
+            mOperationNode = newNode;
+        }
+    }
+    root->numKeys++;
+    newNode->parent = root;
+    return newNode;
 }
 
 void Tree234::splitNode(Node* &root, std::vector<Node*> &nodeList, Node *&node) {
@@ -218,13 +233,14 @@ void Tree234::splitNode(Node* &root, std::vector<Node*> &nodeList, Node *&node) 
         node->numKeys = 1;
         root = node;
     }
+    if (node->parent) node = node->parent;
 }
 
 void Tree234::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
     root->position += sf::Vector2f(isLeft ? -NODE_DISTANCE_HORIZONTAL : NODE_DISTANCE_HORIZONTAL, 0);
-    if (root->tempLeft) root->tempLeft->position = root->position + sf::Vector2f(-2 * Size::NODE_RADIUS_X, 0);
-    if (root->tempRight) root->tempRight->position = root->position + sf::Vector2f(2 * Size::NODE_RADIUS_X, 0);
+    if (root->tempLeft) root->tempLeft->position = root->position + sf::Vector2f(-2 * Size::NODE_RADIUS_X - Size::EDGE_THICKNESS, 0);
+    if (root->tempRight) root->tempRight->position = root->position + sf::Vector2f(2 * Size::NODE_RADIUS_X + Size::EDGE_THICKNESS, 0);
     root->position.y = (root->depth - mRoot->depth) * NODE_DISTANCE_VERTICAL + 150 * Constant::SCALE_Y;
     for (int i = 0; i < 4; i++) {
         if (root->child[i] != nullptr) 
@@ -323,7 +339,9 @@ void Tree234::balanceTree() {
             }
             if (node->orderOfNode[0]) {
                 node->position = node->parent->position + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
-                if (node->numKeys == 3 || node->numKeys == 2) node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 3, 0);
+                if (node->parent->numKeys == 3 || node->parent->numKeys == 2) {
+                    if (node->numKeys == 3) node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 3, 0);
+                }
             }
             else if (node->orderOfNode[1]) {
                 if (node->parent->numKeys == 3) {
@@ -338,6 +356,9 @@ void Tree234::balanceTree() {
                     if (node->numKeys == 3 || node->numKeys == 2) {
                         node->parent->child[0]->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 3, 0);
                         node->parent->child[2]->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, 0);
+                    }
+                    if (node->numKeys == 1 || node->numKeys == 3) {
+                        node->position -= sf::Vector2f(Size::NODE_RADIUS + Size::EDGE_THICKNESS, 0);
                     }
                 }
                 else if (node->parent->numKeys == 1) node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
@@ -359,7 +380,7 @@ void Tree234::balanceTree() {
             }
             else if (node->orderOfNode[3]) {
                 node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
-                if (node->numKeys == 3 || node->numKeys == 2) node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, 0);
+                if (node->numKeys == 3) node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, 0);
             }
         }
     }
@@ -411,4 +432,85 @@ void Tree234::returnToPreviousStep() {
     mAnimationStep = mTreeForBackward.top()->animationIndex;
     mTreeForBackward.pop();
     createTree();
+}
+
+Tree234::Node* Tree234::copyNodeProperties(Node* node) {
+    if (node == nullptr) {
+        return nullptr;
+    }
+    Node* newNode = new Node;
+    newNode->val = node->val;
+    newNode->numKeys = node->numKeys;
+    newNode->depth = node->depth;
+    newNode->nodeIndex = node->nodeIndex;
+    for (int i = 0; i < 4; i++) {
+        newNode->edgeIndex[i] = node->edgeIndex[i];
+        newNode->orderOfNode[i] = node->orderOfNode[i];
+        newNode->isEdgeHighlighted[i] = node->isEdgeHighlighted[i];
+        newNode->child[i] = nullptr;
+    }
+    newNode->isAttached = node->isAttached;
+    newNode->position = node->position;
+    newNode->isNodeHighlighted = node->isNodeHighlighted;
+    newNode->isInsertNode = node->isInsertNode;
+    newNode->duplicate = node->duplicate;
+    newNode->parent = nullptr;
+    newNode->tempLeft = nullptr;
+    newNode->tempRight = nullptr;
+    return newNode;
+}
+
+Tree234::Node* Tree234::copyTree234(Node* root) {
+    if (root == nullptr) {
+        return nullptr;
+    }   
+    
+    Node* newNode = copyNodeProperties(root);
+    if (root->tempLeft) {
+        Node* newTempLeft = copyNodeProperties(root->tempLeft);
+        newNode->tempLeft = newTempLeft;
+        newTempLeft->parent = newNode;
+    }
+
+    if (root->tempRight) {
+        Node* newTempRight = copyNodeProperties(root->tempRight);
+        newNode->tempRight = newTempRight;
+        newTempRight = root->tempRight;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        newNode->child[i] = copyTree234(root->child[i]);
+        if (newNode->child[i]) {
+            newNode->child[i]->parent = newNode;
+        }
+    }
+    return newNode;
+}
+
+void Tree234::getTravelPath(Node* root, int data) {
+    mTravelPath.clear();
+    Node* cur = root;
+    while (cur) {
+        mTravelPath.push_back(std::make_pair(cur, getIndexNextMove(cur, data)));
+        if (getIndexNextMove(cur, data) == -1) {
+            break;
+        }
+        cur = cur->child[getIndexNextMove(cur, data)];
+    }
+    mTravelIndex = 0;
+}
+
+void Tree234::getSplitCheckpoint(Node* root, int data) {
+    mSplitCheckpoint.clear();
+    mSplitCheckpointIndex = 0;
+    Node* cur = root;
+    while (cur) {
+        if (cur->numKeys == 3) {
+            mSplitCheckpoint.push_back(cur);
+        }
+        if (getIndexNextMove(cur, data) == -1) {
+            break;
+        }
+        cur = cur->child[getIndexNextMove(cur, data)];
+    }
 }

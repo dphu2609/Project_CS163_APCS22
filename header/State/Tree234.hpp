@@ -16,6 +16,7 @@ private:
     virtual void buildScene();
 public:
     struct Node {
+        Node() {}
         Node(int data, std::vector<Node*> &nodeList);
         int val;
         int numKeys;
@@ -33,7 +34,7 @@ public:
         bool isNodeHighlighted;
         bool isEdgeHighlighted[4];
         bool isInsertNode;
-
+        
         bool isLeaf();
     };
 
@@ -124,14 +125,18 @@ private: //Algorithms
     void insert(Node* &root, std::vector<Node*> &nodeList, int data);
     void insertNonDuplicateNode(Node *&root, std::vector<Node*> &nodeList, int data);  
     void splitNode(Node* &root, std::vector<Node*> &nodeList, Node* &node);
+    Node* insertInternalNode(Node* &root, std::vector<Node*> &nodeList, int data);
+    Node* getInternalNode(Node* root, int data);
+    Node* copyNodeProperties(Node* node);
     int getIndexNextMove(Node * root, int data);
-    // Node* copyTree234(Node* root);
+    Node* copyTree234(Node* root);
     // // Node* findNode(Node* root, int data);
     // int getHeight(Node* root);
     // void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
-    // void getTravelPath(Node* root, int data);
+    void getTravelPath(Node* root, int data);
+    void getSplitCheckpoint(Node* root, int data);
     // void deleteNode();
     // void changeLink();
     // void createBackupTree();
@@ -141,13 +146,12 @@ private: //Algorithms
 private: //Visualization
     void createTree();
 
-    // void insertAnimation();
+    void insertAnimation();
     // void deleteAnimation();
     // void searchAnimation();
-    // void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    // void checkBalanceFactorAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    // void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    // void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
+    void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     // void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     bool isProcessingAnimation();
     void resetNodeState();
@@ -164,8 +168,9 @@ private:
     int mAnimationStep = 1;
 private:
     std::stack<TreeState*> mTreeForBackward = {};
-    std::vector<Node*> mTravelPath = {};
+    std::vector<std::pair<Node*, int>> mTravelPath = {};
     std::vector<Node*> mSplitCheckpoint = {};
+    int mSplitCheckpointIndex = 0;
     Node* mOperationNode = nullptr;
     Node* mReplaceNode = nullptr;
     Node* mNodeStartChecking = nullptr;

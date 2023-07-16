@@ -20,7 +20,7 @@ void Tree234::draw() {
 
 void Tree234::update() {
     mSceneGraph.update();
-    // if (mInsertAnimation && !mIsReversed) insertAnimation();
+    if (mInsertAnimation && !mIsReversed) insertAnimation();
     // if (mDeleteAnimation && !mIsReversed) deleteAnimation();
     // // if (mUpdateAnimation && !mIsReversed) updateAnimation();
     // if (mSearchAnimation && !mIsReversed) searchAnimation();
