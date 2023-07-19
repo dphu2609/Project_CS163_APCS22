@@ -126,13 +126,29 @@ void AVL::moveTree(Node* root, bool isLeft) {
     moveTree(root->right, isLeft);
 }
 
+AVL::Node* AVL::copyNode(Node* root) {
+    Node* newNode = new Node;
+    newNode->val = root->val;
+    newNode->depth = root->depth;
+    newNode->height = root->height;
+    newNode->balanceFactor = root->balanceFactor;
+    newNode->nodeIndex = root->nodeIndex;
+    newNode->isLeft = root->isLeft;
+    newNode->position = root->position;
+    newNode->duplicate = root->duplicate;
+    newNode->isNodeHighlighted = root->isNodeHighlighted;
+    newNode->isLeftEdgeHighlighted = root->isLeftEdgeHighlighted;
+    newNode->isRightEdgeHighlighted = root->isRightEdgeHighlighted;
+    newNode->isInsertNode = root->isInsertNode;
+    return newNode;
+}
+
 AVL::Node* AVL::copyAVL(Node* root) {
     if (root == nullptr) {
         return nullptr;
     }
     
-    Node* newNode = new Node;
-    newNode = root;
+    Node* newNode = copyNode(root);
 
     newNode->left = copyAVL(root->left);
     if (newNode->left != nullptr) {
@@ -242,7 +258,7 @@ void AVL::getTravelPath(Node* root, int data) {
     mTravelPath.clear();
     Node* cur = root;
     while (cur != nullptr) {
-        mTravelPath.push_back(cur);
+        mTravelPath.push_back({cur, (data < cur->val)});
         if (data < cur->val) cur = cur->left;
         else if (data > cur->val) cur = cur->right;
         else break;
@@ -256,7 +272,7 @@ void AVL::getBalanceFactorPath(Node* start, Node* end) {
     mTraverseControler = {false, false};
     Node* cur = start;
     while (cur) {
-        mTravelPath.push_back(cur);
+        mTravelPath.push_back({cur, false});
         if (cur == end) break;
         cur = cur->parent;
     }

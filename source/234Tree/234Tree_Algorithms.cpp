@@ -270,6 +270,322 @@ int Tree234::getIndexNextMove(Node* root, int data) {
     return 0;
 }
 
+Tree234::Node* Tree234::findNode(Node* root, int data) {
+    Node* cur = root;
+    while (cur) {
+        if (getIndexNextMove(cur, data) == -1) {
+            if (cur->tempLeft && data == cur->tempLeft->val) return cur->tempLeft;
+            else if (data == cur->val) return cur;
+            else if (cur->tempRight && data == cur->tempRight->val) return cur->tempRight;
+        }
+        cur = cur->child[getIndexNextMove(cur, data)];
+    }
+    return nullptr;
+}
+
+void Tree234::deleteInternalNode(Node* &root) {
+    if (root->isAttached) {
+        if (root->parent->numKeys == 3) {
+            mOperationIndex = root->parent->tempRight->nodeIndex;
+            if (root->val < root->parent->val) {
+                std::swap(root->val, root->parent->val);
+                std::swap(root->parent->val, root->parent->tempRight->val);
+                std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex]);
+                std::swap(mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->tempRight->nodeIndex]);
+            }
+            root->parent->numKeys = 2;
+            Node* temp = root->parent;
+            delete root->parent->tempRight;
+            temp->tempRight = nullptr;
+        }
+        else if (root->parent->numKeys == 2) {
+            mOperationIndex = root->parent->tempLeft->nodeIndex;
+            root->parent->numKeys = 1;
+            root->parent->tempLeft = nullptr;
+            delete root;
+        }
+    }
+    else {
+        if (root->numKeys == 3) {
+            mOperationIndex = root->tempRight->nodeIndex;
+            std::swap(root->val, root->tempRight->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempRight->nodeIndex]);
+            root->numKeys = 2;
+            delete root->tempRight;
+            root->tempRight = nullptr;
+        }
+        else if (root->numKeys == 2) {
+            mOperationIndex = root->tempLeft->nodeIndex;
+            std::swap(root->val, root->tempLeft->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempLeft->nodeIndex]);
+            root->numKeys = 1;
+            delete root->tempLeft;
+            root->tempLeft = nullptr;
+        }
+    }
+    mNodeList.erase(mNodeList.begin() + mOperationIndex);
+}
+
+Tree234::Node* Tree234::findReplaceNode(Node* deleteNode) {
+    if (deleteNode->isAttached) {
+        if (deleteNode->val < deleteNode->parent->val) {
+            Node* cur = deleteNode->parent->child[0];
+            while (!cur->isLeaf()) {
+                cur = cur->child[cur->numKeys];
+            }
+            if (cur->tempRight) return cur->tempRight;
+            else return cur;
+        }
+        else {
+            Node* cur = deleteNode->parent->child[deleteNode->parent->numKeys];
+            while (!cur->isLeaf()) {
+                cur = cur->child[0];
+            }
+            if (cur->tempLeft) return cur->tempLeft;
+            else return cur;
+        }
+    }
+    else {
+        if (deleteNode->numKeys == 1) {
+            Node* cur = deleteNode->child[1];
+            while (!cur->isLeaf()) {
+                cur = cur->child[0];
+            }
+            if (cur->tempLeft) return cur->tempLeft;
+            else return cur;
+        }
+        else {
+            Node* cur = deleteNode->child[2];
+            while (!cur->isLeaf()) {
+                cur = cur->child[0];
+            }
+            if (cur->tempLeft) return cur->tempLeft;
+            else return cur;
+        }
+    }
+    return nullptr;
+}
+
+void Tree234::mergeNode(Node *&root) {
+    if (root->isAttached) {
+        if (root->val < root->parent->val) {
+            if (root->parent->numKeys == 2) {
+                root->parent->tempLeft = nullptr;
+            }
+            else if (root->parent->numKeys == 3) {
+                std::swap(root->val, root->parent->val);
+                std::swap(root->parent->val, root->parent->tempRight->val);
+                std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex]);
+                std::swap(mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->tempRight->nodeIndex]);
+                root = root->parent->tempRight;
+                root->parent->tempRight = nullptr;
+            }
+            root->tempLeft = root->parent->child[0];
+            root->tempRight = root->parent->child[1];
+            root->isAttached = false;
+            root->tempLeft->isAttached = true;
+            root->tempRight->isAttached = true;
+            root->tempLeft->parent = root;
+            root->tempRight->parent = root;
+            root->parent->child[0] = root;
+            root->parent->child[1] = root->parent->child[2];
+            root->parent->child[2] = nullptr;
+            root->parent->child[1]->orderOfNode[2] = false;
+            root->parent->child[1]->orderOfNode[1] = true;
+            root->orderOfNode[0] = true;
+            root->parent->numKeys = 1;
+        }
+        else {
+            root->parent->tempRight = nullptr;
+            root->tempLeft = root->parent->child[2];
+            root->tempRight = root->parent->child[3];
+            root->isAttached = false;
+            root->tempLeft->isAttached = true;
+            root->tempRight->isAttached = true;
+            root->tempLeft->parent = root;
+            root->tempRight->parent = root;
+            root->parent->child[2] = root;
+            root->parent->child[3] = nullptr;
+            root->orderOfNode[2] = true;
+            root->parent->numKeys = 2;
+        }
+    }
+    else {
+        if (root->numKeys == 3) {
+            std::swap(root->val, root->tempRight->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempRight->nodeIndex]);
+            root = root->tempRight;
+            root->parent->tempRight = nullptr;
+            root->tempLeft = root->parent->child[1];
+            root->tempRight = root->parent->child[2];
+            root->isAttached = false;
+            root->tempLeft->isAttached = true;
+            root->tempRight->isAttached = true;
+            root->tempLeft->parent = root;
+            root->tempRight->parent = root;
+            root->parent->child[1] = root;
+            root->parent->child[2] = root->parent->child[3];
+            root->parent->child[3] = nullptr;
+            root->parent->child[2]->orderOfNode[3] = false;
+            root->parent->child[2]->orderOfNode[2] = false;
+            root->orderOfNode[1] = true;
+            root->parent->numKeys = 2;
+        }
+        else if (root->numKeys == 2) {
+            std::swap(root->val, root->tempLeft->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempLeft->nodeIndex]);
+            root = root->tempLeft;
+            root->parent->tempLeft = nullptr;
+            root->tempLeft = root->parent->child[1];
+            root->tempRight = root->parent->child[2];
+            root->isAttached = false;
+            root->tempLeft->isAttached = true;
+            root->tempRight->isAttached = true;
+            root->tempLeft->parent = root;
+            root->tempRight->parent = root;
+            root->parent->child[1] = root;
+            root->parent->child[2] = nullptr;
+            root->orderOfNode[1] = true;
+            root->parent->numKeys = 1;
+        }
+        else if (root->numKeys == 1) {
+            root->tempLeft = root->child[0];
+            root->tempRight = root->child[1];
+            root->tempLeft->isAttached = true;
+            root->tempRight->isAttached = true;
+            root->tempLeft->orderOfNode[0] = false;
+            root->tempRight->orderOfNode[1] = false;
+            root->child[0] = root->tempLeft->child[0];
+            root->child[1] = root->tempLeft->child[1];
+            root->tempLeft->child[0] = nullptr;
+            root->tempLeft->child[1] = nullptr;
+            root->child[2] = root->tempRight->child[0];
+            root->child[2]->orderOfNode[0] = false;
+            root->child[2]->orderOfNode[2] = true;
+            root->child[3] = root->tempRight->child[1];
+            root->child[3]->orderOfNode[1] = false;
+            root->child[3]->orderOfNode[3] = true;
+            root->tempRight->child[0] = nullptr;
+            root->tempRight->child[1] = nullptr;
+            for (int i = 0; i < 4; i++) root->child[i]->parent = root;
+        }
+    }
+    root->numKeys = 3;
+}
+
+void Tree234::rotateLeft(Node *&root) {
+    Node* par = root->parent;
+    Node* movedNode;
+    if (root->orderOfNode[0]) movedNode = root->parent->child[1];
+    else if (root->orderOfNode[1]) movedNode = root->parent->child[2];
+    else if (root->orderOfNode[2]) movedNode = root->parent->child[3];
+    if (movedNode->numKeys == 3) {
+        std::swap(movedNode->val, movedNode->tempLeft->val);
+        std::swap(movedNode->val, movedNode->tempRight->val);
+        std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[movedNode->tempLeft->nodeIndex]);
+        std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[movedNode->tempRight->val]);
+        Node* temp = movedNode;
+        movedNode = movedNode->tempRight;
+        temp->tempRight = nullptr;
+    }
+    else if (movedNode->numKeys == 2) {
+        Node* temp = movedNode;
+        movedNode = movedNode->tempLeft;
+        temp->tempLeft = nullptr;
+    }
+
+    if (root->parent->numKeys == 1) {
+        movedNode->parent = par->parent;
+        for (int i = 0; i < 2; i++) {
+            movedNode->child[i] = par->child[i];
+            par->child[i]->parent = movedNode;
+            par->child[i] = nullptr;
+        }
+        movedNode->isAttached = false;
+        for (int i = 0; i < 4; i++) {
+            movedNode->orderOfNode[i] = par->orderOfNode[i];
+            par->orderOfNode[i] = false;
+        }
+    }
+    else {
+        if (root->orderOfNode[0]) {
+            par = par->tempLeft;
+            root->parent->tempLeft = movedNode;
+            movedNode->parent = root->parent;
+        }
+        else if (root->orderOfNode[1]) {
+            std::swap(movedNode->val, par->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[par->nodeIndex]);
+            par = movedNode;
+        }
+        else if (root->orderOfNode[2]) {
+            par = par->tempRight;
+            root->parent->tempRight = movedNode;
+            movedNode->parent = root->parent;
+        }
+    }
+    root->numKeys = 2;
+    root->tempLeft = par;
+    par->parent = root;
+    par->isAttached = true;
+    std::swap(par->val, root->val);
+    std::swap(mSceneLayers[Nodes]->getChildren()[par->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->nodeIndex]);
+}
+
+void Tree234::rotateRight(Node *&root) {
+    Node* par = root->parent;
+    Node* movedNode;
+    if (root->orderOfNode[1]) movedNode = root->parent->child[0];
+    else if (root->orderOfNode[2]) movedNode = root->parent->child[1];
+    else if (root->orderOfNode[3]) movedNode = root->parent->child[2];
+    if (movedNode->numKeys == 3) {
+        Node* temp = movedNode;
+        movedNode = movedNode->tempRight;
+        temp->tempRight = nullptr;
+    }
+    else if (movedNode->numKeys == 2) {
+        std::swap(movedNode->val, movedNode->tempLeft->val);
+        std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[movedNode->tempLeft->nodeIndex]);
+        Node* temp = movedNode;
+        movedNode = movedNode->tempLeft;
+        temp->tempLeft = nullptr;
+    }
+    if (root->parent->numKeys == 1) {
+        movedNode->parent = par->parent;
+        for (int i = 0; i < 2; i++) {
+            movedNode->child[i] = par->child[i];
+            par->child[i]->parent = movedNode;
+            par->child[i] = nullptr;
+        }
+        movedNode->isAttached = false;
+        for (int i = 0; i < 4; i++) {
+            movedNode->orderOfNode[i] = par->orderOfNode[i];
+            par->orderOfNode[i] = false;
+        }
+    }
+    else {
+        if (root->orderOfNode[3]) {
+            par = par->tempRight;
+            root->parent->tempRight = movedNode;
+            movedNode->parent = root->parent;
+        }
+        else if (root->orderOfNode[2]) {
+            std::swap(movedNode->val, par->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[par->nodeIndex]);
+            par = movedNode;
+        }
+        else if (root->orderOfNode[1]) {
+            par = par->tempLeft;
+            root->parent->tempLeft = movedNode;
+            movedNode->parent = root->parent;
+        }
+    }
+    root->numKeys = 2;
+    root->tempLeft = par;
+    par->parent = root;
+    par->isAttached = true;
+}
+
 void Tree234::balanceTree() {
     std::vector<Node*> nodeList;
     std::queue<Node*> q;
@@ -398,7 +714,19 @@ void Tree234::createRandomTree() {
     std::uniform_int_distribution<> dis(0, 99);
 
     for (int i = 0; i < mInputSize; i++) {
-        mInputData.push_back(dis(gen));
+        bool isDuplicate = false;
+        int val = dis(gen);
+        for (int j = 0; j < mInputData.size(); j++) {
+            if (val == mInputData[j]) {
+                isDuplicate = true;
+                break;
+            }
+        }
+        if (isDuplicate) {
+            i--;
+            continue;
+        }
+        mInputData.push_back(val);
     }
     if (mInputSize < 20) {
         NODE_DISTANCE_HORIZONTAL = 270.f * Constant::SCALE_X;

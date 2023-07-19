@@ -112,6 +112,7 @@ private: //Algorithms
     Node* rotateRight(Node *&root);
     Node* getRotateNode();
     Node* copyAVL(Node* root);
+    Node* copyNode(Node* root);
     Node* findNode(Node* root, int data);
     void updateHeightAndBalanceFactor(Node *&root);
     int getHeight(Node* root);
@@ -152,7 +153,7 @@ private:
     int mAnimationStep = 1;
 private:
     std::stack<TreeState*> mTreeForBackward = {};
-    std::vector<Node*> mTravelPath = {};
+    std::vector<std::pair<Node*, bool>> mTravelPath = {};
     Node* mOperationNode = nullptr;
     Node* mReplaceNode = nullptr;
     Node* mNodeForRotate = nullptr;

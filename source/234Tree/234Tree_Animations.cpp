@@ -57,7 +57,7 @@ void Tree234::insertAnimation() {
 
         case 2: {
             if (mSplitCheckpoint.empty()) {
-                mAnimationStep = 6;
+                mAnimationStep = 8;
                 break;
             }
             if (mSplitCheckpointIndex == 0) getTravelPath(mRoot, mSplitCheckpoint[mSplitCheckpointIndex]->val);
@@ -139,6 +139,243 @@ void Tree234::insertAnimation() {
         }
 
         case 12: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+                resetNodeState();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
+void Tree234::deleteAnimation() {
+    switch (mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createTree();
+            if (mRoot->numKeys == 1) {
+                if (mRoot->child[0] && mRoot->child[0]->numKeys == 1 && mRoot->child[1] && mRoot->child[1]->numKeys == 1) {
+                    getTravelPath(mRoot, mRoot->val);
+                    mAnimationStep = 2;
+                    break;
+                }
+            }
+            getTravelPath(mRoot, mInputQueue.front());
+            mAnimationStep = 6;
+            break;
+        }
+
+        case 2: {
+            traverseAnimation(true, 3, 3);
+            break;
+        }
+
+        case 3: {
+            mergeNode(mRoot);
+            balanceTree();
+            mAnimationStep = 4;
+            break;
+        }
+
+        case 4: {
+            moveTreeAnimation(true, 1, 5);
+            break;
+        }
+
+        case 5: {
+            getTravelPath(mRoot, mInputQueue.front());
+            mAnimationStep = 6;
+            break;
+        }
+
+        case 6: {
+            traverseAnimation(true, 3, 7);
+            break;
+        }
+
+        case 7: {
+            mOperationNode = findNode(mRoot, mInputQueue.front());
+            if ((mOperationNode->isAttached && mOperationNode->parent->isLeaf() && mOperationNode->parent->numKeys > 1) || (!mOperationNode->isAttached && mOperationNode->isLeaf() && mOperationNode->numKeys > 1)) {
+                mAnimationStep = 11;
+                break;
+            }
+            if (mOperationNode->isAttached || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
+                mReplaceNode = findReplaceNode(mOperationNode);
+                if (mReplaceNode->numKeys == 1 && ((mOperationNode->isAttached && mReplaceNode->parent == mOperationNode->parent) || (!mOperationNode->isAttached && mReplaceNode->parent == mOperationNode))) {
+                    if (mOperationNode->isAttached) {
+                        if (mOperationNode->val < mOperationNode->parent->val) {
+                            if (mOperationNode->parent->child[1]->numKeys == 1) {
+                                mergeNode(mOperationNode);
+                            }
+                            else {
+                                rotateLeft(mOperationNode->parent->child[0]);
+                            }
+                        }
+                        else {
+                            if (mOperationNode->parent->child[2]->numKeys == 1) {
+                                mergeNode(mOperationNode);
+                            }
+                            else {
+                                rotateRight(mOperationNode->parent->child[3]);
+                            }
+                        }
+                    }
+                    else {
+                        if (mOperationNode->numKeys == 1) {
+                            rotateLeft(mOperationNode->child[0]);
+                        }
+                        if (mOperationNode->numKeys == 2) {
+                            if (mOperationNode->child[1]->numKeys == 1) {
+                                mergeNode(mOperationNode);
+                            }
+                            else {
+                                rotateRight(mOperationNode->child[2]);
+                                mOperationNode = mOperationNode->child[2]->tempLeft;
+                            }
+                        }
+                        else if (mOperationNode->numKeys == 3) {
+                            if (mOperationNode->child[1]->numKeys == 1 && mOperationNode->child[2]->numKeys == 1) {
+                                std::cout << "MERGE NODE" << std::endl;
+                                mergeNode(mOperationNode);
+                            }
+                            else if (mOperationNode->child[1]->numKeys == 1) {
+                                rotateLeft(mOperationNode->child[2]);
+                                mOperationNode = mOperationNode->child[2];
+                            }
+                            else {
+                                rotateRight(mOperationNode->child[2]);
+                                mOperationNode = mOperationNode->child[2]->tempLeft;
+                            }
+                        }
+                    }
+                    balanceTree();
+                    mAnimationStep = 10;
+                }
+                else {
+                    getTravelPath(mOperationNode, mReplaceNode->val);
+                    mAnimationStep = 8;
+                }
+            }
+            else {
+                if (mOperationNode->orderOfNode[0]) {
+                    if (mOperationNode->parent->child[1]->numKeys == 1) {
+                        mergeNode(mOperationNode->parent);
+                    }
+                    else {
+                        rotateLeft(mOperationNode);
+                    }
+                }
+                else if (mOperationNode->orderOfNode[1]) {
+                    if (mOperationNode->parent->numKeys == 1) {
+                        if (mOperationNode->parent->child[0]->numKeys == 1) {
+                            mergeNode(mOperationNode->parent);
+                        }
+                        else {
+                            rotateRight(mOperationNode);
+                        }
+                    }
+                    else {
+                        if (mOperationNode->parent->child[0]->numKeys == 1 && mOperationNode->parent->child[2]->numKeys == 1) {
+                            mergeNode(mOperationNode->parent);
+                        }
+                        else if (mOperationNode->parent->child[0]->numKeys == 1) {
+                            std::cout << "rotate left" << std::endl;
+                            rotateLeft(mOperationNode);
+                            std::cout << "rotate left done" << std::endl;
+                        }
+                        else {
+                            std::cout << "rotate right" << std::endl;
+                            rotateRight(mOperationNode);
+                            std::cout << "rotate right done" << std::endl;
+                        }
+                    }
+                }
+                else if (mOperationNode->orderOfNode[2]) {
+                    if (mOperationNode->parent->numKeys == 2) {
+                        if (mOperationNode->parent->child[1]->numKeys == 1) {
+                            mergeNode(mOperationNode->parent);
+                        }
+                        else {
+                            std::cout << "rotate left" << std::endl;
+                            rotateLeft(mOperationNode);
+                            std::cout << "rotate left done" << std::endl;
+                        }
+                    }
+                    else if (mOperationNode->parent->numKeys == 3) {
+                        if (mOperationNode->parent->child[1]->numKeys == 1 && mOperationNode->parent->child[3]->numKeys == 1) {
+                            mergeNode(mOperationNode->parent);
+                        }
+                        else if (mOperationNode->parent->child[1]->numKeys == 1) {
+                            std::cout << "rotate left" << std::endl;
+                            rotateLeft(mOperationNode);
+                            std::cout << "rotate left done" << std::endl;
+                        }
+                        else {
+                            std::cout << "rotate right" << std::endl;
+                            rotateRight(mOperationNode);
+                            std::cout << "rotate right done" << std::endl;
+                        }
+                    }
+                }
+                else if (mOperationNode->orderOfNode[3]) {
+                    if (mOperationNode->parent->child[2]->numKeys == 1) {
+                        mergeNode(mOperationNode->parent);
+                    }
+                    else {
+                        std::cout << "rotate right" << std::endl;
+                        rotateRight(mOperationNode);
+                        std::cout << "rotate right done" << std::endl;
+                    }
+                }
+                balanceTree();
+                mAnimationStep = 10;
+            }
+            break;
+        }
+
+        case 8: {
+            traverseAnimation(true, 3, 9);
+            break;
+        }
+
+        case 9: {
+            std::swap(mOperationNode->val, mReplaceNode->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+            mOperationNode = mReplaceNode;
+            mAnimationStep = 10;
+            break;
+        }
+
+        case 10: {
+            moveTreeAnimation(true, 1, 11);
+            break;
+        }
+
+        case 11: {   
+            deleteInternalNode(mOperationNode);
+            balanceTree();
+            mAnimationStep = 12;
+            break;
+        }
+
+        case 12: {
+            mSceneLayers[Nodes]->getChildren()[mOperationIndex]->zoom(sf::Vector2f(0, 0), 1);
+            moveTreeAnimation(true, 1);
+            if (mSceneLayers[Nodes]->getChildren()[mOperationIndex]->isZoomFinished()) {
+                mSceneLayers[Nodes]->getChildren().erase(mSceneLayers[Nodes]->getChildren().begin() + mOperationIndex);
+                for (int i = 0; i < 4; i++) {
+                    mSceneLayers[Edges]->getChildren().erase(mSceneLayers[Edges]->getChildren().begin() + mOperationIndex * 4);
+                }
+                mAnimationStep = 13;
+                for (int i = 0; i < mNodeList.size(); i++) {
+                    mNodeList[i]->nodeIndex = i;
+                }
+            }
+            break;
+        }
+
+        case 13: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
                 resetNodeState();

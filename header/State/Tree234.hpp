@@ -130,7 +130,12 @@ private: //Algorithms
     Node* copyNodeProperties(Node* node);
     int getIndexNextMove(Node * root, int data);
     Node* copyTree234(Node* root);
-    // // Node* findNode(Node* root, int data);
+    Node* findNode(Node* root, int data);
+    void deleteInternalNode(Node* &root);
+    void mergeNode(Node *&root);
+    void rotateLeft(Node *&root);
+    void rotateRight(Node *&root);
+    Node* findReplaceNode(Node* deleteNode);
     // int getHeight(Node* root);
     // void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);
@@ -147,7 +152,7 @@ private: //Visualization
     void createTree();
 
     void insertAnimation();
-    // void deleteAnimation();
+    void deleteAnimation();
     // void searchAnimation();
     void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);

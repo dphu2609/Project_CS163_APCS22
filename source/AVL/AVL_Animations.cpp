@@ -62,6 +62,7 @@ void AVL::createTree() {
 void AVL::insertAnimation() {
     switch(mAnimationStep) {
         case 1: {
+            resetAnimation();
             while (!mTreeForBackward.empty()) mTreeForBackward.pop();
             for (auto &child : mNodeList) {
                 child->isNodeHighlighted = false;
@@ -287,7 +288,7 @@ void AVL::deleteAnimation() {
         case 2: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             getTravelPath(mRoot, mInputQueue.front());
-            if (mTravelPath.back()->val != mInputQueue.front()) {
+            if (mTravelPath.back().first->val != mInputQueue.front()) {
                 mAnimationStep = 23;
                 break;
             }
@@ -560,40 +561,40 @@ void AVL::searchAnimation() {
 void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) {
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change3Color(
             Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, speed
         );
-        mTravelPath[mTravelIndex]->isNodeHighlighted = true;
+        mTravelPath[mTravelIndex].first->isNodeHighlighted = true;
     }
     else if (!mTraverseControler.second) {
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change3Color(
             Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, speed
         );
     }
     else {
-        if (mTravelPath[mTravelIndex]->isLeft) {
-            mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
+        if (mTravelPath[mTravelIndex].second) {
+            mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change1Color(
                 sf::Color(255, 171, 25), speed
             );
-            mTravelPath[mTravelIndex]->isLeftEdgeHighlighted = true;
+            mTravelPath[mTravelIndex].first->isLeftEdgeHighlighted   = true;
         }
         else {
-            mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change1Color(
+            mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change1Color(
                 sf::Color(255, 171, 25), speed
             );
-            mTravelPath[mTravelIndex]->isRightEdgeHighlighted = true;
+            mTravelPath[mTravelIndex].first->isRightEdgeHighlighted = true;
         }
     }  
 
     if (!mTraverseControler.first) {
-        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange3ColorFinished()) {
-            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange3ColorFinished()) {
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
             mTraverseControler.first = true;
         }
     }   
     else if (!mTraverseControler.second && !mIsAnimationPaused) {
-        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange3ColorFinished()) {
-            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange3ColorFinished()) {
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
             mTraverseControler.second = true;
             if (mTravelIndex >= mTravelPath.size() - 1) {
                 for (auto &node : mNodeList) {
@@ -608,9 +609,9 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
         }
     } 
     else if (!mIsAnimationPaused) {
-        if (mTravelPath[mTravelIndex]->isLeft) {
-            if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
-                mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+        if (mTravelPath[mTravelIndex].second) {
+            if (mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange1ColorFinished()) {
+                mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
                 mTravelIndex++;
                 mTraverseControler = std::make_pair(false, false);
                 if (mTravelIndex >= mTravelPath.size()) {
@@ -619,8 +620,8 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
             }
         }
         else {
-            if (mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange1ColorFinished()) {
-                mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+            if (mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange1ColorFinished()) {
+                mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
                 mTravelIndex++;
                 mTraverseControler = std::make_pair(false, false);
                 if (mTravelIndex >= mTravelPath.size()) {
@@ -635,34 +636,34 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
 void AVL::checkBalanceFactorAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) { 
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change3Color(
             Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, speed
         );
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->setLabel(std::to_string(-mTravelPath[mTravelIndex]->balanceFactor));
-        mTravelPath[mTravelIndex]->isNodeHighlighted = true;
+        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->setLabel(std::to_string(-mTravelPath[mTravelIndex].first->balanceFactor));
+        mTravelPath[mTravelIndex].first->isNodeHighlighted = true;
     }
     else { 
-        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->change3Color(
+        mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change3Color(
             Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, speed
         );
     }
 
     if (!mTraverseControler.first) {
-        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange3ColorFinished()) {
-            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange3ColorFinished()) {
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
             mTraverseControler.first = true;
         }
     }   
     else if (!mIsAnimationPaused) {
-        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->isChange3ColorFinished()) {
-            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->resetAnimationVar();
+        if (mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->isChange3ColorFinished()) {
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->resetAnimationVar();
             mTraverseControler.first = false;
             if (!mIsReversed && mTravelIndex >= mTravelPath.size() - 1) {
                 mTraverseControler = std::make_pair(false, false);
                 resetNodeState();
                 mAnimationStep = animationStepAfterFinish;
             }
-            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex]->nodeIndex]->setLabel("");
+            mSceneLayers[Nodes]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->setLabel("");
             mTravelIndex++;
         }
     } 
