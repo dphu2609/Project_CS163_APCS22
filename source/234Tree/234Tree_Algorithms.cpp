@@ -371,6 +371,20 @@ void Tree234::mergeNode(Node *&root) {
         if (root->val < root->parent->val) {
             if (root->parent->numKeys == 2) {
                 root->parent->tempLeft = nullptr;
+                root->tempLeft = root->parent->child[0];
+                root->tempRight = root->parent->child[1];
+                root->isAttached = false;
+                root->tempLeft->isAttached = true;
+                root->tempRight->isAttached = true;
+                root->tempLeft->parent = root;
+                root->tempRight->parent = root;
+                root->parent->child[0] = root;
+                root->parent->child[1] = root->parent->child[2];
+                root->parent->child[2] = nullptr;
+                root->parent->child[1]->orderOfNode[2] = false;
+                root->parent->child[1]->orderOfNode[1] = true;
+                root->orderOfNode[0] = true;
+                root->parent->numKeys = 1;
             }
             else if (root->parent->numKeys == 3) {
                 std::swap(root->val, root->parent->val);
@@ -379,21 +393,24 @@ void Tree234::mergeNode(Node *&root) {
                 std::swap(mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->tempRight->nodeIndex]);
                 root = root->parent->tempRight;
                 root->parent->tempRight = nullptr;
+                root->tempLeft = root->parent->child[0];
+                root->tempRight = root->parent->child[1];
+                root->isAttached = false;
+                root->tempLeft->isAttached = true;
+                root->tempRight->isAttached = true;
+                root->tempLeft->parent = root;
+                root->tempRight->parent = root;
+                root->parent->child[0] = root;
+                root->parent->child[1] = root->parent->child[2];
+                root->parent->child[2] = root->parent->child[3];
+                root->parent->child[3] = nullptr;
+                root->parent->child[1]->orderOfNode[2] = false;
+                root->parent->child[1]->orderOfNode[1] = true;
+                root->parent->child[2]->orderOfNode[3] = false;
+                root->parent->child[2]->orderOfNode[2] = true;
+                root->orderOfNode[0] = true;
+                root->parent->numKeys = 2;
             }
-            root->tempLeft = root->parent->child[0];
-            root->tempRight = root->parent->child[1];
-            root->isAttached = false;
-            root->tempLeft->isAttached = true;
-            root->tempRight->isAttached = true;
-            root->tempLeft->parent = root;
-            root->tempRight->parent = root;
-            root->parent->child[0] = root;
-            root->parent->child[1] = root->parent->child[2];
-            root->parent->child[2] = nullptr;
-            root->parent->child[1]->orderOfNode[2] = false;
-            root->parent->child[1]->orderOfNode[1] = true;
-            root->orderOfNode[0] = true;
-            root->parent->numKeys = 1;
         }
         else {
             root->parent->tempRight = nullptr;
@@ -495,17 +512,9 @@ void Tree234::rotateLeft(Node *&root) {
     }
 
     if (root->parent->numKeys == 1) {
-        movedNode->parent = par->parent;
-        for (int i = 0; i < 2; i++) {
-            movedNode->child[i] = par->child[i];
-            par->child[i]->parent = movedNode;
-            par->child[i] = nullptr;
-        }
-        movedNode->isAttached = false;
-        for (int i = 0; i < 4; i++) {
-            movedNode->orderOfNode[i] = par->orderOfNode[i];
-            par->orderOfNode[i] = false;
-        }
+        std::swap(movedNode->val, par->val);
+        std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[par->nodeIndex]);
+        par = movedNode;
     }
     else {
         if (root->orderOfNode[0]) {
@@ -530,6 +539,7 @@ void Tree234::rotateLeft(Node *&root) {
     par->isAttached = true;
     std::swap(par->val, root->val);
     std::swap(mSceneLayers[Nodes]->getChildren()[par->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->nodeIndex]);
+    root = root->tempLeft;
 }
 
 void Tree234::rotateRight(Node *&root) {
@@ -551,17 +561,9 @@ void Tree234::rotateRight(Node *&root) {
         temp->tempLeft = nullptr;
     }
     if (root->parent->numKeys == 1) {
-        movedNode->parent = par->parent;
-        for (int i = 0; i < 2; i++) {
-            movedNode->child[i] = par->child[i];
-            par->child[i]->parent = movedNode;
-            par->child[i] = nullptr;
-        }
-        movedNode->isAttached = false;
-        for (int i = 0; i < 4; i++) {
-            movedNode->orderOfNode[i] = par->orderOfNode[i];
-            par->orderOfNode[i] = false;
-        }
+        std::swap(movedNode->val, par->val);
+        std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[par->nodeIndex]);
+        par = movedNode;
     }
     else {
         if (root->orderOfNode[3]) {
@@ -584,6 +586,116 @@ void Tree234::rotateRight(Node *&root) {
     root->tempLeft = par;
     par->parent = root;
     par->isAttached = true;
+}
+
+void Tree234::handleNonLeafNodeWithLeafChildren(Node *&node) {
+    if (node->isAttached) {
+        if (node->val < node->parent->val) {
+            if (node->parent->child[1]->numKeys == 1) {
+                mergeNode(node);
+            }
+            else {
+                rotateLeft(node->parent->child[0]);
+            }
+        }
+        else {
+            if (node->parent->child[2]->numKeys == 1) {
+                mergeNode(node);
+            }
+            else {
+                rotateRight(node->parent->child[3]);
+            }
+        }
+    }
+    else {
+        if (node->numKeys == 1) {
+            rotateLeft(node->child[0]);
+        }
+        if (node->numKeys == 2) {
+            if (node->child[1]->numKeys == 1) {
+                mergeNode(node);
+            }
+            else {
+                rotateRight(node->child[2]);
+                node = node->child[2]->tempLeft;
+            }
+        }
+        else if (node->numKeys == 3) {
+            if (node->child[1]->numKeys == 1 && node->child[2]->numKeys == 1) {
+                mergeNode(node);
+            }
+            else if (node->child[1]->numKeys == 1) {
+                rotateLeft(node->child[2]);
+                node = node->child[2];
+            }
+            else {
+                rotateRight(node->child[2]);
+                node = node->child[2]->tempLeft;
+            }
+        }
+    }
+}
+
+void Tree234::handleLeafNodeWith1NumKeys(Node *&node) {
+    if (node->orderOfNode[0]) {
+        if (node->parent->child[1]->numKeys == 1) {
+            if (node->parent->numKeys == 1) mergeNode(node->parent);
+            else mergeNode(node->parent->tempLeft);
+        }
+        else {
+            rotateLeft(node);
+        }
+    }
+    else if (node->orderOfNode[1]) {
+        if (node->parent->numKeys == 1) {
+            if (node->parent->child[0]->numKeys == 1) {
+                mergeNode(node->parent);
+            }
+            else {
+                rotateRight(node);
+            }
+        }
+        else {
+            if (node->parent->child[0]->numKeys == 1 && node->parent->child[2]->numKeys == 1) {
+                mergeNode(node->parent);
+            }
+            else if (node->parent->child[0]->numKeys == 1) {
+                rotateLeft(node);
+            }
+            else {
+                rotateRight(node);
+            }
+        }
+    }
+    else if (node->orderOfNode[2]) {
+        if (node->parent->numKeys == 2) {
+            if (node->parent->child[1]->numKeys == 1) {
+                mergeNode(node->parent);
+            }
+            else {
+                rotateLeft(node); 
+            }
+        }
+        else if (node->parent->numKeys == 3) {
+            if (node->parent->child[1]->numKeys == 1 && node->parent->child[3]->numKeys == 1) {
+                mergeNode(node->parent);
+            }
+            else if (node->parent->child[1]->numKeys == 1) {
+                rotateLeft(node);    
+            }
+            else {
+                rotateRight(node);
+            }
+        }
+    }
+    else if (node->orderOfNode[3]) {
+        if (node->parent->child[2]->numKeys == 1) {
+            mergeNode(node->parent->tempRight);
+        }
+        else {
+            rotateRight(node);
+        }
+    }
 }
 
 void Tree234::balanceTree() {
@@ -711,7 +823,7 @@ void Tree234::createRandomTree() {
     mInputData.clear();
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 99);
+    std::uniform_int_distribution<> dis(0, 199);
 
     for (int i = 0; i < mInputSize; i++) {
         bool isDuplicate = false;

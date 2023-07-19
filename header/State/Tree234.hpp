@@ -136,6 +136,8 @@ private: //Algorithms
     void rotateLeft(Node *&root);
     void rotateRight(Node *&root);
     Node* findReplaceNode(Node* deleteNode);
+    void handleLeafNodeWith1NumKeys(Node *&node);
+    void handleNonLeafNodeWithLeafChildren(Node *&node);
     // int getHeight(Node* root);
     // void find2NodesForDelete(int data);
     void moveTree(Node* root, bool isLeft);

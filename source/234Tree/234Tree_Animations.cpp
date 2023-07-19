@@ -195,62 +195,17 @@ void Tree234::deleteAnimation() {
         }
 
         case 7: {
-            mOperationNode = findNode(mRoot, mInputQueue.front());
+            mOperationNode = findNode(mRoot, mInputQueue.front());  
             if ((mOperationNode->isAttached && mOperationNode->parent->isLeaf() && mOperationNode->parent->numKeys > 1) || (!mOperationNode->isAttached && mOperationNode->isLeaf() && mOperationNode->numKeys > 1)) {
-                mAnimationStep = 11;
+                mAnimationStep = 13;
                 break;
             }
             if (mOperationNode->isAttached || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
                 mReplaceNode = findReplaceNode(mOperationNode);
                 if (mReplaceNode->numKeys == 1 && ((mOperationNode->isAttached && mReplaceNode->parent == mOperationNode->parent) || (!mOperationNode->isAttached && mReplaceNode->parent == mOperationNode))) {
-                    if (mOperationNode->isAttached) {
-                        if (mOperationNode->val < mOperationNode->parent->val) {
-                            if (mOperationNode->parent->child[1]->numKeys == 1) {
-                                mergeNode(mOperationNode);
-                            }
-                            else {
-                                rotateLeft(mOperationNode->parent->child[0]);
-                            }
-                        }
-                        else {
-                            if (mOperationNode->parent->child[2]->numKeys == 1) {
-                                mergeNode(mOperationNode);
-                            }
-                            else {
-                                rotateRight(mOperationNode->parent->child[3]);
-                            }
-                        }
-                    }
-                    else {
-                        if (mOperationNode->numKeys == 1) {
-                            rotateLeft(mOperationNode->child[0]);
-                        }
-                        if (mOperationNode->numKeys == 2) {
-                            if (mOperationNode->child[1]->numKeys == 1) {
-                                mergeNode(mOperationNode);
-                            }
-                            else {
-                                rotateRight(mOperationNode->child[2]);
-                                mOperationNode = mOperationNode->child[2]->tempLeft;
-                            }
-                        }
-                        else if (mOperationNode->numKeys == 3) {
-                            if (mOperationNode->child[1]->numKeys == 1 && mOperationNode->child[2]->numKeys == 1) {
-                                std::cout << "MERGE NODE" << std::endl;
-                                mergeNode(mOperationNode);
-                            }
-                            else if (mOperationNode->child[1]->numKeys == 1) {
-                                rotateLeft(mOperationNode->child[2]);
-                                mOperationNode = mOperationNode->child[2];
-                            }
-                            else {
-                                rotateRight(mOperationNode->child[2]);
-                                mOperationNode = mOperationNode->child[2]->tempLeft;
-                            }
-                        }
-                    }
+                    handleNonLeafNodeWithLeafChildren(mOperationNode);
                     balanceTree();
-                    mAnimationStep = 10;
+                    mAnimationStep = 12;
                 }
                 else {
                     getTravelPath(mOperationNode, mReplaceNode->val);
@@ -258,78 +213,9 @@ void Tree234::deleteAnimation() {
                 }
             }
             else {
-                if (mOperationNode->orderOfNode[0]) {
-                    if (mOperationNode->parent->child[1]->numKeys == 1) {
-                        mergeNode(mOperationNode->parent);
-                    }
-                    else {
-                        rotateLeft(mOperationNode);
-                    }
-                }
-                else if (mOperationNode->orderOfNode[1]) {
-                    if (mOperationNode->parent->numKeys == 1) {
-                        if (mOperationNode->parent->child[0]->numKeys == 1) {
-                            mergeNode(mOperationNode->parent);
-                        }
-                        else {
-                            rotateRight(mOperationNode);
-                        }
-                    }
-                    else {
-                        if (mOperationNode->parent->child[0]->numKeys == 1 && mOperationNode->parent->child[2]->numKeys == 1) {
-                            mergeNode(mOperationNode->parent);
-                        }
-                        else if (mOperationNode->parent->child[0]->numKeys == 1) {
-                            std::cout << "rotate left" << std::endl;
-                            rotateLeft(mOperationNode);
-                            std::cout << "rotate left done" << std::endl;
-                        }
-                        else {
-                            std::cout << "rotate right" << std::endl;
-                            rotateRight(mOperationNode);
-                            std::cout << "rotate right done" << std::endl;
-                        }
-                    }
-                }
-                else if (mOperationNode->orderOfNode[2]) {
-                    if (mOperationNode->parent->numKeys == 2) {
-                        if (mOperationNode->parent->child[1]->numKeys == 1) {
-                            mergeNode(mOperationNode->parent);
-                        }
-                        else {
-                            std::cout << "rotate left" << std::endl;
-                            rotateLeft(mOperationNode);
-                            std::cout << "rotate left done" << std::endl;
-                        }
-                    }
-                    else if (mOperationNode->parent->numKeys == 3) {
-                        if (mOperationNode->parent->child[1]->numKeys == 1 && mOperationNode->parent->child[3]->numKeys == 1) {
-                            mergeNode(mOperationNode->parent);
-                        }
-                        else if (mOperationNode->parent->child[1]->numKeys == 1) {
-                            std::cout << "rotate left" << std::endl;
-                            rotateLeft(mOperationNode);
-                            std::cout << "rotate left done" << std::endl;
-                        }
-                        else {
-                            std::cout << "rotate right" << std::endl;
-                            rotateRight(mOperationNode);
-                            std::cout << "rotate right done" << std::endl;
-                        }
-                    }
-                }
-                else if (mOperationNode->orderOfNode[3]) {
-                    if (mOperationNode->parent->child[2]->numKeys == 1) {
-                        mergeNode(mOperationNode->parent);
-                    }
-                    else {
-                        std::cout << "rotate right" << std::endl;
-                        rotateRight(mOperationNode);
-                        std::cout << "rotate right done" << std::endl;
-                    }
-                }
+                handleLeafNodeWith1NumKeys(mOperationNode);
                 balanceTree();
-                mAnimationStep = 10;
+                mAnimationStep = 12;
             }
             break;
         }
@@ -343,7 +229,8 @@ void Tree234::deleteAnimation() {
             std::swap(mOperationNode->val, mReplaceNode->val);
             std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
             mOperationNode = mReplaceNode;
-            mAnimationStep = 10;
+            if (mOperationNode->numKeys == 1) mAnimationStep = 10;
+            else mAnimationStep = 12;
             break;
         }
 
@@ -352,14 +239,25 @@ void Tree234::deleteAnimation() {
             break;
         }
 
-        case 11: {   
-            deleteInternalNode(mOperationNode);
+        case 11: {
+            handleLeafNodeWith1NumKeys(mOperationNode);
             balanceTree();
             mAnimationStep = 12;
-            break;
         }
 
         case 12: {
+            moveTreeAnimation(true, 1, 13);
+            break;
+        }
+
+        case 13: {   
+            deleteInternalNode(mOperationNode);
+            balanceTree();
+            mAnimationStep = 14;
+            break;
+        }
+
+        case 14: {
             mSceneLayers[Nodes]->getChildren()[mOperationIndex]->zoom(sf::Vector2f(0, 0), 1);
             moveTreeAnimation(true, 1);
             if (mSceneLayers[Nodes]->getChildren()[mOperationIndex]->isZoomFinished()) {
@@ -367,7 +265,7 @@ void Tree234::deleteAnimation() {
                 for (int i = 0; i < 4; i++) {
                     mSceneLayers[Edges]->getChildren().erase(mSceneLayers[Edges]->getChildren().begin() + mOperationIndex * 4);
                 }
-                mAnimationStep = 13;
+                mAnimationStep = 15;
                 for (int i = 0; i < mNodeList.size(); i++) {
                     mNodeList[i]->nodeIndex = i;
                 }
@@ -375,7 +273,7 @@ void Tree234::deleteAnimation() {
             break;
         }
 
-        case 13: {
+        case 15: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
                 resetNodeState();

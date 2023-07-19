@@ -215,7 +215,7 @@ void AVL::createRandomTree() {
     mInputData.clear();
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 99);
+    std::uniform_int_distribution<> dis(0, 199);
 
     for (int i = 0; i < mInputSize; i++) {
         mInputData.push_back(dis(gen));
