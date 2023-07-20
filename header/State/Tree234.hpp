@@ -140,6 +140,7 @@ private: //Algorithms
     void handleNonLeafNodeWithLeafChildren(Node *&node);
     // int getHeight(Node* root);
     // void find2NodesForDelete(int data);
+    void setTreeScale(int treeSize);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
     void getTravelPath(Node* root, int data);

@@ -258,8 +258,8 @@ void Tree234::deleteAnimation() {
         }
 
         case 14: {
-            mSceneLayers[Nodes]->getChildren()[mOperationIndex]->zoom(sf::Vector2f(0, 0), 1);
-            moveTreeAnimation(true, 1);
+            mSceneLayers[Nodes]->getChildren()[mOperationIndex]->zoom(sf::Vector2f(0, 0), 1.5);
+            moveTreeAnimation(true, 1.5);
             if (mSceneLayers[Nodes]->getChildren()[mOperationIndex]->isZoomFinished()) {
                 mSceneLayers[Nodes]->getChildren().erase(mSceneLayers[Nodes]->getChildren().begin() + mOperationIndex);
                 for (int i = 0; i < 4; i++) {
@@ -454,6 +454,37 @@ void Tree234::nodeAppearAnimation(bool isAllowPause, float speed, int animationS
     }
 }
 
+void Tree234::setTreeScale(int treeSize) {
+    if (treeSize < 15) {
+        NODE_DISTANCE_HORIZONTAL = 320.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 200.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
+    }
+    else if (treeSize < 21) {
+        NODE_DISTANCE_HORIZONTAL = 240.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 180.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
+    }
+    else if (treeSize < 30) {
+        NODE_DISTANCE_HORIZONTAL = 190.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 150.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 25.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 25.f * Constant::SCALE_Y;
+    }
+    else {
+        NODE_DISTANCE_HORIZONTAL = 180.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 150.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 18.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 18.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 18.f * Constant::SCALE_Y;
+    }
+}
+
 void Tree234::resetAnimation() {
     mAnimationStep = 1;
     mOperationNode = nullptr;
@@ -467,6 +498,7 @@ void Tree234::resetAnimation() {
         child->isInsertNode = false;
         for (int i = 0; i < 4; i++) child->isEdgeHighlighted[i] = false;
     }
+    setTreeScale(mNodeList.size());
 }
 
 bool Tree234::isProcessingAnimation() {
