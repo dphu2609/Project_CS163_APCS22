@@ -13,11 +13,12 @@ enable_testing()
 file(GLOB STATESTACK_SOURCES "source/StateStack/*.cpp")
 file(GLOB AVL_SOURCES "source/AVL/*.cpp")
 file(GLOB TREE234_SOURCES "source/234Tree/*.cpp")
+file(GLOB HEAP_SOURCES "source/Heap/*.cpp")
 file(GLOB SCENEGRAPH_SOURCES "source/SceneGraph/*.cpp")
 file(GLOB MAIN_SOURCES "source/*.cpp")
 
 # Create a single list of all source files
-set(SOURCES ${STATESTACK_SOURCES} ${AVL_SOURCES} ${TREE234_SOURCES} ${SCENEGRAPH_SOURCES} ${MAIN_SOURCES})
+set(SOURCES ${STATESTACK_SOURCES} ${AVL_SOURCES} ${TREE234_SOURCES} ${HEAP_SOURCES} ${SCENEGRAPH_SOURCES} ${MAIN_SOURCES})
 
 add_executable(Project_CS163_APCS22 ${SOURCES})
 

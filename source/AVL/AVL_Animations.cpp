@@ -266,7 +266,6 @@ void AVL::insertAnimation() {
             break;
         }
     };
-    mIsAnimationPaused = mIsStepByStepMode;
 }
 
 void AVL::deleteAnimation() {
@@ -503,7 +502,6 @@ void AVL::deleteAnimation() {
             break;
         }
     };
-    mIsAnimationPaused = mIsStepByStepMode;
 }
 
 void AVL::searchAnimation() {
@@ -554,7 +552,6 @@ void AVL::searchAnimation() {
             break;
         }
     }
-    mIsAnimationPaused = mIsStepByStepMode;
 }
 
 
@@ -781,6 +778,7 @@ void AVL::resetAnimation() {
     for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
     for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
+    setTreeScale(mNodeList.size());
 }
 
 bool AVL::isProcessingAnimation() {

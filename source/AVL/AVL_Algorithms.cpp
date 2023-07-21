@@ -1,5 +1,13 @@
 #include <State/AVL.hpp>
 
+void AVL::clear(Node *&root) {
+    if (root == nullptr) return;
+    clear(root->left);
+    clear(root->right);
+    delete root;
+    root = nullptr;
+}
+
 void AVL::insert(Node* &root, std::vector<Node*> &nodeList, int data, bool isNeedRotating) {
     for (auto &node : nodeList) {
         if (node->val == data) {
@@ -203,12 +211,35 @@ void AVL::balanceTree() {
     }
 }
 
-void AVL::clear(Node *&root) {
-    if (root == nullptr) return;
-    clear(root->left);
-    clear(root->right);
-    delete root;
-    root = nullptr;
+void AVL::setTreeScale(int treeSize) {
+    if (treeSize < 15) {
+        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
+    }
+    else if (treeSize< 30) {
+        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
+    }
+    else if (treeSize < 40) {
+        NODE_DISTANCE_HORIZONTAL = 38.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
+    }
+    else {
+        NODE_DISTANCE_HORIZONTAL = 35.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 28.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 28.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 28.f * Constant::SCALE_Y;
+    }
 }
 
 void AVL::createRandomTree() {
@@ -221,27 +252,6 @@ void AVL::createRandomTree() {
         mInputData.push_back(dis(gen));
     }
 
-    if (mInputSize < 15) {
-        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
-    }
-    else if (mInputSize < 30) {
-        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
-    }
-    else if (mInputSize < 40) {
-        NODE_DISTANCE_HORIZONTAL = 38.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
-    }
-    else {
-        NODE_DISTANCE_HORIZONTAL = 35.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 28.f * Constant::SCALE_X;
-    }
-
     clear(mRoot);
     mNodeList.clear();
 
@@ -249,8 +259,8 @@ void AVL::createRandomTree() {
         insert(mRoot, mNodeList, mInputData[i]);
     }
 
+    setTreeScale(mInputSize);
     balanceTree();
-
     createTree();
 }
 
@@ -324,6 +334,14 @@ void AVL::find2NodesForDelete(int data) {
 
 void AVL::deleteNode() {
     if (mOperationNode == nullptr) return;
+    if (mOperationNode == mRoot && mNodeList.size() == 1) {
+        delete mRoot;
+        mRoot = nullptr;
+        mNodeList.clear();
+        mSceneLayers[Nodes]->getChildren().clear();
+        mSceneLayers[LeftEdges]->getChildren().clear();
+        mSceneLayers[RightEdges]->getChildren().clear();
+    }
     if (mReplaceNode) {
         mOperationNode->val = mReplaceNode->val;
         mOperationNode->position = mNodeListForBackup[mOperationIndex]->position;

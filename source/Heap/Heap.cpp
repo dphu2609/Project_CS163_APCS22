@@ -1,10 +1,12 @@
-#include <State/AVL.hpp>
+#include <State/Heap.hpp>
 
-AVL::AVL(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
+#include <State/Heap.hpp>
+
+Heap::Heap(StateStack &stack, sf::RenderWindow &window) : State(stack, window) {
     buildScene();
 }
 
-AVL::~AVL() {
+Heap::~Heap() {
     clear(mRoot);
     clear(mRootForBackup);
     while (!mTreeForBackward.empty()) {
@@ -14,11 +16,11 @@ AVL::~AVL() {
     }
 }
 
-void AVL::draw() {
+void Heap::draw() {
     mWindow.draw(mSceneGraph);
 }
 
-void AVL::update() {
+void Heap::update() {
     mSceneGraph.update();
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
@@ -27,8 +29,22 @@ void AVL::update() {
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
-void AVL::handleEvent(sf::Event &event) {
+void Heap::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
+
+    if (mSceneLayers[Buttons]->getChildren()[ToggleMaxHeap]->isLeftClicked(mWindow, event)) {
+        if (mIsMaxHeap) {
+            mIsMaxHeap = false;
+            createRandomTree();
+            mSceneLayers[Buttons]->getChildren()[ToggleMaxHeap]->setContent("MIN HEAP");
+        }
+        else {
+            mIsMaxHeap = true;
+            createRandomTree();
+            mSceneLayers[Buttons]->getChildren()[ToggleMaxHeap]->setContent("MAX HEAP");
+        }
+    }
+
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
             if (child->isActive()) {
@@ -217,12 +233,21 @@ void AVL::handleEvent(sf::Event &event) {
     } 
 }
 
-void AVL::buildScene() {
+void Heap::buildScene() {
     for (int i = 0; i < LayerCount; i++) {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();
         mSceneGraph.attachChild(std::move(layer));
     }
+
+    std::unique_ptr<RectangleButton> toggleButton = std::make_unique<RectangleButton>();
+    toggleButton->set(
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 680), "MAX HEAP", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
+        sf::Color(224, 134, 7), sf::Color::Black
+    );
+    mSceneLayers[Buttons]->attachChild(std::move(toggleButton));
+
     std::unique_ptr<RectangleButton> createButton = std::make_unique<RectangleButton>();
     createButton->set(
         Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 600), "Create", 

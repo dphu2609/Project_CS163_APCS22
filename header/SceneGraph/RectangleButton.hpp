@@ -36,6 +36,8 @@ public:
 private: 
     virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
     virtual void setVarForChange3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed);
+private:
+    virtual void setContent(const std::string &content);
 };
 
 #endif

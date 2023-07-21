@@ -49,6 +49,7 @@ void Tree234::insertAnimation() {
     switch (mAnimationStep) {
         case 1: {
             resetAnimation();
+            createBackupTree();
             createTree();
             getSplitCheckpoint(mRoot, mInputQueue.front());
             mAnimationStep = 2;
@@ -56,6 +57,7 @@ void Tree234::insertAnimation() {
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
             if (mSplitCheckpoint.empty()) {
                 mAnimationStep = 8;
                 break;
@@ -74,6 +76,7 @@ void Tree234::insertAnimation() {
         }
 
         case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
             mMovedValue = mSplitCheckpoint[mSplitCheckpointIndex]->val;
             splitNode(mRoot, mNodeList, mSplitCheckpoint[mSplitCheckpointIndex++]);
             mAnimationStep = 5;
@@ -113,6 +116,7 @@ void Tree234::insertAnimation() {
         }
 
         case 8: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(8));
             if (mSplitCheckpoint.empty()) getTravelPath(mRoot, mInputQueue.front());
             else getTravelPath(mSplitCheckpoint.back(), mInputQueue.front());
             mAnimationStep = 9;
@@ -125,6 +129,7 @@ void Tree234::insertAnimation() {
         }
 
         case 10: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(10));
             Node* insertNode = getInternalNode(mRoot, mInputQueue.front());
             insertInternalNode(insertNode, mNodeList, mInputQueue.front());
             balanceTree();
@@ -141,7 +146,6 @@ void Tree234::insertAnimation() {
         case 12: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
-                resetNodeState();
             }
             else mIsReplay = true;
             break;
@@ -152,7 +156,9 @@ void Tree234::insertAnimation() {
 void Tree234::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
             resetAnimation();
+            createBackupTree();
             createTree();
             if (mRoot->numKeys == 1) {
                 if (mRoot->child[0] && mRoot->child[0]->numKeys == 1 && mRoot->child[1] && mRoot->child[1]->numKeys == 1) {
@@ -172,6 +178,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 3: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(3));
             mergeNode(mRoot);
             balanceTree();
             mAnimationStep = 4;
@@ -184,6 +191,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 5: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(5));
             getTravelPath(mRoot, mInputQueue.front());
             mAnimationStep = 6;
             break;
@@ -195,6 +203,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 7: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(7));
             mOperationNode = findNode(mRoot, mInputQueue.front());  
             if ((mOperationNode->isAttached && mOperationNode->parent->isLeaf() && mOperationNode->parent->numKeys > 1) || (!mOperationNode->isAttached && mOperationNode->isLeaf() && mOperationNode->numKeys > 1)) {
                 mAnimationStep = 13;
@@ -226,6 +235,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 9: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(9));
             std::swap(mOperationNode->val, mReplaceNode->val);
             std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
             mOperationNode = mReplaceNode;
@@ -240,6 +250,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 11: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(11));
             handleLeafNodeWith1NumKeys(mOperationNode);
             balanceTree();
             mAnimationStep = 12;
@@ -251,6 +262,7 @@ void Tree234::deleteAnimation() {
         }
 
         case 13: {   
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(13));
             deleteInternalNode(mOperationNode);
             balanceTree();
             mAnimationStep = 14;
@@ -276,13 +288,63 @@ void Tree234::deleteAnimation() {
         case 15: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
-                resetNodeState();
             }
             else mIsReplay = true;
             break;
         }
     }
 }
+
+void Tree234::searchAnimation() {
+    switch(mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createTree();
+            createBackupTree();
+            mAnimationStep++;
+            break;
+        }
+
+        case 2: {
+            getTravelPath(mRoot, mInputQueue.front());
+            mOperationNode = findNode(mRoot, mInputQueue.front());
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
+            mAnimationStep++;
+            break;
+        }
+
+        case 3: {
+            traverseAnimation(true, 3, 4);
+            break;
+        }
+
+        case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mOperationNode) mAnimationStep = 5;
+            else mAnimationStep = 6;
+            break;
+        }
+
+        case 5: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
+                Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2
+            );
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                mAnimationStep = 6;
+            }
+            break;
+        }
+
+        case 6: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
 
 void Tree234::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;

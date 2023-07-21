@@ -27,6 +27,11 @@ void RectangleButton::set(
     mOutlineHoveredColor = outlineHoveredColor;
 }
 
+void RectangleButton::setContent(const std::string &content) {
+    mText.setString(content);
+    mText.setPosition(mRectangle.getPosition().x + mRectangle.getSize().x / 2 - mText.getGlobalBounds().width / 2, mRectangle.getPosition().y + mRectangle.getSize().y / 2 - mText.getGlobalBounds().height);
+}
+
 void RectangleButton::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(mRectangle);
     target.draw(mText);

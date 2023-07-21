@@ -23,7 +23,8 @@ void Tree234::update() {
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
     // // if (mUpdateAnimation && !mIsReversed) updateAnimation();
-    // if (mSearchAnimation && !mIsReversed) searchAnimation();
+    if (mSearchAnimation && !mIsReversed) searchAnimation();
+    mIsAnimationPaused = mIsStepByStepMode;
 }
 
 void Tree234::handleEvent(sf::Event &event) {
@@ -194,7 +195,7 @@ void Tree234::handleEvent(sf::Event &event) {
         mIsAnimationPaused = true;
         mIsStepByStepMode = true;
         mIsReversed = true;
-        // returnToPreviousStep();
+        returnToPreviousStep();
     }
 
     if (!mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mIsReplay) {
@@ -206,7 +207,7 @@ void Tree234::handleEvent(sf::Event &event) {
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
         resetNodeState();
         mAnimationStep = 1;
-        // restoreTree();
+        restoreTree();
         mIsReplay = false;
         mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();

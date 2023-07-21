@@ -322,6 +322,10 @@ void Tree234::deleteInternalNode(Node* &root) {
             delete root->tempLeft;
             root->tempLeft = nullptr;
         }
+        else {
+            mOperationIndex = root->nodeIndex;
+            mRoot = nullptr;
+        }
     }
     mNodeList.erase(mNodeList.begin() + mOperationIndex);
 }
@@ -568,6 +572,7 @@ void Tree234::rotateRight(Node *&root) {
         movedNode = movedNode->tempLeft;
         temp->tempLeft = nullptr;
     }
+
     if (root->parent->numKeys == 1) {
         std::swap(movedNode->val, par->val);
         std::swap(mSceneLayers[Nodes]->getChildren()[movedNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[par->nodeIndex]);
@@ -654,7 +659,6 @@ void Tree234::handleLeafNodeWith1NumKeys(Node *&node) {
             else mergeNode(node->parent->tempLeft);
         }
         else {
-            std::cout << "Rotate Left" << std::endl;
             rotateLeft(node);
         }
     }
@@ -685,7 +689,7 @@ void Tree234::handleLeafNodeWith1NumKeys(Node *&node) {
                 mergeNode(node->parent);
             }
             else {
-                rotateLeft(node); 
+                rotateRight(node); 
             }
         }
         else if (node->parent->numKeys == 3) {
@@ -779,6 +783,7 @@ void Tree234::balanceTree() {
             }
             if (node->orderOfNode[0]) {
                 node->position = node->parent->position + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
+                if (node->numKeys == 3) node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 6, 0);
             }
             else if (node->orderOfNode[1]) {
                 if (node->parent->numKeys == 3) {
@@ -810,6 +815,7 @@ void Tree234::balanceTree() {
                 node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);
                 if (node->parent->child[2]->numKeys == 3 || node->parent->child[2]->numKeys == 2) 
                     node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
+                if (node->numKeys == 3) node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
             }
         }
     }
@@ -848,6 +854,25 @@ void Tree234::createRandomTree() {
 
     balanceTree();
     createTree();
+}
+
+void Tree234::createBackupTree() {
+    mNodeListForBackup.clear();
+    clear(mRootForBackup);
+    mRootForBackup = copyTree234(mRoot);
+    for (auto &child : mNodeList) {
+        mNodeListForBackup.push_back(findNode(mRootForBackup, child->val));
+    }
+}
+
+void Tree234::restoreTree() {
+    clear(mRoot);
+    mNodeList.clear();
+    mRoot = copyTree234(mRootForBackup);
+    for (auto &child : mNodeListForBackup) {
+        mNodeList.push_back(findNode(mRoot, child->val));
+    }
+
 }
 
 void Tree234::returnToPreviousStep() {
@@ -904,7 +929,7 @@ Tree234::Node* Tree234::copyTree234(Node* root) {
     if (root->tempRight) {
         Node* newTempRight = copyNodeProperties(root->tempRight);
         newNode->tempRight = newTempRight;
-        newTempRight = root->tempRight;
+        newTempRight->parent = newNode;
     }
 
     for (int i = 0; i < 4; i++) {
@@ -942,4 +967,18 @@ void Tree234::getSplitCheckpoint(Node* root, int data) {
         }
         cur = cur->child[getIndexNextMove(cur, data)];
     }
+}
+
+Tree234::TreeState* Tree234::createTreeState(int animationIndex) {
+    Node* newRoot = copyTree234(mRoot);
+    Node* nodeForOperation = nullptr;
+    Node* nodeForReplace = nullptr;
+    if (mOperationNode) nodeForOperation = findNode(newRoot, mOperationNode->val);
+    if (mReplaceNode) nodeForReplace = findNode(newRoot, mReplaceNode->val);
+    std::vector<Node*> newNodeList;
+    for (auto &child : mNodeList) {
+        newNodeList.push_back(findNode(newRoot, child->val));
+    }
+    TreeState* newTreeState = new TreeState{newRoot, nodeForOperation, nodeForReplace, newNodeList, animationIndex};
+    return newTreeState;
 }
