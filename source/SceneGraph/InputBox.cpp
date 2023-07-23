@@ -170,3 +170,7 @@ void InputBox::setContent(const std::string &content) {
     mContent.setString(mData);
     mCursor.setPosition(mBox.getPosition() + sf::Vector2f(7 * Constant::SCALE_X + mContent.getLocalBounds().width, mBox.getSize().y*0.05));
 }
+
+std::string InputBox::getContent() {
+    return mData;
+}

@@ -11,19 +11,17 @@ void Trie::clear(Node *&root) {
 
 void Trie::insert(Node* &root, std::vector<Node*> &nodeList, std::string word) {
     if (root == nullptr) {
-        Node* newNode = new Node{' ', 0, 0, {}, -1, sf::Vector2f(0, 0), {}, nullptr, false};
+        Node* newNode = new Node{' ', 0, 0, {}, -1, sf::Vector2f(0, 0), {}, nullptr, false, false};
         root = newNode;
         nodeList.push_back(newNode);
     }
 
     Node* cur = root;
-    Node* parent = root;
     int index = 0;
     while (index < word.size()) {
         bool isFound = false;
         for (int i = 0; i < cur->child.size(); i++) {
             if (cur->child[i]->val == word[index]) {
-                parent = cur;
                 cur = cur->child[i];
                 index++;
                 isFound = true;
@@ -40,7 +38,7 @@ void Trie::insert(Node* &root, std::vector<Node*> &nodeList, std::string word) {
     }
 
     for (int i = index; i < word.size(); i++) {
-        Node* newNode = new Node{word[i], cur->depth + 1, (int)nodeList.size(), {}, (int)cur->child.size(), sf::Vector2f(0, 0), {}, cur, false};
+        Node* newNode = new Node{word[i], cur->depth + 1, (int)nodeList.size(), {}, (int)cur->child.size(), sf::Vector2f(0, 0), {}, cur, false, false};
         nodeList.push_back(newNode);
         cur->child.push_back(newNode);
         cur = newNode;
@@ -50,6 +48,70 @@ void Trie::insert(Node* &root, std::vector<Node*> &nodeList, std::string word) {
     }
 }
 
+void Trie::add1Node(Node *&root, std::vector<Node*> &nodeList, std::string word, int &currentIndex) {
+    Node* newNode = new Node{word[currentIndex], root->depth + 1, (int)nodeList.size(), {}, (int)root->child.size(), sf::Vector2f(0, 0), {}, root, false, true};
+    if (newNode->orderOfNode == 0) {
+        newNode->position = newNode->parent->position + sf::Vector2f(-((int)newNode->parent->child.size() - 1) * NODE_DISTANCE_HORIZONTAL / 2, NODE_DISTANCE_VERTICAL);
+    }
+    else {
+        newNode->position = newNode->parent->child[0]->position + sf::Vector2f((newNode->orderOfNode) * NODE_DISTANCE_HORIZONTAL, 0);
+    }
+    nodeList.push_back(newNode);
+    root->child.push_back(newNode);
+    if (currentIndex == word.size() - 1) {
+        newNode->isEndOfWord = true;
+    }
+    currentIndex++;
+    
+    std::unique_ptr<TreeNode> trieNode = std::make_unique<TreeNode>();
+    std::string content = "a";
+    content[0] = newNode->val;
+    if (!newNode->isEndOfWord) {
+        trieNode->set(
+            content, newNode->position, 0, 
+            Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+        );
+    }
+    else {
+        trieNode->set(
+            content, newNode->position, 0, 
+            Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+        );
+    }
+    mSceneLayers[Nodes]->attachChild(std::move(trieNode));
+
+    root->edgeIndex.push_back(mSceneLayers[Edges]->getChildren().size());
+    std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+    edge->set(
+        root->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), root->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+        Size::EDGE_THICKNESS, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+    );
+    mSceneLayers[Edges]->attachChild(std::move(edge));
+    mIsEdgeHighlighted.push_back(true);
+    root = newNode;
+}
+
+void Trie::getTravelPath(std::string word) {
+    mTravelPath.clear();
+    mTravelIndex = 0;
+    Node* cur = mRoot;
+    int index = 0;
+    while (index < word.size()) {
+        bool isFound = false;
+        for (int i = 0; i < cur->child.size(); i++) {
+            if (cur->child[i]->val == word[index]) {
+                mTravelPath.push_back({cur, i});
+                cur = cur->child[i];
+                index++;
+                isFound = true;
+                break;
+            }
+        }
+        if (!isFound)
+            break;
+    }
+    mTravelPath.push_back({cur, -1});
+}
 
 void Trie::moveTree(Node* root, bool isLeft) {
     if (root == nullptr) return;
@@ -84,6 +146,7 @@ int Trie::isLeftMidRight(Node* node) {
 }
 
 void Trie::balanceTree() {
+    if (mRoot == nullptr) return;
     std::vector<Node*> nodeList;
     std::queue<Node*> q;
     q.push(mRoot);
@@ -194,6 +257,7 @@ Trie::Node* Trie::copyNodeProperties(Node* root) {
 }
 
 Trie::Node* Trie::copyTrie(Node* root) {
+    if (root == nullptr) return nullptr;
     Node* newNode = copyNodeProperties(root);
     for (int i = 0; i < root->child.size(); i++) {
         newNode->child.push_back(copyTrie(root->child[i]));
@@ -202,30 +266,45 @@ Trie::Node* Trie::copyTrie(Node* root) {
     return newNode;
 }
 
+void Trie::getNodeList(Node* root, std::vector<Node*> &nodeList) {
+    if (root == nullptr) return;
+    nodeList.push_back(root);
+    for (auto &node : root->child) {
+        getNodeList(node, nodeList);
+    }
+}
+
+void Trie::createBackupTree() {
+    clear(mRootForBackup);
+    mNodeListForBackup.clear();
+    mRootForBackup = copyTrie(mRoot);
+    getNodeList(mRootForBackup, mNodeListForBackup);
+}
+
+void Trie::restoreTree() {
+    clear(mRoot);
+    mNodeList.clear();
+    mRoot = copyTrie(mRootForBackup);
+    getNodeList(mRoot, mNodeList);
+}
+
 void Trie::setTreeScale(int treeSize) {
-    if (treeSize < 10) {
+    if (treeSize < 16) {
         NODE_DISTANCE_HORIZONTAL = 120.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
     }
-    else if (treeSize < 20) {
-        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
-    }
-    else if (treeSize < 30) {
-        NODE_DISTANCE_HORIZONTAL = 60.f * Constant::SCALE_X;
+    else if (treeSize < 31) {
+        NODE_DISTANCE_HORIZONTAL = 70.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 25.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 25.f * Constant::SCALE_Y;
     }
     else {
-        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 60.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 20.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 20.f * Constant::SCALE_X;
@@ -251,7 +330,7 @@ void Trie::createRandomTree() {
     clear(mRoot);   
     mNodeList.clear();
 
-    for (int i = 0; i < mInputData.size(); i++) {
+    for (int i = 0; i < mInputSize; i++) {
         insert(mRoot, mNodeList, mInputData[i]);
     }
 

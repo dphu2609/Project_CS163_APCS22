@@ -37,6 +37,7 @@ public:
 public:
     virtual std::vector<int> getIntArrayData();
     virtual void setContent(const std::string &content);
+    virtual std::string getContent();
 private: 
     virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
 };

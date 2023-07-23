@@ -78,11 +78,8 @@ void Trie::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
-        std::vector<int> inputList = mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getIntArrayData();
         while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
-        }
+        mInputQueue.push(mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getContent());
         mInsertAnimation = true;
         mDeleteAnimation = false;
         mUpdateAnimation = false;
@@ -97,11 +94,8 @@ void Trie::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
-        std::vector<int> inputList = mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getIntArrayData();
         while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
-        }
+        mInputQueue.push(mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getContent());
         mInsertAnimation = false;
         mDeleteAnimation = true;
         mUpdateAnimation = false;
@@ -116,11 +110,8 @@ void Trie::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[SearchOptions]->getChildren()[SearchStart]->isLeftClicked(mWindow, event)) {
-        std::vector<int> inputList = mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getIntArrayData();
         while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
-        }
+        mInputQueue.push(mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getContent());
         mInsertAnimation = false;
         mDeleteAnimation = false;
         mUpdateAnimation = false;

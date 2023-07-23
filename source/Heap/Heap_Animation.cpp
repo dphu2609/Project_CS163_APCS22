@@ -321,9 +321,7 @@ void Heap::changeNodeAnimation(bool isAllowPause, float speed, int animationStep
 void Heap::resetAnimation() {
     mAnimationStep = 1;
     mOperationNode = nullptr;
-    for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
-    for (auto &child : mSceneLayers[LeftEdges]->getChildren()) child->resetAnimationVar();
-    for (auto &child : mSceneLayers[RightEdges]->getChildren()) child->resetAnimationVar();
+    resetNodeState();
     for (auto &child : mNodeList) {
         child->isNodeHighlighted = false;
         child->isInsertNode = false;

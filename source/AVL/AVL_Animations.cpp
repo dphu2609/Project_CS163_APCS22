@@ -573,7 +573,7 @@ void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAft
             mSceneLayers[LeftEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change1Color(
                 sf::Color(255, 171, 25), speed
             );
-            mTravelPath[mTravelIndex].first->isLeftEdgeHighlighted   = true;
+            mTravelPath[mTravelIndex].first->isLeftEdgeHighlighted = true;
         }
         else {
             mSceneLayers[RightEdges]->getChildren()[mTravelPath[mTravelIndex].first->nodeIndex]->change1Color(
