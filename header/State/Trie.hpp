@@ -1,5 +1,5 @@
-#ifndef HEAP_HPP
-#define HEAP_HPP
+#ifndef TRIE_HPP
+#define TRIE_HPP
 
 #include <State/StateStack.hpp>
 #include <SceneGraph/TreeNode.hpp>
@@ -8,7 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 
-class Heap : public State {
+class Trie : public State {
 private:
     virtual void draw();
     virtual void update();
@@ -16,25 +16,22 @@ private:
     virtual void buildScene();
 public:
     struct Node {
-        int val;
+        char val;
         int depth;
         int nodeIndex;
-        int order;
+        std::vector<int> edgeIndex;
+        int orderOfNode;
         sf::Vector2f position;
-        Node* left;
-        Node* right;
+        std::vector<Node*> child;
         Node* parent;
-        bool isInsertNode;
-        bool isNodeHighlighted;
+        bool isEndOfWord;
     };
 public:
-    explicit Heap(StateStack& stack, sf::RenderWindow &window);
-    ~Heap();
-    void clear(Node *&root);
+    explicit Trie(StateStack& stack, sf::RenderWindow &window);
+    ~Trie();
 private:
     enum SceneLayer {
-        LeftEdges,
-        RightEdges,
+        Edges,
         Nodes,
         Buttons,
         CreateOptions,
@@ -46,7 +43,6 @@ private:
         LayerCount
     };
     enum ButtonTypes {
-        ToggleMaxHeap,
         Create,
         Insert,
         Delete,
@@ -86,7 +82,6 @@ private:
 private:
     Node* mRoot = nullptr;
     Node* mRootForBackup = nullptr;
-    bool mIsMaxHeap = true;
 private:
     float NODE_DISTANCE_HORIZONTAL;
     float NODE_DISTANCE_VERTICAL;
@@ -99,39 +94,41 @@ private:
         std::vector<Node*> nodeList;
         int animationIndex;
     };
-    TreeState* createTreeState(int animationIndex);
+    TreeState* createTreeState(int animationIndex) {return nullptr;}
 private: //Algorithms
-    void createBackupTree();
-    void restoreTree();
-    void insert(Node* &root, std::vector<Node*> &nodeList, int data, bool isNeedCorrectingHeap = true);
+    void createBackupTree() {}
+    void restoreTree() {}
+    void clear(Node *&root);
+    void insert(Node* &root, std::vector<Node*> &nodeList, std::string word);
     Node* copyNodeProperties(Node* node);
-    Node* copyHeap(Node* root);
-    Node* findNode(Node* root, int index);
+    Node* copyTrie(Node* root);
+    // Node* findNode(Node* root, int index);
     void setTreeScale(int treeSize);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();
     std::vector<int> getTravelIndex(int index);
+    int isLeftMidRight(Node* node);
     void balanceTree();
-    void returnToPreviousStep();
+    void returnToPreviousStep() {}
 private: //Visualization
     void createTree();
-    void insertAnimation();
-    void deleteAnimation();
+    void insertAnimation() {}
+    void deleteAnimation() {}
     void searchAnimation() {}
-    void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    bool isProcessingAnimation();
-    void resetNodeState();
-    void resetAnimation();
+    void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
+    void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
+    void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
+    bool isProcessingAnimation() {return false;}
+    void resetNodeState() {}
+    void resetAnimation() {}
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
     bool mSearchAnimation = false;
     bool mUpdateAnimation = false;
 private:
-    std::vector<int> mInputData = {};
-    int mInputSize = 10;
+    std::vector<std::string> mInputData = {};
+    int mInputSize = 4;
     std::queue<int> mInputQueue = {};
     int mAnimationStep = 1;
 private:

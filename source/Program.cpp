@@ -20,6 +20,7 @@ void Program::registerStates() {
     mStateStack.registerState<AVL>(States::AVL);
     mStateStack.registerState<Tree234>(States::Tree234);
     mStateStack.registerState<Heap>(States::Heap);
+    mStateStack.registerState<Trie>(States::Trie);
 }
 
 void Program::loadFonts() {
@@ -42,7 +43,7 @@ void Program::loadTextures() {
 
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::Heap);
+    mStateStack.pushState(States::Trie);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(mWindow.isOpen()) {

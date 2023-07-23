@@ -94,16 +94,6 @@ void Heap::balanceTree() {
     }
 }
 
-std::vector<int> Heap::getTravelIndex(int index) {
-    std::vector<int> travelIndex;
-    while (index >= 1) {
-        travelIndex.push_back(index);
-        index /= 2;
-    }
-    std::sort(travelIndex.begin(), travelIndex.end());
-    return travelIndex;
-}
-
 void Heap::setTreeScale(int treeSize) {
     if (treeSize < 16) {
         NODE_DISTANCE_HORIZONTAL = 150.f * Constant::SCALE_X;
@@ -191,11 +181,22 @@ Heap::Node* Heap::copyHeap(Node* root) {
     return newNode;
 }
 
+
+std::vector<int> Heap::getTravelIndex(int index) {
+    std::vector<int> travelIndex;
+    while (index >= 1) {
+        travelIndex.push_back(index);
+        index /= 2;
+    }
+    std::sort(travelIndex.begin(), travelIndex.end());
+    return travelIndex;
+}
+
 Heap::Node* Heap::findNode(Node* root, int index) {
     std::vector<int> travelIndex = getTravelIndex(index);
     Node* cur = root;
-    for (int i = 1; i < travelIndex.size() - 1; i++) {
-        if (travelIndex[i] % 2 != 0) cur = cur->left;
+    for (int i = 1; i < travelIndex.size(); i++) {
+        if (travelIndex[i] % 2 == 0) cur = cur->left;
         else cur = cur->right;
     }
     return cur;
@@ -228,8 +229,32 @@ void Heap::createBackupTree() {
 void Heap::restoreTree() {
     mNodeList.clear();
     clear(mRoot);
-    mRootForBackup = copyHeap(mRootForBackup);
+    mRoot = copyHeap(mRootForBackup);
     for (auto &child : mNodeListForBackup) {
-        mNodeListForBackup.push_back(findNode(mRootForBackup, child->order));
+        mNodeList.push_back(findNode(mRoot, child->order));
     }
+}
+
+Heap::TreeState* Heap::createTreeState(int animationIndex) {
+    Node* newRoot = copyHeap(mRoot);
+    Node* nodeForOperation = nullptr;
+    if (mOperationNode) nodeForOperation = findNode(newRoot, mOperationNode->order);
+    std::vector<Node*> newNodeList;
+    for (auto &child : mNodeList) {
+        newNodeList.push_back(findNode(newRoot, child->order));
+    }
+    TreeState* newTreeState = new TreeState{newRoot, nodeForOperation, newNodeList, animationIndex};
+    return newTreeState;
+}
+
+void Heap::returnToPreviousStep() {
+    resetNodeState();
+    clear(mRoot);
+    mNodeList.clear();
+    mRoot = mTreeForBackward.top()->root;
+    mOperationNode = mTreeForBackward.top()->nodeForOperation;
+    mNodeList = mTreeForBackward.top()->nodeList;
+    mAnimationStep = mTreeForBackward.top()->animationIndex;
+    mTreeForBackward.pop();
+    createTree();
 }

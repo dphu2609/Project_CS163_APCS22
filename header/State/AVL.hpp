@@ -91,8 +91,8 @@ private:
     Node* mRoot = nullptr;
     Node* mRootForBackup = nullptr;
 private:
-    float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
-    float NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
+    float NODE_DISTANCE_HORIZONTAL;
+    float NODE_DISTANCE_VERTICAL;
 private:
     std::vector<Node*> mNodeList = {};
     std::vector<Node*> mNodeListForBackup = {};

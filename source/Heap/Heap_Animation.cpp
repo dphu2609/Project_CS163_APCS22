@@ -46,6 +46,7 @@ void Heap::createTree() {
 void Heap::insertAnimation() {
     switch (mAnimationStep) {
         case 1: {
+            resetAnimation();
             createBackupTree();
             createTree();
             mAnimationStep = 2;
@@ -53,6 +54,7 @@ void Heap::insertAnimation() {
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
             insert(mRoot, mNodeList, mInputQueue.front(), false);
             mOperationNode = mNodeList.back();
             mOperationNode->isInsertNode = true;
@@ -68,12 +70,15 @@ void Heap::insertAnimation() {
         }
 
         case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
             if (mOperationNode->parent && ((mIsMaxHeap && mOperationNode->val > mOperationNode->parent->val) || (!mIsMaxHeap && mOperationNode->val < mOperationNode->parent->val))) {
                 std::swap(mOperationNode->val, mOperationNode->parent->val);
                 std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex]);
                 mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->setLabel(std::to_string(mOperationNode->order));
                 mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex]->setLabel(std::to_string(mOperationNode->parent->order));
+                mOperationNode->isInsertNode = false;
                 mOperationNode = mOperationNode->parent;
+                mOperationNode->isInsertNode = true;
                 mAnimationStep = 5;
             }
             else mAnimationStep = 6;
@@ -98,6 +103,7 @@ void Heap::insertAnimation() {
 void Heap::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
+            resetAnimation();
             createBackupTree();
             createTree();
             mAnimationStep = 2;
@@ -105,6 +111,7 @@ void Heap::deleteAnimation() {
         }
         
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
             std::swap(mNodeList[mInputQueue.front() - 1]->val, mNodeList.back()->val);
             std::swap(mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1], mSceneLayers[Nodes]->getChildren().back());
             mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setLabel(std::to_string(mNodeList[mInputQueue.front() - 1]->order));
@@ -122,6 +129,7 @@ void Heap::deleteAnimation() {
         }
 
         case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
             if (mNodeList.back()->parent) {
                 if (mNodeList.back()->order % 2 == 0) {
                     mNodeList.back()->parent->left = nullptr;
@@ -153,6 +161,7 @@ void Heap::deleteAnimation() {
         }
 
         case 6: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(6));
             if (mIsMaxHeap) {
                 if ((mOperationNode->left && mOperationNode->val < mOperationNode->left->val) || (mOperationNode->right && mOperationNode->val < mOperationNode->right->val)) {
                     if (mOperationNode->left && mOperationNode->right && mOperationNode->left->val < mOperationNode->right->val) {

@@ -13,6 +13,7 @@ namespace States {
         AVL,
         Tree234,
         Heap,
+        Trie,
         StateCount
     };
 };
@@ -84,5 +85,6 @@ private:
 #include <State/AVL.hpp>
 #include <State/Tree234.hpp>
 #include <State/Heap.hpp>
+#include <State/Trie.hpp>
 
 #endif

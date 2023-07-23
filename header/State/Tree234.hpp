@@ -95,8 +95,8 @@ private:
     Node* mRoot = nullptr;
     Node* mRootForBackup = nullptr;
 private:
-    float NODE_DISTANCE_HORIZONTAL = 300.f * Constant::SCALE_X;
-    float NODE_DISTANCE_VERTICAL = 200.f * Constant::SCALE_Y;
+    float NODE_DISTANCE_HORIZONTAL;
+    float NODE_DISTANCE_VERTICAL;
 private:
     std::vector<Node*> mNodeList = {};
     std::vector<Node*> mNodeListForBackup = {};
@@ -166,7 +166,6 @@ private:
     int mOperationIndex = -1;
     int mReplaceValue = 0;
     int mReplaceIndex = -1;
-    bool mIsAnimation = false;
     int mTravelIndex = 0;
     int mMovedValue = 0;
     std::pair<bool, bool> mTraverseControler = {false, false};
