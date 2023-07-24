@@ -250,7 +250,10 @@ Trie::Node* Trie::copyNodeProperties(Node* root) {
     newNode->position = root->position;
     newNode->isEndOfWord = root->isEndOfWord;
     newNode->nodeIndex = root->nodeIndex;
-    newNode->edgeIndex = root->edgeIndex;
+    newNode->isNodeHighlighted = root->isNodeHighlighted;
+    for (int i = 0; i < root->edgeIndex.size(); i++) {
+        newNode->edgeIndex.push_back(root->edgeIndex[i]);
+    }
     newNode->parent = nullptr;
     newNode->child = {};
     return newNode;
@@ -268,10 +271,57 @@ Trie::Node* Trie::copyTrie(Node* root) {
 
 void Trie::getNodeList(Node* root, std::vector<Node*> &nodeList) {
     if (root == nullptr) return;
-    nodeList.push_back(root);
-    for (auto &node : root->child) {
-        getNodeList(node, nodeList);
+    std::queue<Node*> q;
+    std::vector<Node*> nodeListTemp;
+    q.push(root);
+    while (!q.empty()) {
+        Node* temp = q.front();
+        q.pop();
+        nodeListTemp.push_back(temp);
+        for (auto &node : temp->child) {
+            q.push(node);
+        }
     }
+    int currentIndex = 0;
+    for (int i = 0; i < nodeListTemp.size(); i++) {
+        for (auto &node : nodeListTemp) {
+            if (node->nodeIndex == currentIndex) {
+                nodeList.push_back(node);
+                currentIndex++;
+                break;
+            }
+        }
+    }
+}
+
+Trie::TreeState* Trie::createTreeState(int animationIndex) {
+    Node* newRoot = copyTrie(mRoot);
+    std::vector<Node*> newNodeList = {};
+    getNodeList(newRoot, newNodeList);
+    Node* nodeForOperation = nullptr;
+    if (mOperationNode) nodeForOperation = newNodeList[mOperationNode->nodeIndex];
+    int operationIndex = mOperationIndex;
+    std::vector<bool> isEdgeHighlighted;
+    for (int i = 0; i < mIsEdgeHighlighted.size(); i++) {
+        isEdgeHighlighted.push_back(mIsEdgeHighlighted[i]);
+    }
+    TreeState* newTreeState = new TreeState{newRoot, nodeForOperation, operationIndex, isEdgeHighlighted, newNodeList, animationIndex};
+    return newTreeState;
+}
+
+void Trie::returnToPreviousStep() {
+    resetNodeState();
+    clear(mRoot);
+    mNodeList.clear();
+    mRoot = mTreeForBackward.top()->root;
+    mOperationNode = mTreeForBackward.top()->nodeForOperation;
+    mOperationIndex = mTreeForBackward.top()->operationIndex;
+    mIsEdgeHighlighted = mTreeForBackward.top()->isEdgeHighlighted;
+    mNodeList = mTreeForBackward.top()->nodeList;
+    mAnimationStep = mTreeForBackward.top()->animationIndex;
+    mTreeForBackward.pop();
+    balanceTree();
+    createTree();
 }
 
 void Trie::createBackupTree() {
@@ -329,6 +379,7 @@ void Trie::createRandomTree() {
 
     clear(mRoot);   
     mNodeList.clear();
+    mIsEdgeHighlighted.clear();
 
     for (int i = 0; i < mInputSize; i++) {
         insert(mRoot, mNodeList, mInputData[i]);

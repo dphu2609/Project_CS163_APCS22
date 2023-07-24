@@ -11,7 +11,7 @@ void Trie::createTree() {
             if (node->isNodeHighlighted) {
                 trieNode->set(
                     content, node->position, Size::NODE_RADIUS, 
-                    Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+                    Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
                 );
             }
             else {
@@ -29,23 +29,27 @@ void Trie::createTree() {
             if (node->isNodeHighlighted) {
                 trieNode->set(
                     content, node->position, Size::NODE_RADIUS, 
-                    Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
+                    Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
                 );
             }
             else trieNode->set(content, node->position);
             mSceneLayers[Nodes]->attachChild(std::move(trieNode));
         }
     }
-    if (mIsEdgeHighlighted.empty()) {
+    if (mIsEdgeHighlighted.size() == 0) {
+        int index = 0;
         for (auto &node : mNodeList) {
             node->edgeIndex.clear();
             for (int i = 0; i < node->child.size(); i++) {
-                node->edgeIndex.push_back(mSceneLayers[Edges]->getChildren().size());
+                node->edgeIndex.push_back(index);
                 std::unique_ptr<Edge> edge = std::make_unique<Edge>();
                 edge->set(node->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), node->child[i]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS));
                 mSceneLayers[Edges]->attachChild(std::move(edge));
-                mIsEdgeHighlighted.push_back(false);
+                index++;
             }
+        }
+        for (int i = 0; i < index; i++) {
+            mIsEdgeHighlighted.push_back(false);
         }
     }
     else {
@@ -81,6 +85,7 @@ void Trie::insertAnimation() {
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             if (mRoot == nullptr) {
                 Node* newNode = new Node{' ', 0, 0, {}, -1, sf::Vector2f(Constant::WINDOW_WIDTH/2 - Size::NODE_RADIUS, 150 * Constant::SCALE_Y) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), {}, nullptr, false, false};
                 mRoot = newNode;
@@ -110,6 +115,7 @@ void Trie::insertAnimation() {
         }
 
         case 5: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(5));
             if (mOperationIndex < mInputQueue.front().size()) {
                 add1Node(mOperationNode, mNodeList, mInputQueue.front(), mOperationIndex);
                 balanceTree();
@@ -117,6 +123,7 @@ void Trie::insertAnimation() {
                 mAnimationStep = 6;
             }
             else {
+                mOperationNode->isEndOfWord = true;
                 mAnimationStep = 7;
             }
             break;
@@ -134,6 +141,171 @@ void Trie::insertAnimation() {
         }
 
         case 7: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
+void Trie::deleteAnimation() {
+    switch (mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createBackupTree();
+            createTree();
+            mAnimationStep = 2;
+            break;
+        }
+
+        case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
+            getTravelPath(mInputQueue.front());
+            mAnimationStep = 3;
+            break;
+        }
+
+        case 3: {
+            traverseAnimation(true, 3, 4);
+            break;
+        }
+
+        case 4: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mInputQueue.front().size() == mTravelPath.size() - 1 && mTravelPath.back().first->isEndOfWord) {
+                mOperationNode = mTravelPath.back().first;
+                if (mTravelPath.back().first->child.size() == 0) {
+                    mAnimationStep = 5;
+                }
+                else {
+                    mAnimationStep = 7;
+                }
+            }
+            else {
+                mAnimationStep = 9;
+            }
+            break;
+        }
+
+        case 5: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
+            if (mOperationNode != mRoot) {
+                mSceneLayers[Edges]->getChildren()[mOperationNode->parent->edgeIndex[mOperationNode->orderOfNode]]->moveBy2Points(
+                    mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 
+                    mOperationNode->parent->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 1.5
+                );
+            }
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isZoomFinished() && !mIsAnimationPaused) {
+                mSceneLayers[Nodes]->getChildren().erase(mSceneLayers[Nodes]->getChildren().begin() + mOperationNode->nodeIndex);
+                if (mOperationNode != mRoot) {
+                    mSceneLayers[Edges]->getChildren().erase(mSceneLayers[Edges]->getChildren().begin() + mOperationNode->parent->edgeIndex[mOperationNode->orderOfNode]);
+                }
+                resetNodeState();
+                mAnimationStep = 6;
+            }
+            break;
+        }
+
+        case 6: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(6));
+            Node* temp = mOperationNode;
+            mOperationNode = mOperationNode->parent;
+            mNodeList.erase(mNodeList.begin() + temp->nodeIndex);
+            for (int i = temp->nodeIndex; i < mNodeList.size(); i++) {
+                mNodeList[i]->nodeIndex--;
+            }
+            if (mOperationNode) {
+                mOperationNode->child.erase(mOperationNode->child.begin() + temp->orderOfNode);
+                for (auto &node : mNodeList) {
+                    for (auto &index : node->edgeIndex) {
+                        if (index > mOperationNode->edgeIndex[temp->orderOfNode]) index--;
+                    }
+                }
+                mOperationNode->edgeIndex.erase(mOperationNode->edgeIndex.begin() + temp->orderOfNode);
+            }
+            else {
+                mRoot = nullptr;
+            }
+            delete temp;
+            if (mRoot && mOperationNode->child.size() == 0) {
+                mAnimationStep = 5;
+            }
+            else {
+                if (mRoot) {
+                    balanceTree();
+                    mAnimationStep = 8;
+                }
+                else mAnimationStep = 9;
+            }
+            break;
+        }
+
+        case 7: {
+            if (!mTraverseControler.first) {
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
+                    Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2
+                );
+            }
+            else if (!mTraverseControler.second) {
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
+                    Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR, 2
+                );
+            }
+            if (!mTraverseControler.first) {
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->resetAnimationVar();
+                    mTraverseControler.first = true;
+                }
+            } 
+            else if (!mTraverseControler.second && !mIsAnimationPaused) {
+                if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                    mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->resetAnimationVar();
+                    mAnimationStep = 9;
+                }
+            }
+            break;
+        }
+
+        case 8: {
+            moveTreeAnimation(true, 1.5, 9);
+            break;
+        }
+
+        case 9: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
+void Trie::searchAnimation() {
+    switch(mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createBackupTree();
+            createTree();
+            mAnimationStep = 2;
+            break;
+        }
+
+        case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
+            getTravelPath(mInputQueue.front());
+            mAnimationStep = 3;
+            break;
+        }
+
+        case 3: {
+            traverseAnimation(true, 3, 4);
+            break;
+        }
+
+        case 4: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
             }

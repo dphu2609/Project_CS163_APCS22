@@ -275,8 +275,8 @@ Tree234::Node* Tree234::findNode(Node* root, int data) {
     while (cur) {
         if (getIndexNextMove(cur, data) == -1) {
             if (cur->tempLeft && data == cur->tempLeft->val) return cur->tempLeft;
-            else if (data == cur->val) return cur;
-            else if (cur->tempRight && data == cur->tempRight->val) return cur->tempRight;
+            if (data == cur->val) return cur;
+            if (cur->tempRight && data == cur->tempRight->val) return cur->tempRight;
         }
         cur = cur->child[getIndexNextMove(cur, data)];
     }
@@ -374,7 +374,7 @@ void Tree234::mergeNode(Node *&root) {
     if (root->isAttached) {
         if (root->val < root->parent->val) {
             if (root->parent->numKeys == 2) {
-                root->parent->tempLeft = nullptr;
+                root->numKeys = 3;
                 root->tempLeft = root->parent->child[0];
                 root->tempRight = root->parent->child[1];
                 root->isAttached = false;
@@ -389,6 +389,7 @@ void Tree234::mergeNode(Node *&root) {
                 root->parent->child[1]->orderOfNode[1] = true;
                 root->orderOfNode[0] = true;
                 root->parent->numKeys = 1;
+                root->parent->tempLeft = nullptr;
             }
             else if (root->parent->numKeys == 3) {
                 std::swap(root->val, root->parent->val);
@@ -396,7 +397,7 @@ void Tree234::mergeNode(Node *&root) {
                 std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex]);
                 std::swap(mSceneLayers[Nodes]->getChildren()[root->parent->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->parent->tempRight->nodeIndex]);
                 root = root->parent->tempRight;
-                root->parent->tempRight = nullptr;
+                root->numKeys = 3;
                 root->tempLeft = root->parent->child[0];
                 root->tempRight = root->parent->child[1];
                 root->isAttached = false;
@@ -414,10 +415,11 @@ void Tree234::mergeNode(Node *&root) {
                 root->parent->child[2]->orderOfNode[2] = true;
                 root->orderOfNode[0] = true;
                 root->parent->numKeys = 2;
+                root->parent->tempRight = nullptr;
             }
         }
         else {
-            root->parent->tempRight = nullptr;
+            root->numKeys = 3;
             root->tempLeft = root->parent->child[2];
             root->tempRight = root->parent->child[3];
             root->isAttached = false;
@@ -429,6 +431,7 @@ void Tree234::mergeNode(Node *&root) {
             root->parent->child[3] = nullptr;
             root->orderOfNode[2] = true;
             root->parent->numKeys = 2;
+            root->parent->tempRight = nullptr;
         }
     }
     else {
@@ -436,7 +439,6 @@ void Tree234::mergeNode(Node *&root) {
             std::swap(root->val, root->tempRight->val);
             std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempRight->nodeIndex]);
             root = root->tempRight;
-            root->parent->tempRight = nullptr;
             root->tempLeft = root->parent->child[1];
             root->tempRight = root->parent->child[2];
             root->isAttached = false;
@@ -451,12 +453,12 @@ void Tree234::mergeNode(Node *&root) {
             root->parent->child[2]->orderOfNode[2] = false;
             root->orderOfNode[1] = true;
             root->parent->numKeys = 2;
+            root->parent->tempRight = nullptr;
         }
         else if (root->numKeys == 2) {
             std::swap(root->val, root->tempLeft->val);
             std::swap(mSceneLayers[Nodes]->getChildren()[root->nodeIndex], mSceneLayers[Nodes]->getChildren()[root->tempLeft->nodeIndex]);
             root = root->tempLeft;
-            root->parent->tempLeft = nullptr;
             root->tempLeft = root->parent->child[1];
             root->tempRight = root->parent->child[2];
             root->isAttached = false;
@@ -468,6 +470,7 @@ void Tree234::mergeNode(Node *&root) {
             root->parent->child[2] = nullptr;
             root->orderOfNode[1] = true;
             root->parent->numKeys = 1;
+            root->parent->tempLeft = nullptr;
         }
         else if (root->numKeys == 1) {
             root->tempLeft = root->child[0];
@@ -494,8 +497,8 @@ void Tree234::mergeNode(Node *&root) {
             root->tempRight->child[1] = nullptr;
             for (int i = 0; i < 4; i++) if (root->child[i]) root->child[i]->parent = root;
         }
+        root->numKeys = 3;
     }
-    root->numKeys = 3;
 }
 
 void Tree234::rotateLeft(Node *&root) {

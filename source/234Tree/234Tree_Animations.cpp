@@ -205,6 +205,10 @@ void Tree234::deleteAnimation() {
         case 7: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(7));
             mOperationNode = findNode(mRoot, mInputQueue.front());  
+            if (mOperationNode == nullptr) {
+                mAnimationStep = 15;
+                break;
+            }
             if ((mOperationNode->isAttached && mOperationNode->parent->isLeaf() && mOperationNode->parent->numKeys > 1) || (!mOperationNode->isAttached && mOperationNode->isLeaf() && mOperationNode->numKeys > 1)) {
                 mAnimationStep = 13;
                 break;
@@ -223,6 +227,7 @@ void Tree234::deleteAnimation() {
             }
             else {
                 handleLeafNodeWith1NumKeys(mOperationNode);
+                std::cout << "START BALANCE TREE" << std::endl;
                 balanceTree();
                 mAnimationStep = 12;
             }

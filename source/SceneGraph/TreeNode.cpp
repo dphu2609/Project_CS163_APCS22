@@ -9,7 +9,7 @@ void TreeNode::set(const std::string &text, const sf::Vector2f position, const f
 
     if (text.size() == 0) return;
 
-    mText.setFont(ResourcesHolder::fontsHolder[Fonts::FiraSansRegular]);
+    mText.setFont(ResourcesHolder::fontsHolder[Fonts::RobotoRegular]);
     mText.setString(text);
     if (text.size() <= 3) mText.setCharacterSize(radius);
     else if (text.size() <= 4) mText.setCharacterSize(radius * 0.8);

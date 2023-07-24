@@ -92,10 +92,12 @@ private:
     struct TreeState {
         Node* root;
         Node* nodeForOperation;
+        int operationIndex;
+        std::vector<bool> isEdgeHighlighted;
         std::vector<Node*> nodeList;
         int animationIndex;
     };
-    TreeState* createTreeState(int animationIndex) {return nullptr;}
+    TreeState* createTreeState(int animationIndex);
 private: //Algorithms
     void createBackupTree();
     void restoreTree();
@@ -112,12 +114,12 @@ private: //Algorithms
     void getTravelPath(std::string word);
     int isLeftMidRight(Node* node);
     void balanceTree();
-    void returnToPreviousStep() {}
+    void returnToPreviousStep();
 private: //Visualization
     void createTree();
     void insertAnimation();
-    void deleteAnimation() {}
-    void searchAnimation() {}
+    void deleteAnimation();
+    void searchAnimation();
     void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
@@ -132,7 +134,7 @@ private:
     bool mUpdateAnimation = false;
 private:
     std::vector<std::string> mInputData = {};
-    int mInputSize = 4;
+    int mInputSize = 0;
     std::queue<std::string> mInputQueue = {};
     int mAnimationStep = 1;
 private:
