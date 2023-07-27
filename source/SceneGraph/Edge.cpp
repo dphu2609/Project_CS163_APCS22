@@ -1,6 +1,10 @@
 #include <SceneGraph/Edge.hpp>
 
-void Edge::set(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness, const sf::Color &edgeColor) {
+void Edge::set(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness, const sf::Color &edgeColor, const std::string &label) {
+    mLabel.setFont(ResourcesHolder::fontsHolder[Fonts::RobotoBold]);
+    mLabel.setCharacterSize(Size::NODE_RADIUS * 0.8);
+    mLabel.setString(label);
+    mLabel.setFillColor(Color::NODE_TEXT_COLOR);
     setPositionByPoints(point1, point2);
     mEdge.setFillColor(edgeColor);
 }
@@ -16,12 +20,14 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     mEdge.setSize(size);
     mEdge.setPosition(position);
     mEdge.setRotation(-angle);
+    mLabel.setPosition(sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2));
     startPoint = point1;
     endPoint = point2;
 }
 
 void Edge::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(mEdge);
+    target.draw(mLabel);
 }
 
 void Edge::updateCurrent() {

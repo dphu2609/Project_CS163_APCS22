@@ -229,7 +229,7 @@ void Trie::deleteAnimation() {
                 mRoot = nullptr;
             }
             delete temp;
-            if (mRoot && mOperationNode->child.size() == 0) {
+            if (mRoot && mOperationNode->child.size() == 0 && !mOperationNode->isEndOfWord) {
                 mAnimationStep = 5;
             }
             else {

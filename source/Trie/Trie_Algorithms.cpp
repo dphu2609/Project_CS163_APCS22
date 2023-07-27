@@ -294,6 +294,14 @@ void Trie::getNodeList(Node* root, std::vector<Node*> &nodeList) {
     }
 }
 
+bool Trie::isProcessingAnimation() {
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) 
+        if (child->isProcessing()) return true;
+    for (auto &child : mSceneLayers[Edges]->getChildren())
+        if (child->isProcessing()) return true;
+    return false;
+}
+
 Trie::TreeState* Trie::createTreeState(int animationIndex) {
     Node* newRoot = copyTrie(mRoot);
     std::vector<Node*> newNodeList = {};

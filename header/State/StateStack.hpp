@@ -14,6 +14,8 @@ namespace States {
         Tree234,
         Heap,
         Trie,
+        Graph,
+        HashTable,
         StateCount
     };
 };
@@ -86,5 +88,6 @@ private:
 #include <State/Tree234.hpp>
 #include <State/Heap.hpp>
 #include <State/Trie.hpp>
+#include <State/Graph.hpp>
 
 #endif

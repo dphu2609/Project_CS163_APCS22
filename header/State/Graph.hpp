@@ -1,5 +1,5 @@
-#ifndef TRIE_HPP
-#define TRIE_HPP
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
 
 #include <State/StateStack.hpp>
 #include <SceneGraph/TreeNode.hpp>
@@ -8,7 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 
-class Trie : public State {
+class Graph : public State {
 private:
     virtual void draw();
     virtual void update();
@@ -16,20 +16,16 @@ private:
     virtual void buildScene();
 public:
     struct Node {
-        char val;
-        int depth;
+        int val;
         int nodeIndex;
-        std::vector<int> edgeIndex;
-        int orderOfNode;
         sf::Vector2f position;
-        std::vector<Node*> child;
-        Node* parent;
-        bool isEndOfWord;
+        std::vector<int> child;
         bool isNodeHighlighted;
     };
 public:
-    explicit Trie(StateStack& stack, sf::RenderWindow &window);
-    ~Trie();
+    explicit Graph(StateStack& stack, sf::RenderWindow &window);
+    ~Graph();
+    void clear();
 private:
     enum SceneLayer {
         Edges,
@@ -55,7 +51,8 @@ private:
         SizeLabel,
         SizeInputBox,
         RamdomButton,
-        FromFileButton
+        FromFileButton,
+        FromMatrixButton
     };
 
     enum InsertOptions {
@@ -81,70 +78,54 @@ private:
         Replay
     };
 private:
-    Node* mRoot = nullptr;
-    Node* mRootForBackup = nullptr;
+    std::vector<std::vector<bool>> mConnections = {};
+    std::vector<std::vector<int>> mDistance = {};
+    std::vector<std::vector<std::pair<int, bool>>> mEdgeIndex = {};
 private:
-    float NODE_DISTANCE_HORIZONTAL;
-    float NODE_DISTANCE_VERTICAL;
+    float NODE_DISTANCE_HORIZONTAL = 250.f * Constant::SCALE_X;
+    float NODE_DISTANCE_VERTICAL = 250.f * Constant::SCALE_Y;
 private:
     std::vector<Node*> mNodeList = {};
-    std::vector<Node*> mNodeListForBackup = {};
     struct TreeState {
         Node* root;
         Node* nodeForOperation;
-        int operationIndex;
-        std::vector<bool> isEdgeHighlighted;
         std::vector<Node*> nodeList;
         int animationIndex;
     };
-    TreeState* createTreeState(int animationIndex);
+    TreeState* createTreeState(int animationIndex) {return nullptr;}
 private: //Algorithms
-    void createBackupTree();
-    void restoreTree();
-    void clear(Node *&root);
-    void insert(Node* &root, std::vector<Node*> &nodeList, std::string word);
-    void add1Node(Node *&root, std::vector<Node*> &nodeList, std::string word, int &currentIndex);
-    Node* copyNodeProperties(Node* node);
-    Node* copyTrie(Node* root);
-    // Node* findNode(Node* root, int index);
+    void restoreTree() {}
+    void initGraph();
+    Node* copyNodeProperties(Node* node) {return nullptr;}
+    Node* copyGraph(Node* root) {return nullptr;}
     void setTreeScale(int treeSize);
-    void moveTree(Node* root, bool isLeft);
-    void createRandomTree();
-    void getNodeList(Node *root, std::vector<Node*> &nodeList);
-    void getTravelPath(std::string word);
-    int isLeftMidRight(Node* node);
     void balanceTree();
-    void returnToPreviousStep();
+    void createRandomTree();
+    void returnToPreviousStep() {}
 private: //Visualization
     void createTree();
-    void insertAnimation();
-    void deleteAnimation();
-    void searchAnimation();
-    void traverseAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
-    void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
-    void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0) {}
-    bool isProcessingAnimation();
-    void resetNodeState();
-    void resetAnimation();
+    void insertAnimation() {}
+    void deleteAnimation() {}
+    void searchAnimation() {}
+    bool isProcessingAnimation() {return false;}
+    void resetNodeState() {}
+    void resetAnimation() {}
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
     bool mSearchAnimation = false;
     bool mUpdateAnimation = false;
 private:
-    std::vector<std::string> mInputData = {};
-    int mInputSize = 0;
-    std::queue<std::string> mInputQueue = {};
+    std::vector<int> mInputData = {};
+    int mInputSize = 6;
+    std::queue<int> mInputQueue = {};
     int mAnimationStep = 1;
 private:
     std::stack<TreeState*> mTreeForBackward = {};
     std::vector<std::pair<Node*, int>> mTravelPath = {};
-    std::vector<bool> mIsEdgeHighlighted = {};
     std::vector<Node*> mSplitCheckpoint = {};
     int mSplitCheckpointIndex = 0;
     Node* mOperationNode = nullptr;
-    int mOperationIndex = 0;
     int mTravelIndex = 0;
     std::pair<bool, bool> mTraverseControler = {false, false};
 private: //Control box

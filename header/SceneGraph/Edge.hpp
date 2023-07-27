@@ -6,10 +6,11 @@
 class Edge : public SceneNode {
 private: 
     sf::RectangleShape mEdge;
+    sf::Text mLabel;
     sf::Vector2f startPoint;
     sf::Vector2f endPoint;
 public:
-    void set(const sf::Vector2f &position1, const sf::Vector2f &position2, const float &edgeThickness = Size::EDGE_THICKNESS, const sf::Color &edgeColor = sf::Color::Black);
+    void set(const sf::Vector2f &position1, const sf::Vector2f &position2, const float &edgeThickness = Size::EDGE_THICKNESS, const sf::Color &edgeColor = sf::Color::Black, const std::string &label = "");
     virtual void setPosition(const sf::Vector2f &position);
     virtual void setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness = Size::EDGE_THICKNESS);
 private:

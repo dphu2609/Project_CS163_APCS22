@@ -28,6 +28,7 @@ namespace Fonts {
         TiltWarpRegular,
         RobotoRegular,
         RobotoItalic,
+        RobotoBold,
         FiraMonoRegular
     };
 };

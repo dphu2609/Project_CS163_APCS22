@@ -328,13 +328,18 @@ void AVL::deleteAnimation() {
         }
 
         case 7: {
-            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeListForBackup[mOperationNode->nodeIndex]->position, 1.5);            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeListForBackup[mOperationNode->nodeIndex]->position, 1.5);            
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
             moveTreeAnimation(true, 1.5, 8);
             break;
         }
 
         case 8: {
             deleteNode();
+            if (mRoot == nullptr) {
+                mAnimationStep = 23;
+                break;
+            }
             if (!mIsReversed) mTreeForBackward.push(createTreeState(9));
             mAnimationStep++;
             break;

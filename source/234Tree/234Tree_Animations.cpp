@@ -156,61 +156,98 @@ void Tree234::insertAnimation() {
 void Tree234::deleteAnimation() {
     switch (mAnimationStep) {
         case 1: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
             resetAnimation();
-            createBackupTree();
             createTree();
-            if (mRoot->numKeys == 1) {
-                if (mRoot->child[0] && mRoot->child[0]->numKeys == 1 && mRoot->child[1] && mRoot->child[1]->numKeys == 1) {
-                    getTravelPath(mRoot, mRoot->val);
-                    mAnimationStep = 2;
-                    break;
-                }
-            }
-            getTravelPath(mRoot, mInputQueue.front());
-            mAnimationStep = 6;
+            createBackupTree();
+            mAnimationStep++;
             break;
         }
 
         case 2: {
-            traverseAnimation(true, 3, 3);
+            getTravelPath(mRoot, mInputQueue.front());
+            mOperationNode = findNode(mRoot, mInputQueue.front());
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
+            mAnimationStep++;
             break;
         }
 
         case 3: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(3));
-            mergeNode(mRoot);
-            balanceTree();
-            mAnimationStep = 4;
+            traverseAnimation(true, 3, 4);
             break;
         }
 
         case 4: {
-            moveTreeAnimation(true, 1, 5);
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mOperationNode) mAnimationStep = 5;
+            else mAnimationStep = 20;
             break;
         }
 
         case 5: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(5));
-            getTravelPath(mRoot, mInputQueue.front());
-            mAnimationStep = 6;
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
+                Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2
+            );
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                mAnimationStep = 6;
+            }
             break;
         }
 
         case 6: {
-            traverseAnimation(true, 3, 7);
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(6));
+            resetAnimation();
+            createTree();
+            if (mRoot->numKeys == 1) {
+                if (mRoot->child[0] && mRoot->child[0]->numKeys == 1 && mRoot->child[1] && mRoot->child[1]->numKeys == 1) {
+                    getTravelPath(mRoot, mRoot->val);
+                    mAnimationStep = 7;
+                    break;
+                }
+            }
+            getTravelPath(mRoot, mInputQueue.front());
+            mAnimationStep = 11;
             break;
         }
 
         case 7: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(7));
+            traverseAnimation(true, 3, 8);
+            break;
+        }
+
+        case 8: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(8));
+            mergeNode(mRoot);
+            balanceTree();
+            mAnimationStep = 9;
+            break;
+        }
+
+        case 9: {
+            moveTreeAnimation(true, 1, 10);
+            break;
+        }
+
+        case 10: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(10));
+            getTravelPath(mRoot, mInputQueue.front());
+            mAnimationStep = 11;
+            break;
+        }
+
+        case 11: {
+            traverseAnimation(true, 3, 12);
+            break;
+        }
+
+        case 12: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(12));
             mOperationNode = findNode(mRoot, mInputQueue.front());  
             if (mOperationNode == nullptr) {
-                mAnimationStep = 15;
+                mAnimationStep = 20;
                 break;
             }
             if ((mOperationNode->isAttached && mOperationNode->parent->isLeaf() && mOperationNode->parent->numKeys > 1) || (!mOperationNode->isAttached && mOperationNode->isLeaf() && mOperationNode->numKeys > 1)) {
-                mAnimationStep = 13;
+                mAnimationStep = 18;
                 break;
             }
             if (mOperationNode->isAttached || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
@@ -218,63 +255,62 @@ void Tree234::deleteAnimation() {
                 if (mReplaceNode->numKeys == 1 && ((mOperationNode->isAttached && mReplaceNode->parent == mOperationNode->parent) || (!mOperationNode->isAttached && mReplaceNode->parent == mOperationNode))) {
                     handleNonLeafNodeWithLeafChildren(mOperationNode);
                     balanceTree();
-                    mAnimationStep = 12;
+                    mAnimationStep = 17;
                 }
                 else {
                     getTravelPath(mOperationNode, mReplaceNode->val);
-                    mAnimationStep = 8;
+                    mAnimationStep = 13;
                 }
             }
             else {
                 handleLeafNodeWith1NumKeys(mOperationNode);
-                std::cout << "START BALANCE TREE" << std::endl;
                 balanceTree();
-                mAnimationStep = 12;
+                mAnimationStep = 17;
             }
             break;
         }
 
-        case 8: {
-            traverseAnimation(true, 3, 9);
-            break;
-        }
-
-        case 9: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(9));
-            std::swap(mOperationNode->val, mReplaceNode->val);
-            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
-            mOperationNode = mReplaceNode;
-            if (mOperationNode->numKeys == 1) mAnimationStep = 10;
-            else mAnimationStep = 12;
-            break;
-        }
-
-        case 10: {
-            moveTreeAnimation(true, 1, 11);
-            break;
-        }
-
-        case 11: {
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(11));
-            handleLeafNodeWith1NumKeys(mOperationNode);
-            balanceTree();
-            mAnimationStep = 12;
-        }
-
-        case 12: {
-            moveTreeAnimation(true, 1, 13);
-            break;
-        }
-
-        case 13: {   
-            if (!mIsReversed) mTreeForBackward.push(createTreeState(13));
-            deleteInternalNode(mOperationNode);
-            balanceTree();
-            mAnimationStep = 14;
+        case 13: {
+            traverseAnimation(true, 3, 14);
             break;
         }
 
         case 14: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(14));
+            std::swap(mOperationNode->val, mReplaceNode->val);
+            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+            mOperationNode = mReplaceNode;
+            if (mOperationNode->numKeys == 1) mAnimationStep = 15;
+            else mAnimationStep = 17;
+            break;
+        }
+
+        case 15: {
+            moveTreeAnimation(true, 1, 16);
+            break;
+        }
+
+        case 16: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(16));
+            handleLeafNodeWith1NumKeys(mOperationNode);
+            balanceTree();
+            mAnimationStep = 17;
+        }
+
+        case 17: {
+            moveTreeAnimation(true, 1, 18);
+            break;
+        }
+
+        case 18: {   
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(18));
+            deleteInternalNode(mOperationNode);
+            balanceTree();
+            mAnimationStep = 19;
+            break;
+        }
+
+        case 19: {
             mSceneLayers[Nodes]->getChildren()[mOperationIndex]->zoom(sf::Vector2f(0, 0), 1.5);
             moveTreeAnimation(true, 1.5);
             if (mSceneLayers[Nodes]->getChildren()[mOperationIndex]->isZoomFinished()) {
@@ -282,7 +318,7 @@ void Tree234::deleteAnimation() {
                 for (int i = 0; i < 4; i++) {
                     mSceneLayers[Edges]->getChildren().erase(mSceneLayers[Edges]->getChildren().begin() + mOperationIndex * 4);
                 }
-                mAnimationStep = 15;
+                mAnimationStep = 20;
                 for (int i = 0; i < mNodeList.size(); i++) {
                     mNodeList[i]->nodeIndex = i;
                 }
@@ -290,7 +326,7 @@ void Tree234::deleteAnimation() {
             break;
         }
 
-        case 15: {
+        case 20: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
             }
@@ -558,8 +594,7 @@ void Tree234::resetAnimation() {
     mReplaceNode = nullptr;
     mOperationIndex = -1;
     mReplaceIndex = -1;
-    for (auto &child : mSceneLayers[Nodes]->getChildren()) child->resetAnimationVar();
-    for (auto &child : mSceneLayers[Edges]->getChildren()) child->resetAnimationVar();
+    resetNodeState();
     for (auto &child : mNodeList) {
         child->isNodeHighlighted = false;
         child->isInsertNode = false;

@@ -172,6 +172,7 @@ AVL::Node* AVL::copyAVL(Node* root) {
 }
 
 void AVL::balanceTree() {
+    if (mRoot == nullptr) return;
     std::vector<Node*> nodeList;
     std::queue<Node*> q;
     q.push(mRoot);

@@ -21,11 +21,13 @@ void Program::registerStates() {
     mStateStack.registerState<Tree234>(States::Tree234);
     mStateStack.registerState<Heap>(States::Heap);
     mStateStack.registerState<Trie>(States::Trie);
+    mStateStack.registerState<Graph>(States::Graph);
 }
 
 void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
     ResourcesHolder::fontsHolder.load(Fonts::RobotoRegular, "resources/fonts/Roboto/Roboto-Regular.ttf");
+    ResourcesHolder::fontsHolder.load(Fonts::RobotoBold, "resources/fonts/Roboto/Roboto-Bold.ttf");
 }
 
 void Program::loadTextures() {
@@ -43,7 +45,7 @@ void Program::loadTextures() {
 
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::Trie);
+    mStateStack.pushState(States::Graph);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(mWindow.isOpen()) {
