@@ -559,7 +559,6 @@ void AVL::searchAnimation() {
     }
 }
 
-
 void AVL::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) {

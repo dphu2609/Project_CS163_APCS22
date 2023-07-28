@@ -20,18 +20,26 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     mEdge.setSize(size);
     mEdge.setPosition(position);
     mEdge.setRotation(-angle);
-    if (angle >= 0) {
-        mLabel.setPosition(
-            sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2)
-            - sf::Vector2f(mLabel.getGlobalBounds().width, 0)
-        );
+    sf::FloatRect labelBounds = mLabel.getGlobalBounds();
+    sf::Vector2f labelPosition;
+
+    // Calculate the midpoint of the edge
+    sf::Vector2f midPoint = (point1 + point2) / 2.0f;
+
+    // Calculate an offset vector perpendicular to the edge direction
+    sf::Vector2f offset;
+    if (angle >= -90 && angle < 90) {
+        // Edge pointing rightwards or upwards
+        offset = sf::Vector2f(-labelBounds.width * 5 / 4, labelBounds.height / 1.2);
+    } else {
+        // Edge pointing leftwards or downwards
+        offset = sf::Vector2f(0, labelBounds.height / 1.2);
     }
-    else {
-        mLabel.setPosition(
-            sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2)
-            - sf::Vector2f(mLabel.getGlobalBounds().width, 0)
-        );
-    }
+
+    // Calculate the label position
+    labelPosition = midPoint + offset;
+
+    mLabel.setPosition(labelPosition);
     startPoint = point1;
     endPoint = point2;
 }

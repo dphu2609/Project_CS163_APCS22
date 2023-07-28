@@ -7,10 +7,10 @@ Graph::Graph(StateStack &stack, sf::RenderWindow &window) : State(stack, window)
 Graph::~Graph() {
     clear();
     // clear(mRootForBackup);
-    // while (!mTreeForBackward.empty()) {
-    //     clear(mTreeForBackward.top()->root);
-    //     delete mTreeForBackward.top();
-    //     mTreeForBackward.pop();
+    // while (!mGraphForBackward.empty()) {
+    //     clear(mGraphForBackward.top()->root);
+    //     delete mGraphForBackward.top();
+    //     mGraphForBackward.pop();
     // }
 }
 
@@ -142,9 +142,9 @@ void Graph::handleEvent(sf::Event &event) {
                 }
             }
             initGraph();
-            setTreeScale(mInputSize);
-            balanceTree();
-            createTree();
+            setGraphScale(mInputSize);
+            balanceGraph();
+            createGraph();
         }   
     }
 
@@ -155,7 +155,7 @@ void Graph::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
-        createRandomTree();
+        createRandomGraph();
     }
 
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
@@ -288,15 +288,13 @@ void Graph::handleEvent(sf::Event &event) {
     } 
 
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
-        resetNodeState();
-        mAnimationStep = 1;
-        restoreTree();
         mIsReplay = false;
         mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;
+        applyGraphState(mBackupGraph);
     } 
 }
 
@@ -515,7 +513,7 @@ void Graph::buildScene() {
     clearButton->deactivate();
     mSceneLayers[MatrixOptions]->attachChild(std::move(clearButton));
     //---------------
-    createRandomTree();
+    createRandomGraph();
 }
 
 

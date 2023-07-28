@@ -22,10 +22,10 @@ void Graph::initGraph() {
     }
 }
 
-void Graph::createRandomTree() {
+void Graph::createRandomGraph() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, 99);
+    std::uniform_int_distribution<> dis(1, 9);
     std::uniform_int_distribution<> childNum(0, 2);
     std::uniform_int_distribution<> childIndex(0, mInputSize - 1);
     mConnections.clear();
@@ -54,13 +54,13 @@ void Graph::createRandomTree() {
         }
     }
     initGraph();
-    setTreeScale(mInputSize);
-    balanceTree();
-    createTree();
+    setGraphScale(mInputSize);
+    balanceGraph();
+    createGraph();
 }
 
-void Graph::setTreeScale(int treeSize) {
-    if (treeSize < 7) {
+void Graph::setGraphScale(int GraphSize) {
+    if (GraphSize < 7) {
         Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
@@ -76,7 +76,7 @@ void Graph::setTreeScale(int treeSize) {
     }
 }
 
-void Graph::balanceTree() {
+void Graph::balanceGraph() {
     std::vector<bool> visited(mInputSize, false);
     std::vector<int> depth(mInputSize, 1);
     int count = 0;
@@ -126,4 +126,66 @@ void Graph::balanceTree() {
             nodeLayer[i][j]->position = nodeLayer[i][0]->position + sf::Vector2f(j * NODE_DISTANCE_HORIZONTAL, 0);
         }
     }
+}
+
+Graph::GraphState* Graph::createGraphState(int animationIndex) {
+    GraphState* graphState = new GraphState;
+    graphState->nodeList.resize(mNodeList.size());
+    graphState->connections.resize(mConnections.size());
+    graphState->distance.resize(mDistance.size());
+    graphState->edgeIndex.resize(mEdgeIndex.size());
+    graphState->isVisited.resize(mIsVisited.size());
+    for (int i = 0; i < mConnections.size(); i++) {
+        graphState->connections[i].resize(mConnections[i].size());
+        graphState->distance[i].resize(mDistance[i].size());
+        graphState->edgeIndex[i].resize(mEdgeIndex[i].size());
+        for (int j = 0; j < mConnections[i].size(); j++) {
+            graphState->connections[i][j] = mConnections[i][j];
+            graphState->distance[i][j] = mDistance[i][j];
+            graphState->edgeIndex[i][j] = mEdgeIndex[i][j];
+        }
+    }
+    graphState->queueForDjikstra = mQueueForDjikstra;
+    graphState->djikstraStep = mDjikstraStep;
+    for (int i = 0; i < mIsVisited.size(); i++) {
+        graphState->isVisited[i] = mIsVisited[i];
+    }
+    for (int i = 0; i < mNodeList.size(); i++) {
+        graphState->nodeList[i] = new Node;
+        graphState->nodeList[i]->val = mNodeList[i]->val;
+        graphState->nodeList[i]->nodeIndex = mNodeList[i]->nodeIndex;
+        graphState->nodeList[i]->position = mNodeList[i]->position;
+        graphState->nodeList[i]->child = mNodeList[i]->child;
+        graphState->nodeList[i]->isNodeHighlighted = mNodeList[i]->isNodeHighlighted;
+        graphState->nodeList[i]->distance = mNodeList[i]->distance;
+    }
+    graphState->animationIndex = animationIndex;
+    return graphState;
+}
+
+void Graph::applyGraphState(GraphState * graphState) {
+    for (int i = 0; i < mConnections.size(); i++) {
+        for (int j = 0; j < mConnections[i].size(); j++) {
+            mConnections[i][j] = graphState->connections[i][j];
+            mDistance[i][j] = graphState->distance[i][j];
+            mEdgeIndex[i][j] = graphState->edgeIndex[i][j];
+        }
+    }
+    mQueueForDjikstra = graphState->queueForDjikstra;
+    mDjikstraStep = graphState->djikstraStep;
+    for (int i = 0; i < mIsVisited.size(); i++) {
+        mIsVisited[i] = graphState->isVisited[i];
+    }
+    clear();
+    for (int i = 0; i < graphState->nodeList.size(); i++) {
+        mNodeList.push_back(graphState->nodeList[i]);
+    }
+    mAnimationStep = graphState->animationIndex;
+}
+
+void Graph::returnToPreviousStep() {
+    if (mGraphForBackward.empty()) return;
+    applyGraphState(mGraphForBackward.top());
+    mGraphForBackward.pop();
+    createGraph();
 }
