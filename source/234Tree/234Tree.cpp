@@ -225,47 +225,47 @@ void Tree234::buildScene() {
     }
     std::unique_ptr<RectangleButton> createButton = std::make_unique<RectangleButton>();
     createButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 600), "Create", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 600 * Constant::SCALE_Y), "Create", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(createButton));
 
     std::unique_ptr<RectangleButton> insertButton = std::make_unique<RectangleButton>();
     insertButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 520), "Insert", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 520 * Constant::SCALE_Y), "Insert", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(insertButton));
 
     std::unique_ptr<RectangleButton> deleteButton = std::make_unique<RectangleButton>();
     deleteButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 440), "Delete", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 440 * Constant::SCALE_Y), "Delete", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(deleteButton));
 
     std::unique_ptr<RectangleButton> updateButton = std::make_unique<RectangleButton>();
     updateButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360), "Update", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Update", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(updateButton));
 
     std::unique_ptr<RectangleButton> searchButton = std::make_unique<RectangleButton>();
     searchButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 280), "Search", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 280 * Constant::SCALE_Y), "Search", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(searchButton));   
 
     std::unique_ptr<RectangleButton> sizeButton = std::make_unique<RectangleButton>();
     sizeButton->set(
-        sf::Vector2f(60 * Constant::SCALE_X, 80 * Constant::SCALE_Y), sf::Vector2f(80 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 600), "N =",
+        sf::Vector2f(60 * Constant::SCALE_X, 80 * Constant::SCALE_Y), sf::Vector2f(80 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 600 * Constant::SCALE_Y), "N =",
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color::Transparent, sf::Color::Black,
         sf::Color::Transparent, sf::Color::Black
     );
@@ -273,67 +273,67 @@ void Tree234::buildScene() {
     mSceneLayers[CreateOptions]->attachChild(std::move(sizeButton)); 
 
     std::unique_ptr<InputBox> sizeInput = std::make_unique<InputBox>();
-    sizeInput->set(sf::Vector2f(150 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 585), sf::Vector2f(100 * Constant::SCALE_X, 50 * Constant::SCALE_Y));
+    sizeInput->set(sf::Vector2f(150 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 585 * Constant::SCALE_Y), sf::Vector2f(100 * Constant::SCALE_X, 50 * Constant::SCALE_Y));
     sizeInput->deactivate();
     sizeInput->setContent(std::to_string(mInputSize));
     mSceneLayers[CreateOptions]->attachChild(std::move(sizeInput));
 
     std::unique_ptr<RectangleButton> randomButton = std::make_unique<RectangleButton>();
     randomButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(280 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 590), "Random",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(280 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 590 * Constant::SCALE_Y), "Random",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     randomButton->deactivate();
     mSceneLayers[CreateOptions]->attachChild(std::move(randomButton));
 
     std::unique_ptr<RectangleButton> fileButton = std::make_unique<RectangleButton>();
     fileButton->set(
-        sf::Vector2f(200 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(450 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 590), "Init from file",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        sf::Vector2f(200 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(450 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 590 * Constant::SCALE_Y), "Init from file",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     fileButton->deactivate();
     mSceneLayers[CreateOptions]->attachChild(std::move(fileButton));
 
     std::unique_ptr<InputBox> insertInput = std::make_unique<InputBox>();
-    insertInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 505));
+    insertInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 505 * Constant::SCALE_Y));
     insertInput->deactivate();
     mSceneLayers[InsertOptions]->attachChild(std::move(insertInput));
 
     std::unique_ptr<RectangleButton> startInsertButton = std::make_unique<RectangleButton>();
     startInsertButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 510), "Start",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 510 * Constant::SCALE_Y), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     startInsertButton->deactivate();
     mSceneLayers[InsertOptions]->attachChild(std::move(startInsertButton));
 
     std::unique_ptr<InputBox> deleteInput = std::make_unique<InputBox>();
-    deleteInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 425));
+    deleteInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 425 * Constant::SCALE_Y));
     deleteInput->deactivate();
     mSceneLayers[DeleteOptions]->attachChild(std::move(deleteInput));
 
     std::unique_ptr<RectangleButton> startDeleteButton = std::make_unique<RectangleButton>();
     startDeleteButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 430), "Start",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 430 * Constant::SCALE_Y), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     startDeleteButton->deactivate();
     mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
 
     std::unique_ptr<InputBox> searchInput = std::make_unique<InputBox>();
-    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 265));
+    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 265 * Constant::SCALE_Y));
     searchInput->deactivate();
     mSceneLayers[SearchOptions]->attachChild(std::move(searchInput));
 
     std::unique_ptr<RectangleButton> startSearchButton = std::make_unique<RectangleButton>();
     startSearchButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 270), "Start",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color(46, 196, 0), sf::Color::Black,
-        sf::Color(224, 134, 7), sf::Color::Black
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 270 * Constant::SCALE_Y), "Start",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     startSearchButton->deactivate();
     mSceneLayers[SearchOptions]->attachChild(std::move(startSearchButton));
@@ -341,14 +341,14 @@ void Tree234::buildScene() {
     std::unique_ptr<ImageButton> playButton = std::make_unique<ImageButton>();
     playButton->set(
         ResourcesHolder::texturesHolder[Textures::PlayButton], ResourcesHolder::texturesHolder[Textures::PlayButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
     );
     mSceneLayers[ControlBox]->attachChild(std::move(playButton));
 
     std::unique_ptr<ImageButton> pauseButton = std::make_unique<ImageButton>();
     pauseButton->set(
         ResourcesHolder::texturesHolder[Textures::PauseButton], ResourcesHolder::texturesHolder[Textures::PauseButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
     );
     pauseButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(pauseButton));
@@ -356,21 +356,21 @@ void Tree234::buildScene() {
     std::unique_ptr<ImageButton> nextButton = std::make_unique<ImageButton>();
     nextButton->set(
         ResourcesHolder::texturesHolder[Textures::NextButton], ResourcesHolder::texturesHolder[Textures::NextButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200)
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
     );
     mSceneLayers[ControlBox]->attachChild(std::move(nextButton));
 
     std::unique_ptr<ImageButton> prevButton = std::make_unique<ImageButton>();
     prevButton->set(
         ResourcesHolder::texturesHolder[Textures::PrevButton], ResourcesHolder::texturesHolder[Textures::PrevButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200)
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
     );
     mSceneLayers[ControlBox]->attachChild(std::move(prevButton));
 
     std::unique_ptr<ImageButton> replayButton = std::make_unique<ImageButton>();
     replayButton->set(
         ResourcesHolder::texturesHolder[Textures::ReplayButton], ResourcesHolder::texturesHolder[Textures::ReplayButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200)
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
     );
     replayButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(replayButton));

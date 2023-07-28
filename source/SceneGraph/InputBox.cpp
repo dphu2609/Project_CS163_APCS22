@@ -174,3 +174,15 @@ void InputBox::setContent(const std::string &content) {
 std::string InputBox::getContent() {
     return mData;
 }
+
+bool InputBox::isContainOnlyOneNumber() {
+    if (mData.size() == 0) return false;
+    bool isContainOnlyOneNumber = true;
+    for (int i = 0; i < mData.size(); i++) {
+        if (mData[i] < '0' || mData[i] > '9') {
+            isContainOnlyOneNumber = false;
+            break;
+        }
+    }
+    return isContainOnlyOneNumber;
+}

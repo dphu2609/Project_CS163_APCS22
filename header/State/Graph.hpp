@@ -37,6 +37,10 @@ private:
         UpdateOptions,
         SearchOptions,
         ControlBox,
+        MatrixColumnIndex,
+        MatrixRowIndex,
+        Matrix,
+        MatrixOptions,
         LayerCount
     };
     enum ButtonTypes {
@@ -76,6 +80,11 @@ private:
         Next,
         Previous,
         Replay
+    };
+
+    enum MatrixOptions {
+        ConfirmMatrix,
+        ClearMatrix
     };
 private:
     std::vector<std::vector<bool>> mConnections = {};
@@ -118,6 +127,7 @@ private:
 private:
     std::vector<int> mInputData = {};
     int mInputSize = 6;
+    int mPrevInputSize = 6;
     std::queue<int> mInputQueue = {};
     int mAnimationStep = 1;
 private:

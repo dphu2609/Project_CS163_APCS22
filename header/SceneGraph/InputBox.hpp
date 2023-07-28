@@ -21,11 +21,11 @@ private:
 public: 
     void set(
         const sf::Vector2f &position, const sf::Vector2f &size = sf::Vector2f(300 * Constant::SCALE_X, 50 * Constant::SCALE_Y), 
-        const float &outlineThickness = 2.f,
+        const float &outlineThickness = 2.f * Constant::SCALE_X,
         const sf::Font &font = ResourcesHolder::fontsHolder[Fonts::FiraSansRegular],
-        const sf::Color &boxColor = sf::Color::White, const sf::Color &textColor = sf::Color::Black,
-        const sf::Color &outlineColor = sf::Color::Black,
-        const sf::Color &cursorColor = sf::Color::Black
+        const sf::Color &boxColor = Color::INPUTBOX_COLOR, const sf::Color &textColor = Color::INPUTBOX_TEXT_COLOR,
+        const sf::Color &outlineColor = Color::INPUTBOX_OUTLINE_COLOR,
+        const sf::Color &cursorColor = Color::INPUTBOX_CURSOR_COLOR
     );
 public: 
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
@@ -38,6 +38,7 @@ public:
     virtual std::vector<int> getIntArrayData();
     virtual void setContent(const std::string &content);
     virtual std::string getContent();
+    virtual bool isContainOnlyOneNumber();
 private: 
     virtual void setVarForMove(const sf::Vector2f &positionAfterMove, const float speed);
 };

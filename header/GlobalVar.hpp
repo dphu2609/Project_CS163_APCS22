@@ -26,6 +26,20 @@ namespace Color {
 
     extern sf::Color SETTINGS_BUTTON_COLOR;
     extern sf::Color SETTINGS_BUTTON_TEXT_COLOR;
+    extern sf::Color SETTINGS_BUTTON_OUTLINE_COLOR;
+
+    extern sf::Color INPUTBOX_COLOR;
+    extern sf::Color INPUTBOX_TEXT_COLOR;
+    extern sf::Color INPUTBOX_OUTLINE_COLOR;
+    extern sf::Color INPUTBOX_CURSOR_COLOR;
+
+    extern sf::Color SETTINGS_BUTTON_HOVERED_COLOR;
+    extern sf::Color SETTINGS_BUTTON_HOVERED_TEXT_COLOR;
+    extern sf::Color SETTINGS_BUTTON_HOVERED_OUTLINE_COLOR;
+
+    extern sf::Color MATRIX_SLOT_COLOR;
+    extern sf::Color MATRIX_SLOT_TEXT_COLOR;
+    extern sf::Color MATRIX_SLOT_OUTLINE_COLOR;
 };
 
 namespace Size {
@@ -34,6 +48,7 @@ namespace Size {
     extern float NODE_RADIUS_Y;
     extern float EDGE_THICKNESS;
     extern sf::Vector2f SETTINGS_BUTTON_SIZE;
+    extern sf::Vector2f MATRIX_SLOT_SIZE;
 };
 
 namespace Animation {

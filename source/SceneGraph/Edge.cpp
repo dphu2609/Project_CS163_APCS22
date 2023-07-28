@@ -20,7 +20,18 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     mEdge.setSize(size);
     mEdge.setPosition(position);
     mEdge.setRotation(-angle);
-    mLabel.setPosition(sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2));
+    if (angle >= 0) {
+        mLabel.setPosition(
+            sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2)
+            - sf::Vector2f(mLabel.getGlobalBounds().width, 0)
+        );
+    }
+    else {
+        mLabel.setPosition(
+            sf::Vector2f((point1.x + point2.x) / 2, (point1.y + point2.y) / 2)
+            - sf::Vector2f(mLabel.getGlobalBounds().width, 0)
+        );
+    }
     startPoint = point1;
     endPoint = point2;
 }

@@ -39,6 +39,7 @@ public:
     virtual void setContent(const std::string &content) {}
     virtual void setLabel(const std::string &label) {}
     virtual std::string getContent() {return "";}
+    virtual bool isContainOnlyOneNumber() {return false;}
 private:
     bool mIsActive = true;
 public:
