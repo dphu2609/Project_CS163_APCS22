@@ -7,6 +7,7 @@
 #include <SceneGraph/RectangleButton.hpp>
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
+#include <SceneGraph/CodeBlock.hpp>
 
 class AVL : public State {
 private:
@@ -48,6 +49,7 @@ private:
         UpdateOptions,
         SearchOptions,
         ControlBox,
+        CodeBox,
         LayerCount
     };
     enum ButtonTypes {

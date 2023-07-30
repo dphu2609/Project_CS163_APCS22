@@ -131,7 +131,8 @@ void Tree234::insertAnimation() {
         case 10: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(10));
             Node* insertNode = getInternalNode(mRoot, mInputQueue.front());
-            insertInternalNode(insertNode, mNodeList, mInputQueue.front());
+            if (mRoot == nullptr) mRoot = insertInternalNode(mRoot, mNodeList, mInputQueue.front());
+            else insertInternalNode(insertNode, mNodeList, mInputQueue.front());
             balanceTree();
             mAnimationStep = 11;
             break;
@@ -250,17 +251,10 @@ void Tree234::deleteAnimation() {
                 mAnimationStep = 18;
                 break;
             }
-            if (mOperationNode->isAttached || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
+            if ((mOperationNode->isAttached && !mOperationNode->parent->isLeaf()) || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
                 mReplaceNode = findReplaceNode(mOperationNode);
-                if (mReplaceNode->numKeys == 1 && ((mOperationNode->isAttached && mReplaceNode->parent == mOperationNode->parent) || (!mOperationNode->isAttached && mReplaceNode->parent == mOperationNode))) {
-                    handleNonLeafNodeWithLeafChildren(mOperationNode);
-                    balanceTree();
-                    mAnimationStep = 17;
-                }
-                else {
-                    getTravelPath(mOperationNode, mReplaceNode->val);
-                    mAnimationStep = 13;
-                }
+                getTravelPath(mOperationNode, mReplaceNode->val);
+                mAnimationStep = 13;
             }
             else {
                 handleLeafNodeWith1NumKeys(mOperationNode);

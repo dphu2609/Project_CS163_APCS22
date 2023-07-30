@@ -7,6 +7,7 @@
 #include <SceneGraph/RectangleButton.hpp>
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
+#include <SceneGraph/CodeBlock.hpp>
 
 class Tree234 : public State {
 private:
@@ -52,6 +53,7 @@ private:
         UpdateOptions,
         SearchOptions,
         ControlBox,
+        CodeBox,
         LayerCount
     };
     enum ButtonTypes {
@@ -126,7 +128,6 @@ private: //Algorithms
     void rotateRight(Node *&root);
     Node* findReplaceNode(Node* deleteNode);
     void handleLeafNodeWith1NumKeys(Node *&node);
-    void handleNonLeafNodeWithLeafChildren(Node *&node);
     void setTreeScale(int treeSize);
     void moveTree(Node* root, bool isLeft);
     void createRandomTree();

@@ -88,6 +88,12 @@ Tree234::Node* Tree234::getInternalNode(Node* root, int data) {
 }
 
 Tree234::Node* Tree234::insertInternalNode(Node* &root, std::vector<Node*> &nodeList, int data) {
+    if (root == nullptr) {
+        root = new Node(data, nodeList);
+        nodeList.push_back(root);
+        mOperationNode = root;
+        return root;
+    }
     Node* newNode = new Node(data, nodeList);
     newNode->isAttached = true;
     nodeList.push_back(newNode);
@@ -284,6 +290,10 @@ Tree234::Node* Tree234::findNode(Node* root, int data) {
 }
 
 void Tree234::deleteInternalNode(Node* &root) {
+    if (root == mRoot) {
+        delete mRoot;
+        mRoot == nullptr;
+    }
     if (root->isAttached) {
         if (root->parent->numKeys == 3) {
             mOperationIndex = root->parent->tempRight->nodeIndex;
@@ -602,61 +612,6 @@ void Tree234::rotateRight(Node *&root) {
     par->isAttached = true;
 }
 
-void Tree234::handleNonLeafNodeWithLeafChildren(Node *&node) {
-    if (node->isAttached) {
-        if (node->val < node->parent->val) {
-            if (node->parent->child[1]->numKeys == 1) {
-                mergeNode(node);
-            }
-            else {
-                rotateLeft(node->parent->child[0]);
-                mOperationNode = mOperationNode->parent;
-                node->parent->child[0] = node->parent->child[0]->parent;
-            }
-        }
-        else {
-            if (node->parent->child[2]->numKeys == 1) {
-                mergeNode(node);
-            }
-            else {
-                rotateRight(node->parent->child[3]);
-            }
-        }
-    }
-    else {
-        if (node->numKeys == 1) {
-            if (node->child[1]->numKeys == 1) {
-                mergeNode(node);
-            }
-            else {
-                rotateLeft(node->child[0]);
-                node->child[0] = node->child[0]->parent;
-            }
-        }
-        if (node->numKeys == 2) {
-            if (node->child[1]->numKeys == 1) {
-                mergeNode(node);
-            }
-            else {
-                rotateRight(node->child[2]);
-                node = node->child[2]->tempLeft;
-            }
-        }
-        else if (node->numKeys == 3) {
-            if (node->child[1]->numKeys == 1 && node->child[2]->numKeys == 1) {
-                mergeNode(node);
-            }
-            else if (node->child[1]->numKeys == 1) {
-                rotateLeft(node->child[2]);
-                node = node->child[2];
-            }
-            else {
-                rotateRight(node->child[2]);
-                node = node->child[2]->tempLeft;
-            }
-        }
-    }
-}
 
 void Tree234::handleLeafNodeWith1NumKeys(Node *&node) {
     if (node->orderOfNode[0]) {

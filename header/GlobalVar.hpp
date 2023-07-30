@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <ResourceHolder.hpp>
+#include <CodeHolder.hpp>
 
 namespace Constant {
     extern const double SCALE_X;
@@ -40,6 +41,11 @@ namespace Color {
     extern sf::Color MATRIX_SLOT_COLOR;
     extern sf::Color MATRIX_SLOT_TEXT_COLOR;
     extern sf::Color MATRIX_SLOT_OUTLINE_COLOR;
+
+    extern sf::Color CODEBLOCK_BOX_COLOR;
+    extern sf::Color CODEBLOCK_TEXT_COLOR;
+    extern sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR;
+    extern sf::Color CODEBLOCK_TEXT_ACTIVATED_COLOR;
 };
 
 namespace Size {
@@ -59,4 +65,9 @@ namespace ResourcesHolder {
     extern ResourceHolder<sf::Font, Fonts::ID> fontsHolder;
     extern ResourceHolder<sf::Texture, Textures::ID> texturesHolder;
 };
+
+namespace CodeContainer {
+    extern CodeHolder codeHolder;
+};
+
 #endif

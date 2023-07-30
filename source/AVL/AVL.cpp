@@ -374,6 +374,9 @@ void AVL::buildScene() {
     );
     replayButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
+
+    std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
+    mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));
     //---------------
     createRandomTree();
 }

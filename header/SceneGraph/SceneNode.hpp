@@ -37,9 +37,13 @@ public:
 public:
     virtual std::vector<int> getIntArrayData() {return {};} 
     virtual void setContent(const std::string &content) {}
+    virtual void setMultipleContent(const std::vector<std::string> &content) {}
     virtual void setLabel(const std::string &label) {}
     virtual std::string getContent() {return "";}
     virtual bool isContainOnlyOneNumber() {return false;}
+public:
+    virtual void activateLine(std::vector<int> index) {}
+    virtual void resetLine() {}
 private:
     bool mIsActive = true;
 public:

@@ -50,6 +50,7 @@ void Graph::insertAnimation() {
             resetAnimation();
             createGraph();
             mBackupGraph = createGraphState(1);
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::Djikstra]);
             mAnimationStep = 2;
             break;
         }

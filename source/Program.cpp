@@ -14,6 +14,7 @@ Program::Program() :
     mWindow.setVerticalSyncEnabled(true);
     loadFonts();
     loadTextures();
+    loadCode();
 }
 
 void Program::registerStates() {
@@ -29,6 +30,7 @@ void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::FiraSansRegular, "resources/fonts/FiraSans-Regular.ttf");
     ResourcesHolder::fontsHolder.load(Fonts::RobotoRegular, "resources/fonts/Roboto/Roboto-Regular.ttf");
     ResourcesHolder::fontsHolder.load(Fonts::RobotoBold, "resources/fonts/Roboto/Roboto-Bold.ttf");
+    ResourcesHolder::fontsHolder.load(Fonts::FiraMonoRegular, "resources/fonts/Fira_Mono/FiraMono-Regular.ttf");
 }
 
 void Program::loadTextures() {
@@ -44,9 +46,13 @@ void Program::loadTextures() {
     ResourcesHolder::texturesHolder.load(Textures::ReplayButtonHovered, "resources/img/replayButtonHovered.png");
 }
 
+void Program::loadCode() {
+    CodeContainer::codeHolder.load();
+}
+
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::HashTable);
+    mStateStack.pushState(States::Graph);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(mWindow.isOpen()) {

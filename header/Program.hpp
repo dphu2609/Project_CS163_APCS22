@@ -22,6 +22,7 @@ private:
 private:
     void loadFonts();
     void loadTextures();
+    void loadCode();
 };
 
 #endif

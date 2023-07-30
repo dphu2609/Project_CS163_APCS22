@@ -114,10 +114,14 @@ void Graph::balanceGraph() {
     }
 
     for (auto &node : mNodeList) {
+        int numOfDuplicateDepth = 0;
         for (auto childNode : node->child) {
             if (depth[node->val] == depth[childNode] && depth[node->val] != 1) {
-                if (depth[node->val] == maxDepth) maxDepth++;
-                depth[childNode] = depth[node->val] + 1;
+                numOfDuplicateDepth++;
+                if (numOfDuplicateDepth > 1) {
+                    depth[childNode] = depth[node->val] + 1;
+                    maxDepth = std::max(maxDepth, depth[childNode]);
+                }
             }
         }
     }

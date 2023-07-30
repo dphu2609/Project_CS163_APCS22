@@ -7,6 +7,7 @@
 #include <SceneGraph/RectangleButton.hpp>
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
+#include <SceneGraph/CodeBlock.hpp>
 
 class Graph : public State {
 private:
@@ -43,6 +44,7 @@ private:
         MatrixRowIndex,
         Matrix,
         MatrixOptions,
+        CodeBox,
         LayerCount
     };
     enum ButtonTypes {

@@ -512,6 +512,9 @@ void Graph::buildScene() {
     );
     clearButton->deactivate();
     mSceneLayers[MatrixOptions]->attachChild(std::move(clearButton));
+
+    std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
+    mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));
     //---------------
     createRandomGraph();
 }

@@ -34,6 +34,11 @@ namespace Color {
     sf::Color MATRIX_SLOT_COLOR = sf::Color::White;
     sf::Color MATRIX_SLOT_TEXT_COLOR = sf::Color::Black;
     sf::Color MATRIX_SLOT_OUTLINE_COLOR = sf::Color::Black;
+
+    sf::Color CODEBLOCK_BOX_COLOR = sf::Color(145, 174, 226);
+    sf::Color CODEBLOCK_TEXT_COLOR = sf::Color::Black;
+    sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
+    sf::Color CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
 };
 
 namespace Size {
@@ -53,3 +58,7 @@ namespace ResourcesHolder {
     ResourceHolder<sf::Font, Fonts::ID> fontsHolder;
     ResourceHolder<sf::Texture, Textures::ID> texturesHolder;
 };
+
+namespace CodeContainer {
+    CodeHolder codeHolder;
+}
