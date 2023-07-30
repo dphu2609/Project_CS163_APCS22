@@ -24,9 +24,9 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     sf::Vector2f labelPosition;
 
     // Calculate the midpoint of the edge
-    sf::Vector2f midPoint = (point1 + point2) / 2.0f;
+    sf::Vector2f threeFivePoint = sf::Vector2f(point1.x + (point2.x - point1.x) * 3 / 5, point1.y + (point2.y - point1.y) * 3 / 5);
 
-    // Calculate an offset vector perpendicular to the edge direction
+    // Calculate an offset vector perpendicular to the edge direction   
     sf::Vector2f offset;
     if (angle >= -90 && angle < 90) {
         // Edge pointing rightwards or upwards
@@ -37,7 +37,7 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     }
 
     // Calculate the label position
-    labelPosition = midPoint + offset;
+    labelPosition = threeFivePoint + offset;
 
     mLabel.setPosition(labelPosition);
     startPoint = point1;

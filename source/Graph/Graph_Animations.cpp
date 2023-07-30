@@ -72,40 +72,112 @@ void Graph::insertAnimation() {
 
         case 3: {
             if (!mIsReversed) mGraphForBackward.push(createGraphState(3));
-            mQueueForDjikstra.push({0, mInputQueue.front()});
-            mDjikstraStep.push({0, std::make_pair(mInputQueue.front(), mInputQueue.front())});
+            mPriorityQueue.push({0, mInputQueue.front()});
             mAnimationStep = 4;
             break;
         }
 
         case 4: {
-            if (!mIsReversed) mGraphForBackward.push(createGraphState(4));
-            if (mQueueForDjikstra.empty()) {
-                mAnimationStep = 6;
-                break;
-            }
-            int temp = mQueueForDjikstra.top().second;
-            mDjikstraStepPair = mDjikstraStep.top().second;
-            mQueueForDjikstra.pop();
-            mDjikstraStep.pop();
-            if (mIsVisited[temp]) {
-                break;
-            }
-            mIsVisited[temp] = true;
-            mSceneLayers[Nodes]->getChildren()[temp]->setLabel(std::to_string(mNodeList[temp]->distance));
-            for (auto &node : mNodeList[temp]->child) {
-                if (mNodeList[temp]->distance + mDistance[temp][node] < mNodeList[node]->distance) {
-                    mNodeList[node]->distance = mNodeList[temp]->distance + mDistance[temp][node];
-                    mQueueForDjikstra.push({-mNodeList[node]->distance, node});
-                    mDjikstraStep.push({-mNodeList[node]->distance, std::make_pair(temp, node)});
-                }
-            }
-            mAnimationStep = 5;
+            traverseAnimation(true, 2, 5, mInputQueue.front(), mInputQueue.front());
             break;
         }
 
         case 5: {
-            traverseAnimation(true, 2, 4, mDjikstraStepPair.first, mDjikstraStepPair.second);
+            if (mPriorityQueue.empty()) {
+                mAnimationStep = 8;
+                break;
+            }
+            mCurrentIndex = mPriorityQueue.top().second;
+            mPriorityQueue.pop();
+            if (mIsVisited[mCurrentIndex]) {
+                break;
+            }
+            mIsVisited[mCurrentIndex] = true;
+            mAnimationStep = 6;
+            break;
+        }
+
+        case 6: {
+            if (!mIsReversed) mGraphForBackward.push(createGraphState(5));
+            if (mCheckIndex == mNodeList[mCurrentIndex]->child.size()) {
+                mCheckIndex = 0;
+                mAnimationStep = 5;
+                break;
+            }
+            int childIndex = mNodeList[mCurrentIndex]->child[mCheckIndex];
+            if (mNodeList[mCurrentIndex]->distance + mDistance[mCurrentIndex][childIndex] < mNodeList[childIndex]->distance) {
+                mNodeList[childIndex]->distance = mNodeList[mCurrentIndex]->distance + mDistance[mCurrentIndex][childIndex];
+                mSceneLayers[Nodes]->getChildren()[childIndex]->setLabel(std::to_string(mNodeList[childIndex]->distance));
+                mPriorityQueue.push({-mNodeList[childIndex]->distance, childIndex});
+            }
+            if (!mIsVisited[childIndex]) mAnimationStep = 7;
+            mCheckIndex++;
+            break;
+        }
+
+        case 7: {
+            traverseAnimation(true, 2, 6, mCurrentIndex, mNodeList[mCurrentIndex]->child[mCheckIndex - 1]);
+            break;
+        }
+
+        case 8: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
+void Graph::deleteAnimation() {
+    switch (mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createGraph();
+            mBackupGraph = createGraphState(1);
+            mAnimationStep = 2;
+            break;
+        }
+
+        case 2: {
+            if (!mIsReversed) mGraphForBackward.push(createGraphState(2));
+            for (auto &node : mNodeList) node->key = INT_MAX;
+            mNodeList[mInputQueue.front()]->key = 0;
+            mPriorityQueueForPrim.push({0, {mInputQueue.front(), mInputQueue.front()}});
+            mAnimationStep = 3;
+            break;
+        }
+
+        case 3: {
+            if (!mIsReversed) mGraphForBackward.push(createGraphState(3));
+            if (mPriorityQueueForPrim.empty()) {
+                mAnimationStep = 6;
+                break;
+            }
+            mCurrentIndex = mPriorityQueueForPrim.top().second.second;
+            mCheckIndex = mPriorityQueueForPrim.top().second.first;
+            mPriorityQueueForPrim.pop();
+            if (mIsVisited[mCurrentIndex]) {
+                break;
+            }
+            mIsVisited[mCurrentIndex] = true;
+            mAnimationStep = 4;
+            break;
+        }
+        case 4: {
+            traverseAnimation(true, 2, 5, mCheckIndex, mCurrentIndex);
+            break;
+        }
+
+        case 5: {
+            for (auto &node : mNodeList[mCurrentIndex]->child) {
+                if (!mIsVisited[node] && mNodeList[node]->key > mDistance[mCurrentIndex][node]) {
+                    mNodeList[node]->key = mDistance[mCurrentIndex][node];
+                    mPriorityQueueForPrim.push({-mDistance[mCurrentIndex][node], {mCurrentIndex, node}});
+                }
+            }
+            mAnimationStep = 3;
             break;
         }
 
@@ -172,6 +244,7 @@ void Graph::resetNodeState() {
 void Graph::resetAnimation() {
     for (auto &node : mNodeList) {
         node->isNodeHighlighted = false;
+        node->distance = -1;
     }
     for (auto &row : mEdgeIndex) {
         for (auto &col : row) {

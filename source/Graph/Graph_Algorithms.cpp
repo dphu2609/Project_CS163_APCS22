@@ -34,6 +34,7 @@ void Graph::createRandomGraph() {
     mConnections.resize(mInputSize);
     mDistance.resize(mInputSize);
     mEdgeIndex.resize(mInputSize);
+    for (auto &child : mSceneLayers[Matrix]->getChildren()) child->setContent("");
     for (int i = 0; i < mInputSize; i++) {
         mConnections[i].resize(mInputSize, false);
         mDistance[i].resize(mInputSize, -1);
@@ -51,6 +52,8 @@ void Graph::createRandomGraph() {
             int distance = dis(gen);
             mDistance[i][child] = distance;
             mDistance[child][i] = distance;
+            mSceneLayers[Matrix]->getChildren()[i * 10 + child]->setContent(std::to_string(distance));
+            mSceneLayers[Matrix]->getChildren()[child * 10 + i]->setContent(std::to_string(distance));
         }
     }
     initGraph();
@@ -64,15 +67,15 @@ void Graph::setGraphScale(int GraphSize) {
         Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
-        NODE_DISTANCE_HORIZONTAL = 250.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 250.f * Constant::SCALE_Y;
+        NODE_DISTANCE_HORIZONTAL = 350.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 300.f * Constant::SCALE_Y;
     }
     else {
         Size::NODE_RADIUS = 35.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 35.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 35.f * Constant::SCALE_Y;
-        NODE_DISTANCE_HORIZONTAL = 220.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 220.f * Constant::SCALE_Y;
+        NODE_DISTANCE_HORIZONTAL = 320.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 250.f * Constant::SCALE_Y;
     }
 }
 
@@ -106,6 +109,15 @@ void Graph::balanceGraph() {
             if (!visited[i]) {
                 startNode = mNodeList[i];
                 break;
+            }
+        }
+    }
+
+    for (auto &node : mNodeList) {
+        for (auto childNode : node->child) {
+            if (depth[node->val] == depth[childNode] && depth[node->val] != 1) {
+                if (depth[node->val] == maxDepth) maxDepth++;
+                depth[childNode] = depth[node->val] + 1;
             }
         }
     }
@@ -145,8 +157,10 @@ Graph::GraphState* Graph::createGraphState(int animationIndex) {
             graphState->edgeIndex[i][j] = mEdgeIndex[i][j];
         }
     }
-    graphState->queueForDjikstra = mQueueForDjikstra;
-    graphState->djikstraStep = mDjikstraStep;
+    graphState->priorityQueue = mPriorityQueue;
+    graphState->priorityQueueForPrim = mPriorityQueueForPrim;
+    graphState->currentIndex = mCurrentIndex;
+    graphState->checkIndex = mCheckIndex;
     for (int i = 0; i < mIsVisited.size(); i++) {
         graphState->isVisited[i] = mIsVisited[i];
     }
@@ -171,11 +185,13 @@ void Graph::applyGraphState(GraphState * graphState) {
             mEdgeIndex[i][j] = graphState->edgeIndex[i][j];
         }
     }
-    mQueueForDjikstra = graphState->queueForDjikstra;
-    mDjikstraStep = graphState->djikstraStep;
+    mPriorityQueue = graphState->priorityQueue;
+    mPriorityQueueForPrim = graphState->priorityQueueForPrim;
     for (int i = 0; i < mIsVisited.size(); i++) {
         mIsVisited[i] = graphState->isVisited[i];
     }
+    mCurrentIndex = graphState->currentIndex;
+    mCheckIndex = graphState->checkIndex;
     clear();
     for (int i = 0; i < graphState->nodeList.size(); i++) {
         mNodeList.push_back(graphState->nodeList[i]);
@@ -188,4 +204,24 @@ void Graph::returnToPreviousStep() {
     applyGraphState(mGraphForBackward.top());
     mGraphForBackward.pop();
     createGraph();
+}
+
+int Graph::getGraphSize(int nodeIndex) {
+    int count = 0;
+    std::vector<bool> visited(mInputSize, false);
+    std::queue<int> q;
+    q.push(nodeIndex);
+    visited[nodeIndex] = true;
+    while (!q.empty()) {
+        int temp = q.front();
+        q.pop();
+        count++;
+        for (auto &node : mNodeList[temp]->child) {
+            if (!visited[node]) {
+                visited[node] = true;
+                q.push(node);
+            }
+        }
+    }
+    return count;
 }

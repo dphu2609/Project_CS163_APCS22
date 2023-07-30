@@ -22,6 +22,7 @@ public:
         std::vector<int> child;
         bool isNodeHighlighted;
         int distance = -1;
+        int key = -1;
     };
 public:
     explicit Graph(StateStack& stack, sf::RenderWindow &window);
@@ -100,8 +101,10 @@ private:
         std::vector<std::vector<bool>> connections;
         std::vector<std::vector<int>> distance;
         std::vector<std::vector<std::pair<int, bool>>> edgeIndex;
-        std::priority_queue<std::pair<int, int>> queueForDjikstra;
-        std::priority_queue<std::pair<int, std::pair<int, int>>> djikstraStep;
+        std::priority_queue<std::pair<int, int>> priorityQueue;
+        std::priority_queue<std::pair<int, std::pair<int, int>>> priorityQueueForPrim;
+        int currentIndex;
+        int checkIndex;
         std::vector<int> isVisited;
         std::vector<Node*> nodeList;
         int animationIndex;
@@ -112,6 +115,7 @@ private: //Algorithms
     void initGraph();
     Node* copyNodeProperties(Node* node) {return nullptr;}
     Node* copyGraph(Node* root) {return nullptr;}
+    int getGraphSize(int nodeIndex);
     void setGraphScale(int GraphSize);
     void balanceGraph();
     void createRandomGraph();
@@ -119,7 +123,7 @@ private: //Algorithms
 private: //Visualization
     void createGraph();
     void insertAnimation();
-    void deleteAnimation() {}
+    void deleteAnimation();
     void searchAnimation() {}
     bool isProcessingAnimation() {return false;}
     void resetNodeState();
@@ -132,17 +136,19 @@ private:
     bool mUpdateAnimation = false;
 private:
     std::vector<int> mInputData = {};
-    int mInputSize = 6;
-    int mPrevInputSize = 6;
+    int mInputSize = 5;
+    int mPrevInputSize = 5;
     std::queue<int> mInputQueue = {};
     int mAnimationStep = 1;
 private:
     GraphState* mBackupGraph = nullptr;
     std::stack<GraphState*> mGraphForBackward = {};
-    std::priority_queue<std::pair<int, int>> mQueueForDjikstra = {};
-    std::priority_queue<std::pair<int, std::pair<int, int>>> mDjikstraStep = {};
-    std::pair<int, int> mDjikstraStepPair = {};
+    std::priority_queue<std::pair<int, int>> mPriorityQueue = {};
+    std::priority_queue<std::pair<int, std::pair<int, int>>> mPriorityQueueForPrim = {};
     std::vector<int> mIsVisited = {};
+    int mSubGraphSize = 0;
+    int mCurrentIndex = 0;
+    int mCheckIndex = 0;
     std::pair<bool, bool> mTraverseControler = {false, false};
 private: //Control box
     bool mIsAnimationPaused = false;
