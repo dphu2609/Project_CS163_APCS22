@@ -89,5 +89,6 @@ private:
 #include <State/Heap.hpp>
 #include <State/Trie.hpp>
 #include <State/Graph.hpp>
+#include <State/HashTable.hpp>
 
 #endif

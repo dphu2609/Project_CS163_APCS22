@@ -7,7 +7,7 @@ void Heap::createTree() {
     for (int i = 0; i < mNodeList.size(); i++) {
         if (mNodeList[i]->isInsertNode) {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(
+            node->set(true, 
                 std::to_string(mNodeList[i]->val), 
                 mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 
                 Size::NODE_RADIUS / 8, std::to_string(mNodeList[i]->order)
@@ -16,7 +16,7 @@ void Heap::createTree() {
         }
         else if (!mNodeList[i]->isNodeHighlighted) {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(
+            node->set(true, 
                 std::to_string(mNodeList[i]->val),
                 mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR,
                 Size::NODE_RADIUS / 8, std::to_string(mNodeList[i]->order)
@@ -25,7 +25,7 @@ void Heap::createTree() {
         }
         else {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(
+            node->set(true, 
                 std::to_string(mNodeList[i]->val), 
                 mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR,
                 Size::NODE_RADIUS / 8, std::to_string(mNodeList[i]->order)
@@ -228,7 +228,7 @@ void Heap::nodeAppearAnimation(bool isAllowPause, float speed, int animationStep
     if (!isAllowPause) mIsAnimationPaused = false;
     if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size() && !mIsReversed) {
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-        node->set(
+        node->set(true, 
             std::to_string(mOperationNode->val), mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 0,
             Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR,
             0, std::to_string(mNodeList.back()->order)

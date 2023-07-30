@@ -6,7 +6,7 @@ void Tree234::createTree() {
     for (int i = 0; i < mNodeList.size(); i++) {
         if (mNodeList[i]->isInsertNode) {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(
+            node->set(false,
                 std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
                 mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
             );
@@ -14,12 +14,12 @@ void Tree234::createTree() {
         }
         else if (!mNodeList[i]->isNodeHighlighted) {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), mNodeList[i]->position);
+            node->set(false, std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), mNodeList[i]->position);
             mSceneLayers[Nodes]->attachChild(std::move(node));
         }
         else {
             std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-            node->set(
+            node->set(false,
                 std::to_string(mNodeList[i]->val) + (mNodeList[i]->duplicate > 1 ? ("-" + std::to_string(mNodeList[i]->duplicate)) : ""), 
                 mNodeList[i]->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
             );
@@ -513,7 +513,7 @@ void Tree234::nodeAppearAnimation(bool isAllowPause, float speed, int animationS
     if (!isAllowPause) mIsAnimationPaused = false;
     if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size()) {
         std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-        node->set(
+        node->set(false, 
             std::to_string(mOperationNode->val), mOperationNode->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), 0,
             Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
         );

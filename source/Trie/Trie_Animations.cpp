@@ -9,13 +9,13 @@ void Trie::createTree() {
             std::string content = "a";
             content[0] = node->val;
             if (node->isNodeHighlighted) {
-                trieNode->set(
+                trieNode->set(true, 
                     content, node->position, Size::NODE_RADIUS, 
                     Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
                 );
             }
             else {
-                trieNode->set(
+                trieNode->set(true, 
                     content, node->position, Size::NODE_RADIUS, 
                     Color::NODE_TEXT_COLOR, Color::NODE_COLOR, Color::NODE_OUTLINE_COLOR
                 );
@@ -27,12 +27,12 @@ void Trie::createTree() {
             std::string content = "a";
             content[0] = node->val;
             if (node->isNodeHighlighted) {
-                trieNode->set(
+                trieNode->set(true, 
                     content, node->position, Size::NODE_RADIUS, 
                     Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
                 );
             }
-            else trieNode->set(content, node->position);
+            else trieNode->set(true, content, node->position);
             mSceneLayers[Nodes]->attachChild(std::move(trieNode));
         }
     }
@@ -93,7 +93,7 @@ void Trie::insertAnimation() {
                 std::unique_ptr<TreeNode> trieNode = std::make_unique<TreeNode>();
                 std::string content = "a";
                 content[0] = mRoot->val;
-                trieNode->set(content, mRoot->position, 0);
+                trieNode->set(true, content, mRoot->position, 0);
                 mSceneLayers[Nodes]->attachChild(std::move(trieNode));
                 mAnimationStep = 6;
             }

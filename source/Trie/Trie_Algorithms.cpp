@@ -67,13 +67,13 @@ void Trie::add1Node(Node *&root, std::vector<Node*> &nodeList, std::string word,
     std::string content = "a";
     content[0] = newNode->val;
     if (!newNode->isEndOfWord) {
-        trieNode->set(
+        trieNode->set(true, 
             content, newNode->position, 0, 
             Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
         );
     }
     else {
-        trieNode->set(
+        trieNode->set(true, 
             content, newNode->position, 0, 
             Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
         );

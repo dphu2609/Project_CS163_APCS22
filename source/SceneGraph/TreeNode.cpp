@@ -1,11 +1,19 @@
 #include <SceneGraph/TreeNode.hpp>
 
-void TreeNode::set(const std::string &text, const sf::Vector2f position, const float &radius, const sf::Color &nodeColor, const sf::Color &textColor, const sf::Color &outlineColor, const float &outlineThickness, const std::string &labelContent, const sf::Color &labelColor) {
+void TreeNode::set(bool isCircle, const std::string &text, const sf::Vector2f position, const float &radius, const sf::Color &nodeColor, const sf::Color &textColor, const sf::Color &outlineColor, const float &outlineThickness, const std::string &labelContent, const sf::Color &labelColor) {
     mNode.setRadius(radius);
     mNode.setPosition(position);
     mNode.setFillColor(nodeColor);
     mNode.setOutlineThickness(outlineThickness);
     mNode.setOutlineColor(outlineColor);
+
+    mRectangleNode.setSize(sf::Vector2f(radius * 2, radius * 2));
+    mRectangleNode.setPosition(position);
+    mRectangleNode.setFillColor(nodeColor);
+    mRectangleNode.setOutlineThickness(outlineThickness);
+    mRectangleNode.setOutlineColor(outlineColor);
+
+    mIsCircle = isCircle;
 
     if (text.size() == 0) return;
 
@@ -31,7 +39,8 @@ sf::Vector2f TreeNode::getPosition() {
 }
 
 void TreeNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(mNode);
+    if (mIsCircle) target.draw(mNode);
+    else target.draw(mRectangleNode);
     target.draw(mText);
     target.draw(mLabel);
 }
@@ -47,6 +56,9 @@ void TreeNode::updateCurrent() {
         mNode.setRadius(newRadius);
         mNode.setOutlineThickness(newRadius / 8);
         mNode.setPosition(oldPosition - sf::Vector2f(newRadius, newRadius));
+        mRectangleNode.setSize(sf::Vector2f(newRadius * 2, newRadius * 2));
+        mRectangleNode.setPosition(oldPosition - sf::Vector2f(newRadius, newRadius));
+        mRectangleNode.setOutlineThickness(newRadius / 8);
         std::string text = mText.getString();
         if (text.size() <= 3) mText.setCharacterSize(newRadius);
         else if (text.size() <= 4) mText.setCharacterSize(newRadius * 0.8);
@@ -115,6 +127,7 @@ void TreeNode::updateCurrent() {
                 newColor.a = mStartObjectColor.a + std::pow(mCurrentObjectColor.a, 2) + mDeltaObjectColor.a;
         }
         mNode.setFillColor(newColor);
+        mRectangleNode.setFillColor(newColor);
         
         if (mCurrentObjectColor.r > 0) mCurrentObjectColor.r -= mObjectColorJumpStep.r;
         if (mCurrentObjectColor.g > 0) mCurrentObjectColor.g -= mObjectColorJumpStep.g;
@@ -181,6 +194,7 @@ void TreeNode::updateCurrent() {
         }
 
         mNode.setOutlineColor(newOutlineColor);
+        mRectangleNode.setOutlineColor(newOutlineColor);
 
         if (mCurrentOutlineColor.r > 0) mCurrentOutlineColor.r -= mOutlineColorJumpStep.r;
         if (mCurrentOutlineColor.g > 0) mCurrentOutlineColor.g -= mOutlineColorJumpStep.g;
@@ -201,6 +215,7 @@ void TreeNode::updateCurrent() {
 
 void TreeNode::setPosition(const sf::Vector2f &position) {
     mNode.setPosition(position);
+    mRectangleNode.setPosition(position);
     mText.setPosition(position + sf::Vector2f(mNode.getRadius(), mNode.getRadius()) - sf::Vector2f(mText.getGlobalBounds().width/2, mText.getGlobalBounds().height));
     mLabel.setPosition(position + sf::Vector2f(mNode.getRadius(), 3 * mNode.getRadius()) - sf::Vector2f(mLabel.getGlobalBounds().width/2, mLabel.getGlobalBounds().height));
 }

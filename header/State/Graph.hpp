@@ -113,8 +113,6 @@ private:
     void applyGraphState(GraphState* graphState);
 private: //Algorithms
     void initGraph();
-    Node* copyNodeProperties(Node* node) {return nullptr;}
-    Node* copyGraph(Node* root) {return nullptr;}
     int getGraphSize(int nodeIndex);
     void setGraphScale(int GraphSize);
     void balanceGraph();
@@ -125,7 +123,7 @@ private: //Visualization
     void insertAnimation();
     void deleteAnimation();
     void searchAnimation() {}
-    bool isProcessingAnimation() {return false;}
+    bool isProcessingAnimation();
     void resetNodeState();
     void resetAnimation();
     void traverseAnimation(bool isAllowPause = true, float speed = 1.f, int animationStepAfterFinish = 0, int startNode = 0, int endNode = 0);

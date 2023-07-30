@@ -22,6 +22,7 @@ void Program::registerStates() {
     mStateStack.registerState<Heap>(States::Heap);
     mStateStack.registerState<Trie>(States::Trie);
     mStateStack.registerState<Graph>(States::Graph);
+    mStateStack.registerState<HashTable>(States::HashTable);
 }
 
 void Program::loadFonts() {
@@ -45,7 +46,7 @@ void Program::loadTextures() {
 
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::Graph);
+    mStateStack.pushState(States::HashTable);
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while(mWindow.isOpen()) {

@@ -6,10 +6,13 @@
 class TreeNode : public SceneNode {
 private:
     sf::CircleShape mNode;
+    sf::RectangleShape mRectangleNode;
     sf::Text mText;
     sf::Text mLabel;
+    bool mIsCircle = true;
 public:
     void set(
+        bool isCircle,
         const std::string &text, const sf::Vector2f position, 
         const float &radius = Size::NODE_RADIUS, const sf::Color &nodeColor = Color::NODE_COLOR,
         const sf::Color &textColor = Color::NODE_TEXT_COLOR,

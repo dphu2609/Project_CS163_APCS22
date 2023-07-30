@@ -6,7 +6,7 @@ void Graph::createGraph() {
     for (auto &node : mNodeList) {
         if (node->isNodeHighlighted) {
             std::unique_ptr<TreeNode> graphNode = std::make_unique<TreeNode>();
-            graphNode->set(
+            graphNode->set(true,
                 std::to_string(node->val), 
                 node->position, Size::NODE_RADIUS, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR
             );
@@ -14,7 +14,7 @@ void Graph::createGraph() {
         }
         else {
             std::unique_ptr<TreeNode> graphNode = std::make_unique<TreeNode>();
-            graphNode->set(std::to_string(node->val), node->position);
+            graphNode->set(true, std::to_string(node->val), node->position);
             mSceneLayers[Nodes]->attachChild(std::move(graphNode));
         }
         if (node->distance == INT_MAX) {
@@ -258,4 +258,12 @@ void Graph::resetAnimation() {
         mBackupGraph = nullptr;
     }
     resetNodeState();
+}
+
+bool Graph::isProcessingAnimation() {
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) 
+        if (child->isProcessing()) return true;
+    for (auto &child : mSceneLayers[Edges]->getChildren())
+        if (child->isProcessing()) return true;
+    return false;
 }
