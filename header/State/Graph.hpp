@@ -45,6 +45,7 @@ private:
         Matrix,
         MatrixOptions,
         CodeBox,
+        ReturnButton,
         LayerCount
     };
     enum ButtonTypes {
@@ -122,6 +123,7 @@ private: //Algorithms
     void returnToPreviousStep();
 private: //Visualization
     void createGraph();
+    void updateGraphByMouse(sf::Event &event);
     void insertAnimation();
     void deleteAnimation();
     void searchAnimation() {}

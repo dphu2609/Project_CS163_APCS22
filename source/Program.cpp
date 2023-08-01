@@ -24,6 +24,7 @@ void Program::registerStates() {
     mStateStack.registerState<Trie>(States::Trie);
     mStateStack.registerState<Graph>(States::Graph);
     mStateStack.registerState<HashTable>(States::HashTable);
+    mStateStack.registerState<MainMenu>(States::MainMenu);
 }
 
 void Program::loadFonts() {
@@ -44,6 +45,8 @@ void Program::loadTextures() {
     ResourcesHolder::texturesHolder.load(Textures::PrevButtonHovered, "resources/img/prevButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::ReplayButton, "resources/img/replayButtonBlack.png");
     ResourcesHolder::texturesHolder.load(Textures::ReplayButtonHovered, "resources/img/replayButtonHovered.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReturnButton, "resources/img/returnButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReturnButtonHovered, "resources/img/returnButtonHovered.png");
 }
 
 void Program::loadCode() {
@@ -52,9 +55,9 @@ void Program::loadCode() {
 
 void Program::run() {
     registerStates();
-    mStateStack.pushState(States::Graph);
+    mStateStack.pushState(States::MainMenu);
     sf::Clock clock;    
-    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;  
     while(mWindow.isOpen()) {
         processEvents();
         sf::Time elapsedTime = clock.restart();

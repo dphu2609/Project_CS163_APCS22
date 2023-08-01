@@ -39,6 +39,9 @@ namespace Color {
     sf::Color CODEBLOCK_TEXT_COLOR = sf::Color::Black;
     sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
     sf::Color CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
+
+    sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(133, 163, 137);
+    sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
 };
 
 namespace Size {
@@ -48,6 +51,8 @@ namespace Size {
     float EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
     sf::Vector2f SETTINGS_BUTTON_SIZE = sf::Vector2f(400.f * Constant::SCALE_X, 80.f * Constant::SCALE_Y);
     sf::Vector2f MATRIX_SLOT_SIZE = sf::Vector2f(70.f * Constant::SCALE_X, 50.f * Constant::SCALE_Y);
+    sf::Vector2f DATA_STRUCTURE_BUTTON = sf::Vector2f(500.f * Constant::SCALE_X, 400.f * Constant::SCALE_Y);
+    float DATA_STRUCTURE_BUTTON_EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
 };
 
 namespace Animation {

@@ -214,28 +214,28 @@ void AVL::balanceTree() {
 
 void AVL::setTreeScale(int treeSize) {
     if (treeSize < 15) {
-        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 100.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 100.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
     }
-    else if (treeSize< 30) {
-        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
+    else if (treeSize < 30) {
+        NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
     }
     else if (treeSize < 40) {
-        NODE_DISTANCE_HORIZONTAL = 38.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 60.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
     }
     else {
-        NODE_DISTANCE_HORIZONTAL = 35.f * Constant::SCALE_X;
+        NODE_DISTANCE_HORIZONTAL = 50.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 28.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 28.f * Constant::SCALE_X;
@@ -274,8 +274,7 @@ void AVL::getTravelPath(Node* root, int data) {
         else if (data > cur->val) cur = cur->right;
         else break;
     }
-    if (!mIsReversed) mTravelIndex = 0;
-    else mTravelIndex = mTravelPath.size() - 1;
+    mTravelIndex = 0;
 }
 
 void AVL::getBalanceFactorPath(Node* start, Node* end) {

@@ -16,6 +16,7 @@ namespace States {
         Trie,
         Graph,
         HashTable,
+        Settings,
         StateCount
     };
 };
@@ -90,5 +91,6 @@ private:
 #include <State/Trie.hpp>
 #include <State/Graph.hpp>
 #include <State/HashTable.hpp>
+#include <State/MainMenu.hpp>
 
 #endif

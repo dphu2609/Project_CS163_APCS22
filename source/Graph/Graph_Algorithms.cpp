@@ -229,3 +229,27 @@ int Graph::getGraphSize(int nodeIndex) {
     }
     return count;
 }
+
+void Graph::updateGraphByMouse(sf::Event &event) {
+    int index = 0;
+    for (auto &child : mSceneLayers[Nodes]->getChildren()) {
+        if (child->isLeftMouseHeld(mWindow, event)) {
+            mNodeList[index]->position = sf::Vector2f(sf::Mouse::getPosition(mWindow)) - sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS);
+            break;
+        }
+        index++;
+    }
+    for (int i = 0; i < mNodeList.size(); i++) {
+        mSceneLayers[Nodes]->getChildren()[i]->setPosition(mNodeList[i]->position);
+    }
+
+    for (int i = 0; i < mEdgeIndex.size(); i++) {
+        for (int j = i; j < mEdgeIndex[i].size(); j++) {
+            if (mConnections[i][j]) {
+                sf::Vector2f pos1 = mNodeList[i]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS);
+                sf::Vector2f pos2 = mNodeList[j]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS);
+                mSceneLayers[Edges]->getChildren()[mEdgeIndex[i][j].first]->setPositionByPoints(pos1, pos2);
+            }
+        }
+    }
+}

@@ -29,6 +29,7 @@ void Graph::update() {
 
 void Graph::handleEvent(sf::Event &event) {
     mSceneGraph.handleEvent(mWindow, event);
+    updateGraphByMouse(event);
     if (mSceneLayers[Buttons]->getChildren()[Create]->isLeftClicked(mWindow, event)) {
         for (auto &child : mSceneLayers[CreateOptions]->getChildren()) {
             if (child->isActive()) {
@@ -296,6 +297,10 @@ void Graph::handleEvent(sf::Event &event) {
         mIsStepByStepMode = false;
         applyGraphState(mBackupGraph);
     } 
+
+    if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        requestStackPop();
+    }
 }
 
 void Graph::buildScene() {
@@ -322,7 +327,7 @@ void Graph::buildScene() {
 
     std::unique_ptr<RectangleButton> deleteButton = std::make_unique<RectangleButton>();
     deleteButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 440 * Constant::SCALE_Y), "Minimum Spanning Tree", 
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 440 * Constant::SCALE_Y), "Prim", 
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
@@ -464,6 +469,13 @@ void Graph::buildScene() {
     );
     replayButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
+
+    std::unique_ptr<ImageButton> returnButton = std::make_unique<ImageButton>();
+    returnButton->set(
+        ResourcesHolder::texturesHolder[Textures::ReturnButton], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
+        sf::Vector2f(100 * Constant::SCALE_X, 100 * Constant::SCALE_Y)
+    );
+    mSceneLayers[ReturnButton]->attachChild(std::move(returnButton));
 
     sf::Vector2f startPos = sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 650 * Constant::SCALE_Y);
     for (int i = 0; i < 10; i++) {

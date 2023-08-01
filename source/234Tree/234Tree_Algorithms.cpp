@@ -380,7 +380,7 @@ Tree234::Node* Tree234::findReplaceNode(Node* deleteNode) {
     return nullptr;
 }
 
-void Tree234::mergeNode(Node *&root) {
+void Tree234::mergeNode(Node *root) {
     if (root->isAttached) {
         if (root->val < root->parent->val) {
             if (root->parent->numKeys == 2) {

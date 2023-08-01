@@ -23,7 +23,7 @@ void CodeHolder::load() {
     mCodeMap[Code::SearchAVL] = {
         "if this == null",
         "   return null",
-        "else if this key == search value"
+        "else if this key == search value",
         "   return this",
         "else if this key > search value",
         "   search this.left",

@@ -45,6 +45,7 @@ private:
         SearchOptions,
         ControlBox,
         CodeBox,
+        ReturnButton,
         LayerCount
     };
     enum ButtonTypes {

@@ -10,6 +10,7 @@ private:
     sf::Text mText;
     sf::Text mLabel;
     bool mIsCircle = true;
+    bool mIsMouseHeld = false;
 public:
     void set(
         bool isCircle,
@@ -25,6 +26,8 @@ public:
     virtual void setContent(const std::string &text);
     virtual void setLabel(const std::string &label);
     virtual std::string getContent();
+    virtual bool isHovered(sf::RenderWindow &window, sf::Event &event);
+    virtual bool isLeftMouseHeld(sf::RenderWindow &window, sf::Event &event);
 private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
     virtual void updateCurrent();

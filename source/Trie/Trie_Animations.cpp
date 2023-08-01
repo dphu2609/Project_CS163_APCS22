@@ -80,6 +80,7 @@ void Trie::insertAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::InsertTrie]);
             mAnimationStep = 2;
             break;
         }
@@ -102,6 +103,7 @@ void Trie::insertAnimation() {
         }
 
         case 3: {
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3});
             getTravelPath(mInputQueue.front());
             mOperationNode = mTravelPath.back().first;
             mOperationIndex = mTravelPath.size() - 1;
@@ -120,10 +122,12 @@ void Trie::insertAnimation() {
                 add1Node(mOperationNode, mNodeList, mInputQueue.front(), mOperationIndex);
                 balanceTree();
                 mOperationNode->position += sf::Vector2f(0, Size::NODE_RADIUS);
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
                 mAnimationStep = 6;
             }
             else {
                 mOperationNode->isEndOfWord = true;
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4});
                 mAnimationStep = 7;
             }
             break;
@@ -156,6 +160,7 @@ void Trie::deleteAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteTrie]);
             mAnimationStep = 2;
             break;
         }
@@ -163,6 +168,7 @@ void Trie::deleteAnimation() {
         case 2: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             getTravelPath(mInputQueue.front());
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mAnimationStep = 3;
             break;
         }
@@ -180,6 +186,7 @@ void Trie::deleteAnimation() {
                     mAnimationStep = 5;
                 }
                 else {
+                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
                     mAnimationStep = 7;
                 }
             }
@@ -230,6 +237,7 @@ void Trie::deleteAnimation() {
             }
             delete temp;
             if (mRoot && mOperationNode->child.size() == 0 && !mOperationNode->isEndOfWord) {
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4, 5, 6});
                 mAnimationStep = 5;
             }
             else {
@@ -289,12 +297,14 @@ void Trie::searchAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::SearchTrie]);
             mAnimationStep = 2;
             break;
         }
 
         case 2: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0, 1, 2, 3});
             getTravelPath(mInputQueue.front());
             mAnimationStep = 3;
             break;
@@ -306,6 +316,7 @@ void Trie::searchAnimation() {
         }
 
         case 4: {
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4});
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
             }
@@ -409,6 +420,10 @@ void Trie::resetAnimation() {
         if (child->isEndOfWord) wordNum++;
     }
     mIsEdgeHighlighted.clear();
+    while (!mTreeForBackward.empty()) {
+        delete mTreeForBackward.top();
+        mTreeForBackward.pop();
+    }
     setTreeScale(wordNum);
     balanceTree();
 }

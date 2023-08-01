@@ -54,6 +54,7 @@ private:
         SearchOptions,
         ControlBox,
         CodeBox,
+        ReturnButton,
         LayerCount
     };
     enum ButtonTypes {
@@ -123,7 +124,7 @@ private: //Algorithms
     Node* copyTree234(Node* root);
     Node* findNode(Node* root, int data);
     void deleteInternalNode(Node* &root);
-    void mergeNode(Node *&root);
+    void mergeNode(Node *root);
     void rotateLeft(Node *&root);
     void rotateRight(Node *&root);
     Node* findReplaceNode(Node* deleteNode);

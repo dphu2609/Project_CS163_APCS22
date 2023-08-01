@@ -16,7 +16,9 @@ namespace Textures {
         PrevButton,
         PrevButtonHovered,
         ReplayButton,
-        ReplayButtonHovered
+        ReplayButtonHovered,
+        ReturnButton,
+        ReturnButtonHovered
     };
 };
 

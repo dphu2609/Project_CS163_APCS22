@@ -25,16 +25,21 @@ void HashTable::insertAnimation() {
             createTree();
             mTreeStateForReplay = createTreeState(1);
             mOperationIndex = mInputQueue.front() % mInputSize;
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::InsertHashTable]);
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mAnimationStep = 2;
             break;
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             if (mNodeList[mOperationIndex].val == -1) {
                 mNodeList[mOperationIndex].val = mInputQueue.front();
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
                 mAnimationStep = 3;
             }
             else {
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3});
                 mAnimationStep = 4;
             }
             break;
@@ -72,6 +77,7 @@ void HashTable::insertAnimation() {
         case 6: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -86,16 +92,21 @@ void HashTable::deleteAnimation() {
             createTree();
             mTreeStateForReplay = createTreeState(1);
             mOperationIndex = mInputQueue.front() % mInputSize;
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteHashTable]);
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mAnimationStep = 2;
             break;
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             if (mNodeList[mOperationIndex].val == mInputQueue.front()) {
                 mNodeList[mOperationIndex].val = -1;
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5});
                 mAnimationStep = 3;
             }
             else {
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2, 3, 4});
                 mAnimationStep = 4;
             }
             break;
@@ -133,6 +144,7 @@ void HashTable::deleteAnimation() {
         case 6: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -147,16 +159,21 @@ void HashTable::searchAnimation() {
             createTree();
             mTreeStateForReplay = createTreeState(1);
             mOperationIndex = mInputQueue.front() % mInputSize;
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::SearchHashTable]);
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mAnimationStep = 2;
             break;
         }
 
         case 2: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(2));
             if (mNodeList[mOperationIndex].val == mInputQueue.front()) {
                 mNodeList[mOperationIndex].val = mInputQueue.front();
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5});
                 mAnimationStep = 3;
             }
             else {
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2, 3, 4});
                 mAnimationStep = 4;
             }
             break;
@@ -261,6 +278,10 @@ void HashTable::resetAnimation() {
     mOperationIndex = -1;
     for (auto &node : mNodeList) {
         node.isNodeHighlighted = false;
+    }
+    while (!mTreeForBackward.empty()) {
+        delete mTreeForBackward.top();
+        mTreeForBackward.pop();
     }
     mAnimationStep = 1;
 }

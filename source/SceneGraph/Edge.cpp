@@ -13,8 +13,8 @@ void Edge::setPosition(const sf::Vector2f &position) {
     mEdge.setPosition(position);
 }
 
-void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2, const float &edgeThickness) {
-    sf::Vector2f size(edgeThickness, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)));
+void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &point2) {
+    sf::Vector2f size(Size::EDGE_THICKNESS, std::sqrt(std::pow(point2.x - point1.x, 2) + std::pow(point2.y - point1.y, 2)));
     sf::Vector2f position = point1;
     double angle = std::atan2(point2.x - point1.x, point2.y - point1.y) * 180 / std::acos(-1);
     mEdge.setSize(size);
@@ -23,20 +23,10 @@ void Edge::setPositionByPoints(const sf::Vector2f &point1, const sf::Vector2f &p
     sf::FloatRect labelBounds = mLabel.getGlobalBounds();
     sf::Vector2f labelPosition;
 
-    // Calculate the midpoint of the edge
-    sf::Vector2f threeFivePoint = sf::Vector2f(point1.x + (point2.x - point1.x) * 3 / 5, point1.y + (point2.y - point1.y) * 3 / 5);
-
-    // Calculate an offset vector perpendicular to the edge direction   
+    sf::Vector2f threeFivePoint = sf::Vector2f(point1.x + (point2.x - point1.x) * 3 / 5, point1.y + (point2.y - point1.y) * 3 / 5) + sf::Vector2f(labelBounds.width, labelBounds.height);   
     sf::Vector2f offset;
-    if (angle >= -90 && angle < 90) {
-        // Edge pointing rightwards or upwards
-        offset = sf::Vector2f(-labelBounds.width * 5 / 4, labelBounds.height / 1.2);
-    } else {
-        // Edge pointing leftwards or downwards
-        offset = sf::Vector2f(0, labelBounds.height / 1.2);
-    }
+    if (angle <= 45 && angle > 0) offset = sf::Vector2f(-labelBounds.width, 0);
 
-    // Calculate the label position
     labelPosition = threeFivePoint + offset;
 
     mLabel.setPosition(labelPosition);

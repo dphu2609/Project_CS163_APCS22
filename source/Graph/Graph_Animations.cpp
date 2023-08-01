@@ -57,6 +57,7 @@ void Graph::insertAnimation() {
 
         case 2: {
             if (!mIsReversed) mGraphForBackward.push(createGraphState(2));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0, 1, 2, 3});
             for (auto &node : mNodeList) node->distance = INT_MAX;
             mNodeList[mInputQueue.front()]->distance = 0;
             for (auto &node : mNodeList) {
@@ -88,6 +89,7 @@ void Graph::insertAnimation() {
                 mAnimationStep = 8;
                 break;
             }
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4, 5, 6, 7, 8, 9, 10});
             mCurrentIndex = mPriorityQueue.top().second;
             mPriorityQueue.pop();
             if (mIsVisited[mCurrentIndex]) {
@@ -137,12 +139,14 @@ void Graph::deleteAnimation() {
             resetAnimation();
             createGraph();
             mBackupGraph = createGraphState(1);
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::Prim]);
             mAnimationStep = 2;
             break;
         }
 
         case 2: {
             if (!mIsReversed) mGraphForBackward.push(createGraphState(2));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0, 1, 2, 3});
             for (auto &node : mNodeList) node->key = INT_MAX;
             mNodeList[mInputQueue.front()]->key = 0;
             mPriorityQueueForPrim.push({0, {mInputQueue.front(), mInputQueue.front()}});
@@ -172,6 +176,7 @@ void Graph::deleteAnimation() {
         }
 
         case 5: {
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4, 5, 6, 7, 8, 9, 10});
             for (auto &node : mNodeList[mCurrentIndex]->child) {
                 if (!mIsVisited[node] && mNodeList[node]->key > mDistance[mCurrentIndex][node]) {
                     mNodeList[node]->key = mDistance[mCurrentIndex][node];
@@ -257,6 +262,10 @@ void Graph::resetAnimation() {
     if (mBackupGraph) {
         delete mBackupGraph;
         mBackupGraph = nullptr;
+    }
+    while (!mGraphForBackward.empty()) {
+        delete mGraphForBackward.top();
+        mGraphForBackward.pop();
     }
     resetNodeState();
 }

@@ -31,6 +31,7 @@ public:
     virtual sf::Vector2f getPosition() {return sf::Vector2f(0, 0);}
 public:
     virtual bool isLeftClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
+    virtual bool isLeftMouseHeld(sf::RenderWindow &window, sf::Event &event) {return false;}
     virtual bool isRightClicked(sf::RenderWindow &window, sf::Event &event) {return false;}
     virtual bool isHovered(sf::RenderWindow &window, sf::Event &event) {return false;}
     virtual bool isHolded(sf::RenderWindow &window, sf::Event &event) {return false;}

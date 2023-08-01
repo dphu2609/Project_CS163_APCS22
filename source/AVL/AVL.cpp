@@ -215,6 +215,10 @@ void AVL::handleEvent(sf::Event &event) {
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;
     } 
+
+    if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        requestStackPop();
+    }
 }
 
 void AVL::buildScene() {
@@ -374,6 +378,13 @@ void AVL::buildScene() {
     );
     replayButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
+
+    std::unique_ptr<ImageButton> returnButton = std::make_unique<ImageButton>();
+    returnButton->set(
+        ResourcesHolder::texturesHolder[Textures::ReturnButton], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
+        sf::Vector2f(100 * Constant::SCALE_X, 100 * Constant::SCALE_Y)
+    );
+    mSceneLayers[ReturnButton]->attachChild(std::move(returnButton));
 
     std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
     mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));

@@ -46,9 +46,7 @@ void HashTable::applyTreeState(TreeState* treeState) {
 }
 
 void HashTable::returnToPreviousStep() {
-    mNodeList = mTreeForBackward.top()->nodeList;
-    mOperationIndex = mTreeForBackward.top()->operationIndex;
-    mAnimationStep = mTreeForBackward.top()->animationIndex;
+    applyTreeState(mTreeForBackward.top());
     mTreeForBackward.pop();
     createTree();
 }

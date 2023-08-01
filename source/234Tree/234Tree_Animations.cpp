@@ -147,6 +147,7 @@ void Tree234::insertAnimation() {
         case 12: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -253,7 +254,8 @@ void Tree234::deleteAnimation() {
             }
             if ((mOperationNode->isAttached && !mOperationNode->parent->isLeaf()) || (!mOperationNode->isAttached && !mOperationNode->isLeaf())) {
                 mReplaceNode = findReplaceNode(mOperationNode);
-                getTravelPath(mOperationNode, mReplaceNode->val);
+                if (!mOperationNode->isAttached) getTravelPath(mOperationNode, mReplaceNode->val);
+                else getTravelPath(mOperationNode->parent, mReplaceNode->val);
                 mAnimationStep = 13;
             }
             else {
@@ -323,6 +325,7 @@ void Tree234::deleteAnimation() {
         case 20: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -373,6 +376,7 @@ void Tree234::searchAnimation() {
         case 6: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -593,6 +597,10 @@ void Tree234::resetAnimation() {
         child->isNodeHighlighted = false;
         child->isInsertNode = false;
         for (int i = 0; i < 4; i++) child->isEdgeHighlighted[i] = false;
+    }
+    while (!mTreeForBackward.empty()) {
+        delete mTreeForBackward.top();
+        mTreeForBackward.pop();
     }
     setTreeScale(mNodeList.size());
 }

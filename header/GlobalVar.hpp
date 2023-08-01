@@ -46,6 +46,9 @@ namespace Color {
     extern sf::Color CODEBLOCK_TEXT_COLOR;
     extern sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR;
     extern sf::Color CODEBLOCK_TEXT_ACTIVATED_COLOR;
+
+    extern sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR;
+    extern sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR;
 };
 
 namespace Size {
@@ -55,6 +58,8 @@ namespace Size {
     extern float EDGE_THICKNESS;
     extern sf::Vector2f SETTINGS_BUTTON_SIZE;
     extern sf::Vector2f MATRIX_SLOT_SIZE;
+    extern sf::Vector2f DATA_STRUCTURE_BUTTON;
+    extern float DATA_STRUCTURE_BUTTON_EDGE_THICKNESS;
 };
 
 namespace Animation {
