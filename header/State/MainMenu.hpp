@@ -5,6 +5,8 @@
 #include <SceneGraph/RectangleButton.hpp>
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
+#include <SceneGraph/TreeNode.hpp>
+#include <SceneGraph/Edge.hpp>
 #include <GlobalVar.hpp>
 
 class MainMenu : public State {
@@ -17,23 +19,26 @@ public:
     explicit MainMenu(StateStack& stack, sf::RenderWindow &window);
 private:
     float NODE_RADIUS = 20.f * Constant::SCALE_X;
-    float NODE_DISTANCE_HORIZONTAL = 40.f * Constant::SCALE_X;
-    float NODE_DISTANCE_VERTICAL = 40.f * Constant::SCALE_Y;
+    float NODE_DISTANCE_HORIZONTAL = 80.f * Constant::SCALE_X;
+    float NODE_DISTANCE_VERTICAL = 80.f * Constant::SCALE_Y;
+
+    std::vector<bool> mIsHovered = {};
+    void handleHoverOfDataStructureButtons(sf::Event &event, int indexOfDSLayer, int indexOfNodeLayer, int indexOfEdgeLayer = -1);
 private: 
     enum SceneLayers {
         Background,
         DataStructureButtons,
-        AVLNodes,
         AVLEdges,
-        GraphNodes,
+        AVLNodes,
         GraphEdges,
+        GraphNodes,
         HashTableNodes,
+        HeapEdges,
         HeapNodes,
-        HeadEdges,
+        Tree234Edges,   
         Tree234Nodes,
-        Tree234Edges,
-        TrieNodes,
         TrieEdges,
+        TrieNodes,
         ExitButton,
         LayerCount
     };

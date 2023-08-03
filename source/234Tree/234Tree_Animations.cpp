@@ -51,6 +51,7 @@ void Tree234::insertAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::Insert234]);
             getSplitCheckpoint(mRoot, mInputQueue.front());
             mAnimationStep = 2;
             break;
@@ -58,6 +59,7 @@ void Tree234::insertAnimation() {
 
         case 2: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             if (mSplitCheckpoint.empty()) {
                 mAnimationStep = 8;
                 break;
@@ -79,6 +81,7 @@ void Tree234::insertAnimation() {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
             mMovedValue = mSplitCheckpoint[mSplitCheckpointIndex]->val;
             splitNode(mRoot, mNodeList, mSplitCheckpoint[mSplitCheckpointIndex++]);
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
             mAnimationStep = 5;
             break;
         }
@@ -117,8 +120,13 @@ void Tree234::insertAnimation() {
 
         case 8: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(8));
+            if (mRoot == nullptr) {
+                mAnimationStep = 10;
+                break;
+            }
             if (mSplitCheckpoint.empty()) getTravelPath(mRoot, mInputQueue.front());
             else getTravelPath(mSplitCheckpoint.back(), mInputQueue.front());
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mAnimationStep = 9;
             break;
         }
@@ -134,6 +142,7 @@ void Tree234::insertAnimation() {
             if (mRoot == nullptr) mRoot = insertInternalNode(mRoot, mNodeList, mInputQueue.front());
             else insertInternalNode(insertNode, mNodeList, mInputQueue.front());
             balanceTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3, 4});
             mAnimationStep = 11;
             break;
         }
@@ -161,11 +170,13 @@ void Tree234::deleteAnimation() {
             resetAnimation();
             createTree();
             createBackupTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::Delete234]);
             mAnimationStep++;
             break;
         }
 
         case 2: {
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             getTravelPath(mRoot, mInputQueue.front());
             mOperationNode = findNode(mRoot, mInputQueue.front());
             if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
@@ -220,6 +231,7 @@ void Tree234::deleteAnimation() {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(8));
             mergeNode(mRoot);
             balanceTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
             mAnimationStep = 9;
             break;
         }
@@ -256,11 +268,13 @@ void Tree234::deleteAnimation() {
                 mReplaceNode = findReplaceNode(mOperationNode);
                 if (!mOperationNode->isAttached) getTravelPath(mOperationNode, mReplaceNode->val);
                 else getTravelPath(mOperationNode->parent, mReplaceNode->val);
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({15, 16, 17, 18});
                 mAnimationStep = 13;
             }
             else {
                 handleLeafNodeWith1NumKeys(mOperationNode);
                 balanceTree();
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14});
                 mAnimationStep = 17;
             }
             break;
@@ -273,10 +287,11 @@ void Tree234::deleteAnimation() {
 
         case 14: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(14));
-            std::swap(mOperationNode->val, mReplaceNode->val);
-            std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
-            mOperationNode = mReplaceNode;
-            if (mOperationNode->numKeys == 1) mAnimationStep = 15;
+            if (mReplaceNode->depth > mOperationNode->depth + 1 || (mReplaceNode->isAttached && mReplaceNode->parent->numKeys != 1) || (!mReplaceNode->isAttached && mReplaceNode->numKeys != 1)) {
+                std::swap(mOperationNode->val, mReplaceNode->val);
+                std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+            }
+            if (mReplaceNode->numKeys == 1) mAnimationStep = 15;
             else mAnimationStep = 17;
             break;
         }
@@ -288,7 +303,8 @@ void Tree234::deleteAnimation() {
 
         case 16: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(16));
-            handleLeafNodeWith1NumKeys(mOperationNode);
+            handleLeafNodeWith1NumKeys(mReplaceNode);
+            mOperationNode = mReplaceNode;
             balanceTree();
             mAnimationStep = 17;
         }
@@ -339,6 +355,7 @@ void Tree234::searchAnimation() {
             resetAnimation();
             createTree();
             createBackupTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::Search234]);
             mAnimationStep++;
             break;
         }
@@ -347,6 +364,7 @@ void Tree234::searchAnimation() {
             getTravelPath(mRoot, mInputQueue.front());
             mOperationNode = findNode(mRoot, mInputQueue.front());
             if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0, 1, 4});
             mAnimationStep++;
             break;
         }
@@ -358,8 +376,14 @@ void Tree234::searchAnimation() {
 
         case 4: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
-            if (mOperationNode) mAnimationStep = 5;
-            else mAnimationStep = 6;
+            if (mOperationNode) {
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2, 3});
+                mAnimationStep = 5;
+            }
+            else { 
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5});
+                mAnimationStep = 6;
+            }
             break;
         }
 

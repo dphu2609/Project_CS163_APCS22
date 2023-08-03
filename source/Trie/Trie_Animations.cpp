@@ -145,6 +145,15 @@ void Trie::insertAnimation() {
         }
 
         case 7: {
+            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2);
+            if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished()) {
+                resetNodeState();
+                mAnimationStep = 8;
+            }
+            break;
+        }
+
+        case 8: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
             }

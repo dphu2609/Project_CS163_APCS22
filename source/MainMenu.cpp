@@ -37,6 +37,61 @@ void MainMenu::handleEvent(sf::Event &event) {
     if (mSceneLayers[DataStructureButtons]->getChildren()[Heap]->isLeftClicked(mWindow, event)) {
         requestStackPush(States::Heap);
     }
+
+    handleHoverOfDataStructureButtons(event, AVL, AVLNodes, AVLEdges);
+    handleHoverOfDataStructureButtons(event, Tree234, Tree234Nodes, Tree234Edges);
+    handleHoverOfDataStructureButtons(event, Trie, TrieNodes, TrieEdges);
+    handleHoverOfDataStructureButtons(event, HashTable, HashTableNodes);
+    handleHoverOfDataStructureButtons(event, Graph, GraphNodes, GraphEdges);
+    handleHoverOfDataStructureButtons(event, Heap, HeapNodes, HeapEdges);
+}
+
+void MainMenu::handleHoverOfDataStructureButtons(sf::Event &event, int indexOfDSLayer, int indexOfNodeLayer, int indexOfEdgeLayer) {
+    if (mSceneLayers[DataStructureButtons]->getChildren()[indexOfDSLayer]->isHovered(mWindow, event)) {
+        if (!mIsHovered[indexOfDSLayer]) {
+            mIsHovered[indexOfDSLayer] = true;
+            for (auto &child : mSceneLayers[indexOfNodeLayer]->getChildren()) child->resetAnimationVar();
+            if (indexOfEdgeLayer != -1) for (auto &child : mSceneLayers[indexOfEdgeLayer]->getChildren()) child->resetAnimationVar();
+            int index = 0;
+            for (auto &child : mSceneLayers[indexOfNodeLayer]->getChildren()) {
+                if (indexOfDSLayer == Trie && (index == 3 || index == 6)) {
+                    child->change3Color(
+                        Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, 
+                        Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 5 * (1 / Animation::SPEED)
+                    );
+                }
+                else {
+                    child->change3Color(
+                        Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_COLOR, 
+                        Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 5 * (1 / Animation::SPEED)
+                    );
+                }
+                index++;
+            }
+            if (indexOfEdgeLayer != -1) for (auto &child : mSceneLayers[indexOfEdgeLayer]->getChildren()) child->change1Color(Color::NODE_HIGHLIGHT_COLOR, 5 * (1 / Animation::SPEED));
+        }
+    }
+    else if (mIsHovered[indexOfDSLayer]) {
+        mIsHovered[indexOfDSLayer] = false;
+        for (auto &child : mSceneLayers[indexOfNodeLayer]->getChildren()) child->resetAnimationVar();
+        if (indexOfEdgeLayer != -1) for (auto &child : mSceneLayers[indexOfEdgeLayer]->getChildren()) child->resetAnimationVar();
+        int index = 0;
+        for (auto &child : mSceneLayers[indexOfNodeLayer]->getChildren()) {
+            if (indexOfDSLayer == Trie && (index == 3 || index == 6)) {
+                child->change3Color(
+                    Color::NODE_TEXT_COLOR, Color::NODE_COLOR, 
+                    Color::NODE_OUTLINE_COLOR, 5 * (1 / Animation::SPEED)
+                );
+            }
+            else {
+                child->change3Color(
+                    Color::NODE_COLOR, Color::NODE_TEXT_COLOR, Color::NODE_OUTLINE_COLOR, 5 * (1 / Animation::SPEED)
+                );
+            }
+            index++;
+        }
+        if (indexOfEdgeLayer != -1) for (auto &child : mSceneLayers[indexOfEdgeLayer]->getChildren()) child->change1Color(Color::NODE_EDGE_COLOR, 5 * (1 / Animation::SPEED));
+    }
 }
 
 void MainMenu::buildScene() {
@@ -44,6 +99,7 @@ void MainMenu::buildScene() {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();
         mSceneGraph.attachChild(std::move(layer));
+        mIsHovered.push_back(false);
     }
 
     sf::Vector2f startPos = sf::Vector2f(500 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 - Size::DATA_STRUCTURE_BUTTON.y);
@@ -66,11 +122,196 @@ void MainMenu::buildScene() {
     }
 
     std::vector<sf::Vector2f> avlPos;
-    avlPos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 - NODE_RADIUS, NODE_RADIUS));
+    avlPos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 + NODE_RADIUS * 2, NODE_RADIUS * 4));
     avlPos.push_back(avlPos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 2, NODE_DISTANCE_VERTICAL));
     avlPos.push_back(avlPos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL));
     avlPos.push_back(avlPos[1] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL));
     avlPos.push_back(avlPos[1] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL));
+    
+    for (int i = 0; i < avlPos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        std::string content = "";
+        if (i == 0) content = "V";
+        else if (i == 1) content = "A";
+        else if (i == 2) content = "L";
+        node->set(true, content, avlPos[i], NODE_RADIUS);
+        mSceneLayers[AVLNodes]->attachChild(std::move(node));
+    }
+
+    for (auto &pos : avlPos) pos += sf::Vector2f(NODE_RADIUS, NODE_RADIUS);
+
+    std::vector<std::pair<sf::Vector2f, sf::Vector2f>> avlEdgePos;
+    avlEdgePos.push_back(std::make_pair(avlPos[0], avlPos[1]));
+    avlEdgePos.push_back(std::make_pair(avlPos[0], avlPos[2]));
+    avlEdgePos.push_back(std::make_pair(avlPos[1], avlPos[3]));
+    avlEdgePos.push_back(std::make_pair(avlPos[1], avlPos[4]));
+
+    for (int i = 0; i < avlEdgePos.size(); i++) {
+        std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+        edge->set(avlEdgePos[i].first, avlEdgePos[i].second);
+        mSceneLayers[AVLEdges]->attachChild(std::move(edge));
+    }
+
+    std::vector<sf::Vector2f> tree234Pos;
+    tree234Pos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 - NODE_RADIUS + horizontalDistance, NODE_RADIUS * 6));
+    tree234Pos.push_back(tree234Pos[0] - sf::Vector2f(2 * NODE_RADIUS + NODE_RADIUS / 4, 0));
+    tree234Pos.push_back(tree234Pos[0] + sf::Vector2f(2 * NODE_RADIUS + NODE_RADIUS / 4, 0));
+    tree234Pos.push_back(tree234Pos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 2, NODE_DISTANCE_VERTICAL));
+    tree234Pos.push_back(tree234Pos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 2 / 3, NODE_DISTANCE_VERTICAL));
+    tree234Pos.push_back(tree234Pos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 2 / 3, NODE_DISTANCE_VERTICAL));
+    tree234Pos.push_back(tree234Pos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 2, NODE_DISTANCE_VERTICAL));
+
+    std::string content = "324TREE";
+
+    for (int i = 0; i < tree234Pos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        std::string cont = " ";
+        cont[0] = content[i];
+        node->set(false, cont, tree234Pos[i], NODE_RADIUS);
+        mSceneLayers[Tree234Nodes]->attachChild(std::move(node));
+    }
+
+    for (auto &pos : tree234Pos) pos += sf::Vector2f(NODE_RADIUS, NODE_RADIUS);
+    std::vector<std::pair<sf::Vector2f, sf::Vector2f>> tree234EdgePos;
+    tree234EdgePos.push_back(std::make_pair(tree234Pos[0], tree234Pos[3]));
+    tree234EdgePos.push_back(std::make_pair(tree234Pos[0], tree234Pos[4]));
+    tree234EdgePos.push_back(std::make_pair(tree234Pos[0], tree234Pos[5]));
+    tree234EdgePos.push_back(std::make_pair(tree234Pos[0], tree234Pos[6]));
+
+    for (int i = 0; i < tree234EdgePos.size(); i++) {
+        std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+        edge->set(tree234EdgePos[i].first, tree234EdgePos[i].second);
+        mSceneLayers[Tree234Edges]->attachChild(std::move(edge));
+    }
+
+    std::vector<sf::Vector2f> triePos;
+    triePos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 + horizontalDistance * 2 - NODE_RADIUS, NODE_RADIUS * 2));
+    triePos.push_back(triePos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL));
+    triePos.push_back(triePos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL));
+    triePos.push_back(triePos[1] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL / 1.2));
+    triePos.push_back(triePos[2] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL / 1.2));
+    triePos.push_back(triePos[4] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL / 1.2));
+    triePos.push_back(triePos[5] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL / 1.2));
+
+    content = " DTPRIE";
+
+    for (int i = 0; i < triePos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        std::string cont = " ";
+        cont[0] = content[i];
+        if (i == 3 || i == 6) {
+            node->set(true, cont, triePos[i], NODE_RADIUS, Color::NODE_TEXT_COLOR, Color::NODE_COLOR, Color::NODE_OUTLINE_COLOR);
+        }
+        else node->set(true, cont, triePos[i], NODE_RADIUS);
+        mSceneLayers[TrieNodes]->attachChild(std::move(node));
+    }
+
+    for (auto &pos : triePos) pos += sf::Vector2f(NODE_RADIUS, NODE_RADIUS);
+    std::vector<std::pair<sf::Vector2f, sf::Vector2f>> trieEdgePos;
+    trieEdgePos.push_back(std::make_pair(triePos[0], triePos[1]));
+    trieEdgePos.push_back(std::make_pair(triePos[0], triePos[2]));
+    trieEdgePos.push_back(std::make_pair(triePos[1], triePos[3]));
+    trieEdgePos.push_back(std::make_pair(triePos[2], triePos[4]));
+    trieEdgePos.push_back(std::make_pair(triePos[4], triePos[5]));
+    trieEdgePos.push_back(std::make_pair(triePos[5], triePos[6]));
+
+    for (int i = 0; i < trieEdgePos.size(); i++) {
+        std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+        edge->set(trieEdgePos[i].first, trieEdgePos[i].second);
+        mSceneLayers[TrieEdges]->attachChild(std::move(edge));
+    }
+
+    std::vector<sf::Vector2f> hashTablePos;
+    hashTablePos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 - NODE_RADIUS, verticalDistance + NODE_RADIUS * 6));
+    hashTablePos.push_back(hashTablePos[0] + sf::Vector2f(-4 * NODE_RADIUS * 2, NODE_DISTANCE_VERTICAL));
+    hashTablePos.push_back(hashTablePos[1] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[2] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[3] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[4] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[5] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[6] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[7] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+    hashTablePos.push_back(hashTablePos[8] + sf::Vector2f(NODE_RADIUS * 2 + NODE_RADIUS / 8, 0));
+
+    content = " HASHTABLE";
+
+    for (int i = 0; i < hashTablePos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        bool isCircle = (i == 0 ? true : false);
+        std::string cont = " ";
+        cont[0] = content[i];
+        if (i == 0) content = "21";
+        node->set(isCircle, cont, hashTablePos[i], NODE_RADIUS);
+        if (i != 0) node->setLabel(std::to_string(i - 1));
+        mSceneLayers[HashTableNodes]->attachChild(std::move(node));
+    }
+
+    std::vector<sf::Vector2f> graphPos;
+    graphPos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 - NODE_RADIUS + horizontalDistance, verticalDistance + NODE_RADIUS * 2));
+    graphPos.push_back(graphPos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 2, NODE_DISTANCE_VERTICAL));
+    graphPos.push_back(graphPos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 2, NODE_DISTANCE_VERTICAL));
+    graphPos.push_back(graphPos[1] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL * 2));
+    graphPos.push_back(graphPos[2] + sf::Vector2f(0, NODE_DISTANCE_VERTICAL * 2));
+
+    content = "GRAPH";
+
+    for (int i = 0; i < graphPos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        std::string cont = " ";
+        cont[0] = content[i];
+        node->set(true, cont, graphPos[i], NODE_RADIUS);
+        mSceneLayers[GraphNodes]->attachChild(std::move(node));
+    }
+
+    for (auto &pos : graphPos) pos += sf::Vector2f(NODE_RADIUS, NODE_RADIUS);
+    std::vector<std::pair<sf::Vector2f, sf::Vector2f>> graphEdgePos;
+    graphEdgePos.push_back(std::make_pair(graphPos[0], graphPos[1]));
+    graphEdgePos.push_back(std::make_pair(graphPos[0], graphPos[2]));
+    graphEdgePos.push_back(std::make_pair(graphPos[1], graphPos[2]));
+    graphEdgePos.push_back(std::make_pair(graphPos[1], graphPos[3]));
+    graphEdgePos.push_back(std::make_pair(graphPos[2], graphPos[4]));
+    graphEdgePos.push_back(std::make_pair(graphPos[3], graphPos[4]));
+
+    for (int i = 0; i < graphEdgePos.size(); i++) {
+        std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+        edge->set(graphEdgePos[i].first, graphEdgePos[i].second);
+        mSceneLayers[GraphEdges]->attachChild(std::move(edge));
+    }
+
+    std::vector<sf::Vector2f> heapPos;
+    heapPos.push_back(startPos + sf::Vector2f(Size::DATA_STRUCTURE_BUTTON.x / 2 - NODE_RADIUS + horizontalDistance * 2, verticalDistance + NODE_RADIUS * 2));
+    heapPos.push_back(heapPos[0] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 2 * 0.75, NODE_DISTANCE_VERTICAL));
+    heapPos.push_back(heapPos[0] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 2 * 0.75, NODE_DISTANCE_VERTICAL));
+    heapPos.push_back(heapPos[1] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 0.75, NODE_DISTANCE_VERTICAL));
+    heapPos.push_back(heapPos[1] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 0.75, NODE_DISTANCE_VERTICAL));
+    heapPos.push_back(heapPos[2] + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL * 0.75, NODE_DISTANCE_VERTICAL));
+    heapPos.push_back(heapPos[2] + sf::Vector2f(NODE_DISTANCE_HORIZONTAL * 0.75, NODE_DISTANCE_VERTICAL));
+
+    content = "   HEAP";
+
+    for (int i = 0; i < heapPos.size(); i++) {
+        std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
+        std::string cont = " ";
+        cont[0] = content[i];
+        node->set(true, cont, heapPos[i], NODE_RADIUS);
+        node->setLabel(std::to_string(i + 1));
+        mSceneLayers[HeapNodes]->attachChild(std::move(node));
+    }
+
+    for (auto &pos : heapPos) pos += sf::Vector2f(NODE_RADIUS, NODE_RADIUS);
+    std::vector<std::pair<sf::Vector2f, sf::Vector2f>> heapEdgePos;
+    heapEdgePos.push_back(std::make_pair(heapPos[0], heapPos[1]));
+    heapEdgePos.push_back(std::make_pair(heapPos[0], heapPos[2]));
+    heapEdgePos.push_back(std::make_pair(heapPos[1], heapPos[3]));
+    heapEdgePos.push_back(std::make_pair(heapPos[1], heapPos[4]));
+    heapEdgePos.push_back(std::make_pair(heapPos[2], heapPos[5]));
+    heapEdgePos.push_back(std::make_pair(heapPos[2], heapPos[6]));
+
+    for (int i = 0; i < heapEdgePos.size(); i++) {
+        std::unique_ptr<Edge> edge = std::make_unique<Edge>();
+        edge->set(heapEdgePos[i].first, heapEdgePos[i].second);
+        mSceneLayers[HeapEdges]->attachChild(std::move(edge));
+    }
 }
 
 

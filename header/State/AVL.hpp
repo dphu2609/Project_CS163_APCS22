@@ -8,6 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 #include <SceneGraph/CodeBlock.hpp>
+#include <tinyfiledialogs.h>
 
 class AVL : public State {
 private:
@@ -50,6 +51,8 @@ private:
         SearchOptions,
         ControlBox,
         CodeBox,
+        ErrorContainer,
+        ErrorConfirmButton,
         ReturnButton,
         LayerCount
     };
@@ -131,6 +134,8 @@ private: //Algorithms
     void restoreTree();
     void balanceTree();
     void returnToPreviousStep();
+    void annouceError(std::string error);
+    void initFromFile();
 private: //Visualization
     void createTree();
 
@@ -175,6 +180,8 @@ private: //Control box
     bool mIsReversed = false;
     bool mIsPendingReversed = false;
     bool mIsReplay = false;
+    bool mIsAnnouncingError = false;
+    bool mIsInitFromFile = false;
 };
 
 #endif

@@ -752,6 +752,7 @@ void Tree234::balanceTree() {
                     node->position = node->parent->position + sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 3, NODE_DISTANCE_VERTICAL);
                     if (node->numKeys == 3 || node->numKeys == 2) {
                         node->parent->child[0]->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 6 + Size::NODE_RADIUS, 0);
+                        if (node->numKeys == 3)  node->position += sf::Vector2f(-NODE_DISTANCE_HORIZONTAL / 6 + Size::NODE_RADIUS, 0);
                     }
                 }
                 else if (node->parent->numKeys == 2) {
@@ -768,6 +769,10 @@ void Tree234::balanceTree() {
             else if (node->orderOfNode[2]) {
                 if (node->parent->numKeys == 3) { 
                     node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 3, NODE_DISTANCE_VERTICAL);
+                    if (node->numKeys == 3 || node->numKeys == 2) {
+                        node->parent->child[3]->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
+                        node->position += sf::Vector2f(NODE_DISTANCE_HORIZONTAL / 6, 0);
+                    }
                 }
                 else if (node->parent->numKeys == 2) {
                     node->position = node->parent->position + sf::Vector2f(NODE_DISTANCE_HORIZONTAL, NODE_DISTANCE_VERTICAL);

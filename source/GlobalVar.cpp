@@ -42,6 +42,10 @@ namespace Color {
 
     sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(133, 163, 137);
     sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
+
+    sf::Color ERROR_MESSAGE_BOX_COLOR = sf::Color::White;
+    sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::Black;
+    sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Black;
 };
 
 namespace Size {

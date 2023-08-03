@@ -8,6 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 #include <SceneGraph/CodeBlock.hpp>
+#include <tinyfiledialogs.h>
 
 class Graph : public State {
 private:
@@ -45,6 +46,8 @@ private:
         Matrix,
         MatrixOptions,
         CodeBox,
+        ErrorContainer,
+        ErrorConfirmButton,
         ReturnButton,
         LayerCount
     };
@@ -131,6 +134,8 @@ private: //Visualization
     void resetNodeState();
     void resetAnimation();
     void traverseAnimation(bool isAllowPause = true, float speed = 1.f, int animationStepAfterFinish = 0, int startNode = 0, int endNode = 0);
+    void initFromFile() {}
+    void annouceError(std::string error) {}
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
@@ -158,6 +163,8 @@ private: //Control box
     bool mIsReversed = false;
     bool mIsPendingReversed = false;
     bool mIsReplay = false;
+    bool mIsAnnouncingError = false;
+    bool mIsInitFromFile = false;
 };
 
 #endif

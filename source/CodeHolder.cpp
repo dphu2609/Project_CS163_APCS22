@@ -32,9 +32,9 @@ void CodeHolder::load() {
     };
 
     mCodeMap[Code::Insert234] = {
-        "if this numKeys == 3",
-        "   split this",
         "traverse to leaf",
+        "   if this numKeys == 3",
+        "       split this",
         "if this is leaf",
         "   insert node to this",
     };
@@ -62,26 +62,12 @@ void CodeHolder::load() {
     };
 
     mCodeMap[Code::Search234] = {
-        "if this == null",
-        "   return null",
-        "if search value < this key 1",
-        "   search this child 1",
-        "else if this numKeys == 1",
-        "   if search value == this key 1",
+        "while this is not null",
+        "   compare search value with all keys in this node",
+        "   if found",
         "       return this",
-        "   else",
-        "       search this child 2",
-        "else if search value < this key 2",
-        "   search this child 2",
-        "else if this numKeys == 2",
-        "   if search value == this key 2",
-        "       return this",
-        "   else",
-        "       search this child 3",
-        "else if search value == this key 3",
-        "   return this",
-        "else",
-        "   search this child 3",
+        "   go to next appropriate child node",
+        "return null",
     };
 
     mCodeMap[Code::InsertTrie] = {
@@ -110,13 +96,32 @@ void CodeHolder::load() {
         "return this.isEndOfWord",
     };
 
-    mCodeMap[Code::InsertHeap] = {
+    mCodeMap[Code::InsertMaxHeap] = {
         "insert node to last position",
         "while this.parent is not null and this.parent.value < this.value",
         "   swap this and this.parent",
     };
 
-    mCodeMap[Code::DeleteHeap] = {
+    mCodeMap[Code::InsertMinHeap] = {
+        "insert node to last position",
+        "while this.parent is not null and this.parent.value > this.value",
+        "   swap this and this.parent",
+    };
+
+    mCodeMap[Code::DeleteMaxHeap] = {
+        "set this.value to top value + 1",
+        "while this.parent is not null and this.parent.value < this.value",
+        "   swap this and this.parent",
+        "swap this and last node",
+        "delete last node",
+        "while this < this.children",
+        "   swap this and max of this.left and this.right",
+    };
+
+    mCodeMap[Code::DeleteMinHeap] = {
+        "set this.value to top value - 1",
+        "while this.parent is not null and this.parent.value > this.value",
+        "   swap this and this.parent",
         "swap this and last node",
         "delete last node",
         "while this < this.children",

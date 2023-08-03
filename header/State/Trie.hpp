@@ -8,6 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 #include <SceneGraph/CodeBlock.hpp>
+#include <tinyfiledialogs.h>
 
 class Trie : public State {
 private:
@@ -43,6 +44,8 @@ private:
         SearchOptions,
         ControlBox,
         CodeBox,
+        ErrorContainer,
+        ErrorConfirmButton,
         ReturnButton,
         LayerCount
     };
@@ -130,6 +133,8 @@ private: //Visualization
     bool isProcessingAnimation();
     void resetNodeState();
     void resetAnimation();
+    void initFromFile() {}
+    void annouceError(std::string error) {}
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
@@ -156,6 +161,8 @@ private: //Control box
     bool mIsReversed = false;
     bool mIsPendingReversed = false;
     bool mIsReplay = false;
+    bool mIsAnnouncingError = false;
+    bool mIsInitFromFile = false;
 };
 
 #endif

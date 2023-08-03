@@ -16,7 +16,7 @@ private:
     std::vector<bool> mLineActivated = {};
 public:
     void set(
-        const std::vector<std::string> &codeContent = {}, double textSize = 20.f * Constant::SCALE_X,
+        const std::vector<std::string> &codeContent = {}, double textSize = 23.f * Constant::SCALE_X,
         sf::Color boxColor = Color::CODEBLOCK_BOX_COLOR, sf::Color textColor = Color::CODEBLOCK_TEXT_COLOR, 
         sf::Color boxColorActivated = Color::CODEBLOCK_BOX_ACTIVATED_COLOR, sf::Color textColorActivated = Color::CODEBLOCK_TEXT_ACTIVATED_COLOR
     );

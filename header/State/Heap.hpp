@@ -8,6 +8,7 @@
 #include <SceneGraph/InputBox.hpp>
 #include <SceneGraph/ImageButton.hpp>
 #include <SceneGraph/CodeBlock.hpp>
+#include <tinyfiledialogs.h>
 
 class Heap : public State {
 private:
@@ -45,6 +46,8 @@ private:
         SearchOptions,
         ControlBox,
         CodeBox,
+        ErrorContainer,
+        ErrorConfirmButton,
         ReturnButton,
         LayerCount
     };
@@ -116,6 +119,8 @@ private: //Algorithms
     std::vector<int> getTravelIndex(int index);
     void balanceTree();
     void returnToPreviousStep();
+    void initFromFile() {}
+    void annouceError(std::string error) {}
 private: //Visualization
     void createTree();
     void insertAnimation();
@@ -151,6 +156,8 @@ private: //Control box
     bool mIsReversed = false;
     bool mIsPendingReversed = false;
     bool mIsReplay = false;
+    bool mIsAnnouncingError = false;
+    bool mIsInitFromFile = false;
 };
 
 #endif

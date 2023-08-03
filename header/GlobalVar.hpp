@@ -49,6 +49,10 @@ namespace Color {
 
     extern sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR;
     extern sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR;
+
+    extern sf::Color ERROR_MESSAGE_BOX_COLOR;
+    extern sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR;
+    extern sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR;
 };
 
 namespace Size {

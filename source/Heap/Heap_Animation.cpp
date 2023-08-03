@@ -49,7 +49,8 @@ void Heap::insertAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
-            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::InsertHashTable]);
+            if (mIsMaxHeap) mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::InsertMaxHeap]);
+            else mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::InsertMinHeap]);
             mAnimationStep = 2;
             break;
         }
@@ -96,6 +97,7 @@ void Heap::insertAnimation() {
         case 6: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;
@@ -109,32 +111,75 @@ void Heap::deleteAnimation() {
             resetAnimation();
             createBackupTree();
             createTree();
-            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteHeap]);
+            if (mIsMaxHeap) mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteMaxHeap]);
+            else mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteMinHeap]);
             mAnimationStep = 2;
             break;
         }
-        
+
         case 2: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
-            std::swap(mNodeList[mInputQueue.front() - 1]->val, mNodeList.back()->val);
-            std::swap(mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1], mSceneLayers[Nodes]->getChildren().back());
-            mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setLabel(std::to_string(mNodeList[mInputQueue.front() - 1]->order));
-            mSceneLayers[Nodes]->getChildren().back()->setLabel(std::to_string(mNodeList.back()->order));
-            if (mInputQueue.front() != mNodeList.size())
-                mOperationNode = mNodeList[mInputQueue.front() - 1];
-            else mOperationNode = nullptr;
             mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
-            mAnimationStep = 3;
+            mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->change3Color(Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2);
+            if (mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->isChange3ColorFinished() && !mIsAnimationPaused) {
+                if (mIsMaxHeap) {
+                    mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val + 1));
+                    mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val + 1;
+                }
+                else {
+                    mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val - 1));
+                    mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val - 1;
+                }
+                mOperationNode = mNodeList[mInputQueue.front() - 1];
+                resetNodeState();
+                mAnimationStep = 3;
+            }
             break;
         }
 
         case 3: {
-            moveTreeAnimation(true, 1.5, 4);
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
+            if (mOperationNode->parent && ((mIsMaxHeap && mOperationNode->val > mOperationNode->parent->val) || (!mIsMaxHeap && mOperationNode->val < mOperationNode->parent->val))) {
+                std::swap(mOperationNode->val, mOperationNode->parent->val);
+                std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex]);
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->setLabel(std::to_string(mOperationNode->order));
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->parent->nodeIndex]->setLabel(std::to_string(mOperationNode->parent->order));
+                mOperationNode = mOperationNode->parent;
+                mAnimationStep = 4;
+            }
+            else mAnimationStep = 5;
             break;
         }
 
         case 4: {
+            moveTreeAnimation(true, 1.5, 3);
+            break;
+        }
+        
+        case 5: {
+            if (!mIsReversed) mTreeForBackward.push(createTreeState(1));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3});
+            std::swap(mNodeList.front()->val, mNodeList.back()->val);
+            std::swap(mSceneLayers[Nodes]->getChildren().front(), mSceneLayers[Nodes]->getChildren().back());
+            mSceneLayers[Nodes]->getChildren().front()->setLabel(std::to_string(mNodeList.front()->order));
+            mSceneLayers[Nodes]->getChildren().back()->setLabel(std::to_string(mNodeList.back()->order));
+            if (mInputQueue.front() != mNodeList.size())
+                mOperationNode = mNodeList.front();
+            else mOperationNode = nullptr;
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
+            mAnimationStep = 6;
+            break;
+        }
+
+        case 6: {
+            moveTreeAnimation(true, 1.5, 7);
+            break;
+        }
+
+        case 7: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4});
             if (mNodeList.back()->parent) {
                 if (mNodeList.back()->order % 2 == 0) {
                     mNodeList.back()->parent->left = nullptr;
@@ -147,26 +192,25 @@ void Heap::deleteAnimation() {
             mNodeList.pop_back();
             delete temp;
             balanceTree();
-            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1});
-            mAnimationStep = 5;
+            mAnimationStep = 8;
             break;
         }
 
-        case 5: {
+        case 8: {
             mSceneLayers[Nodes]->getChildren().back()->zoom(sf::Vector2f(0, 0), 1.5);
             moveTreeAnimation(true, 1.5);
             if (mSceneLayers[Nodes]->getChildren().back()->isZoomFinished()) {
                 mSceneLayers[Nodes]->getChildren().pop_back();
                 mSceneLayers[LeftEdges]->getChildren().pop_back();
                 mSceneLayers[RightEdges]->getChildren().pop_back();
-                if (mOperationNode) mAnimationStep = 6;
-                else mAnimationStep = 8;
+                if (mOperationNode) mAnimationStep = 9;
+                else mAnimationStep = 11;
                 resetNodeState();
             }
             break;
         }
 
-        case 6: {
+        case 9: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(6));
             if (mIsMaxHeap) {
                 if ((mOperationNode->left && mOperationNode->val < mOperationNode->left->val) || (mOperationNode->right && mOperationNode->val < mOperationNode->right->val)) {
@@ -184,11 +228,11 @@ void Heap::deleteAnimation() {
                         mSceneLayers[Nodes]->getChildren()[mOperationNode->left->nodeIndex]->setLabel(std::to_string(mOperationNode->left->order));
                         mOperationNode = mOperationNode->left;
                     }
-                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2, 3});
-                    mAnimationStep = 7;
+                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5, 6});
+                    mAnimationStep = 10;
                 }
                 else {
-                    mAnimationStep = 8;
+                    mAnimationStep = 11;
                 }
             }
             else {
@@ -207,24 +251,25 @@ void Heap::deleteAnimation() {
                         mSceneLayers[Nodes]->getChildren()[mOperationNode->left->nodeIndex]->setLabel(std::to_string(mOperationNode->left->order));
                         mOperationNode = mOperationNode->left;
                     }
-                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2, 3});
-                    mAnimationStep = 7;
+                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5, 6});
+                    mAnimationStep = 10;
                 }
                 else {
-                    mAnimationStep = 8;
+                    mAnimationStep = 11;
                 }
             }
             break;
         }
 
-        case 7: {
-            moveTreeAnimation(true, 1.5, 6);
+        case 10: {
+            moveTreeAnimation(true, 1.5, 9);
             break;
         }
 
-        case 8: {
+        case 11: {
             if (mInputQueue.size() > 1) {
                 mInputQueue.pop();
+                mAnimationStep = 1;
             }
             else mIsReplay = true;
             break;

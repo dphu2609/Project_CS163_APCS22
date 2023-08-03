@@ -75,6 +75,11 @@ void AVL::handleEvent(sf::Event &event) {
         createRandomTree();
     }
 
+    if (mSceneLayers[CreateOptions]->getChildren()[FromFileButton]->isLeftClicked(mWindow, event)) {
+        annouceError("Error messages");
+        mIsInitFromFile = true;
+    }
+
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getIntArrayData();
         while (!mInputQueue.empty()) mInputQueue.pop();
@@ -215,6 +220,12 @@ void AVL::handleEvent(sf::Event &event) {
         mIsAnimationPaused = false;
         mIsStepByStepMode = false;
     } 
+
+    if (mSceneLayers[ErrorConfirmButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        if (mIsInitFromFile) initFromFile();
+        mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
+        mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+    }
 
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         requestStackPop();
@@ -379,6 +390,27 @@ void AVL::buildScene() {
     replayButton->deactivate();
     mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
 
+    std::unique_ptr<RectangleButton> errorContainer = std::make_unique<RectangleButton>();
+    errorContainer->set(
+        sf::Vector2f(400 * Constant::SCALE_X, 300 * Constant::SCALE_Y), 
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 200 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 - 150 * Constant::SCALE_Y), "",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::ERROR_MESSAGE_BOX_COLOR, Color::ERROR_MESSAGE_BOX_TEXT_COLOR,
+        Color::ERROR_MESSAGE_BOX_COLOR, Color::ERROR_MESSAGE_BOX_TEXT_COLOR, 5 * Constant::SCALE_X, Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR,
+        Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR
+    );
+    errorContainer->deactivate();
+    mSceneLayers[ErrorContainer]->attachChild(std::move(errorContainer));
+
+    std::unique_ptr<RectangleButton> errorConfirmButton = std::make_unique<RectangleButton>();
+    errorConfirmButton->set(
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), 
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 125 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 + 70 * Constant::SCALE_Y), "OK",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
+    );
+    errorConfirmButton->deactivate();
+    mSceneLayers[ErrorConfirmButton]->attachChild(std::move(errorConfirmButton));
+
     std::unique_ptr<ImageButton> returnButton = std::make_unique<ImageButton>();
     returnButton->set(
         ResourcesHolder::texturesHolder[Textures::ReturnButton], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
@@ -392,5 +424,17 @@ void AVL::buildScene() {
     createRandomTree();
 }
 
+void AVL::annouceError(std::string error) {
+    mSceneLayers[ErrorContainer]->getChildren()[0]->activate();
+    mSceneLayers[ErrorConfirmButton]->getChildren()[0]->activate();
+    mSceneLayers[ErrorContainer]->getChildren()[0]->setContent(error);
+}
+
+void AVL::initFromFile() {
+    const char *path = tinyfd_openFileDialog(
+        "Open file", "", 0, nullptr, nullptr, 0
+    );
+    std::cout << path << std::endl;
+}
 
 
