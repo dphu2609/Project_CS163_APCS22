@@ -381,7 +381,7 @@ void AVL::deleteNode() {
         mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mReplaceIndex);
         mNodeList.erase(mNodeList.begin() + mReplaceIndex);
         for (int i = 0; i < mNodeList.size(); i++) {
-            if (mNodeList[i]->nodeIndex > mReplaceIndex) mNodeList[i]->nodeIndex--;
+            mNodeList[i]->nodeIndex = i;
         }
         mNodeStartChecking = mReplaceNode->parent;
         delete mReplaceNode;
@@ -395,13 +395,12 @@ void AVL::deleteNode() {
         mSceneLayers[RightEdges]->getChildren().erase(mSceneLayers[RightEdges]->getChildren().begin() + mOperationIndex);
         mNodeList.erase(mNodeList.begin() + mOperationIndex);
         for (int i = 0; i < mNodeList.size(); i++) {
-            if (mNodeList[i]->nodeIndex > mOperationIndex) mNodeList[i]->nodeIndex--;
+            mNodeList[i]->nodeIndex = i;
         }
         mNodeStartChecking = mOperationNode->parent;
         delete mOperationNode;
         mOperationNode = nullptr;
     }
-    balanceTree();
 }
 
 AVL::Node* AVL::getRotateNode() {

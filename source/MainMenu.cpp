@@ -240,7 +240,7 @@ void MainMenu::buildScene() {
         bool isCircle = (i == 0 ? true : false);
         std::string cont = " ";
         cont[0] = content[i];
-        if (i == 0) content = "21";
+        if (i == 0) cont = "21";
         node->set(isCircle, cont, hashTablePos[i], NODE_RADIUS);
         if (i != 0) node->setLabel(std::to_string(i - 1));
         mSceneLayers[HashTableNodes]->attachChild(std::move(node));

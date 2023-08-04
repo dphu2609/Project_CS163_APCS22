@@ -337,6 +337,7 @@ void AVL::deleteAnimation() {
 
         case 8: {
             deleteNode();
+            balanceTree();
             if (mRoot == nullptr) {
                 mAnimationStep = 23;
                 break;
@@ -370,7 +371,14 @@ void AVL::deleteAnimation() {
 
         case 12: {
             if (mNodeForRotate->balanceFactor > 1) {
-                if (mNodeForRotate->right->balanceFactor == 1) {
+                if (mNodeForRotate->left->balanceFactor == -1) {
+                    mNodeForRotate->right = rotateRight(mNodeForRotate->right);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
+                    std::swap(mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
+                    std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
+                    mAnimationStep = 13;
+                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5});
+                } else {
                     if (mNodeForRotate->parent) {
                         if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateLeft(mNodeForRotate);
                         else mNodeForRotate->parent->right = rotateLeft(mNodeForRotate);
@@ -381,17 +389,17 @@ void AVL::deleteAnimation() {
                     std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->parent->nodeIndex]);
                     mAnimationStep = 17;
                     mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4});
-                } else if (mNodeForRotate->right->balanceFactor == -1) {
-                    mNodeForRotate->right = rotateRight(mNodeForRotate->right);
-                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
-                    std::swap(mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
-                    std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->right->right->nodeIndex]);
-                    mAnimationStep = 13;
-                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({5});
                 }
             }
             else if (mNodeForRotate->balanceFactor < -1) {
-                if (mNodeForRotate->left->balanceFactor == -1) {
+                if (mNodeForRotate->left->balanceFactor == 1) {
+                    mNodeForRotate->left = rotateLeft(mNodeForRotate->left);
+                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
+                    std::swap(mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
+                    std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
+                    mAnimationStep = 13;
+                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3});
+                } else if (mNodeForRotate->left->balanceFactor == 1) {
                     if (mNodeForRotate->parent) {
                         if (mNodeForRotate->isLeft) mNodeForRotate->parent->left = rotateRight(mNodeForRotate);
                         else mNodeForRotate->parent->right = rotateRight(mNodeForRotate);
@@ -402,13 +410,6 @@ void AVL::deleteAnimation() {
                     std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->parent->nodeIndex]);
                     mAnimationStep = 17;
                     mSceneLayers[CodeBox]->getChildren()[0]->activateLine({2});
-                } else if (mNodeForRotate->left->balanceFactor == 1) {
-                    mNodeForRotate->left = rotateLeft(mNodeForRotate->left);
-                    std::swap(mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[Nodes]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
-                    std::swap(mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[LeftEdges]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
-                    std::swap(mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->left->nodeIndex], mSceneLayers[RightEdges]->getChildren()[mNodeForRotate->left->left->nodeIndex]);
-                    mAnimationStep = 13;
-                    mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3});
                 }
             }
             if (mAnimationStep == 17) {
@@ -488,7 +489,10 @@ void AVL::deleteAnimation() {
         case 20: {
             if (mNodeForRotate) getBalanceFactorPath(mNodeForRotate, mRoot);
             else if (mOperationNode) getBalanceFactorPath(mOperationNode, mRoot);
-            else mAnimationStep = 23;
+            else {
+                mAnimationStep = 23;
+                break;
+            }
             resetNodeState();
             mAnimationStep = 21;
             break;
@@ -724,30 +728,17 @@ void AVL::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepA
 
 void AVL::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
-    int index = 0;
-    for (auto &child : mSceneLayers[Nodes]->getChildren()) {
-        child->move(mNodeList[index]->position, speed);
-        index++;
-    }
-    index = 0;
-    for (auto &child : mSceneLayers[LeftEdges]->getChildren()) {
-        child->moveBy2Points(
-            mNodeList[index]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            (mNodeList[index]->left ? mNodeList[index]->left->position : mNodeList[index]->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            speed
+    for (auto &node : mNodeList) {
+        mSceneLayers[Nodes]->getChildren()[node->nodeIndex]->move(node->position, speed);
+        mSceneLayers[LeftEdges]->getChildren()[node->nodeIndex]->moveBy2Points(
+            node->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            (node->left ? node->left->position : node->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
         );
-        index++;
-    }
-
-    index = 0;
-    for (auto &child : mSceneLayers[RightEdges]->getChildren()) {
-        child->moveBy2Points(
-            mNodeList[index]->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            (mNodeList[index]->right ? mNodeList[index]->right->position : mNodeList[index]->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
-            speed
+        mSceneLayers[RightEdges]->getChildren()[node->nodeIndex]->moveBy2Points(
+            node->position + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS),
+            (node->right ? node->right->position : node->position) + sf::Vector2f(Size::NODE_RADIUS, Size::NODE_RADIUS), speed
         );
-        index++;
-    }
+    } 
 
     if (animationStepAfterFinish != 0 && !mIsAnimationPaused) {
         bool isFinishedAll = true;

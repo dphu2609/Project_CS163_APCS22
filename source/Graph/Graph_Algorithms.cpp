@@ -176,6 +176,7 @@ Graph::GraphState* Graph::createGraphState(int animationIndex) {
         graphState->nodeList[i]->child = mNodeList[i]->child;
         graphState->nodeList[i]->isNodeHighlighted = mNodeList[i]->isNodeHighlighted;
         graphState->nodeList[i]->distance = mNodeList[i]->distance;
+        graphState->nodeList[i]->key = mNodeList[i]->key;
     }
     graphState->animationIndex = animationIndex;
     return graphState;

@@ -6,7 +6,7 @@ namespace Constant {
     const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 144.f);
     const int WINDOW_WIDTH = sf::VideoMode::getDesktopMode().width;
     const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height;
-};
+};  
 
 namespace Color {
     sf::Color BACKGROUND_COLOR = sf::Color::White;
