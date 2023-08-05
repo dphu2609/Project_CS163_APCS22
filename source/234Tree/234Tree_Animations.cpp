@@ -231,7 +231,7 @@ void Tree234::deleteAnimation() {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(8));
             mergeNode(mRoot);
             balanceTree();
-            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1});
             mAnimationStep = 9;
             break;
         }
@@ -268,13 +268,13 @@ void Tree234::deleteAnimation() {
                 mReplaceNode = findReplaceNode(mOperationNode);
                 if (!mOperationNode->isAttached) getTravelPath(mOperationNode, mReplaceNode->val);
                 else getTravelPath(mOperationNode->parent, mReplaceNode->val);
-                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({15, 16, 17, 18});
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({8, 9, 10});
                 mAnimationStep = 13;
             }
             else {
                 handleLeafNodeWith1NumKeys(mOperationNode);
                 balanceTree();
-                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14});
+                mSceneLayers[CodeBox]->getChildren()[0]->activateLine({3, 4, 5, 6, 7});
                 mAnimationStep = 17;
             }
             break;
@@ -287,12 +287,15 @@ void Tree234::deleteAnimation() {
 
         case 14: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(14));
-            if (mReplaceNode->depth > mOperationNode->depth + 1 || (mReplaceNode->isAttached && mReplaceNode->parent->numKeys != 1) || (!mReplaceNode->isAttached && mReplaceNode->numKeys != 1)) {
+            if (mReplaceNode->depth > mOperationNode->depth + 1 || (mReplaceNode->isAttached) || (!mReplaceNode->isAttached && mReplaceNode->numKeys != 1)) {
                 std::swap(mOperationNode->val, mReplaceNode->val);
                 std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
             }
-            if (mReplaceNode->numKeys == 1) mAnimationStep = 15;
-            else mAnimationStep = 17;
+            if ((!mReplaceNode->isAttached && mReplaceNode->numKeys == 1)) mAnimationStep = 15;
+            else {
+                mOperationNode = mReplaceNode;
+                mAnimationStep = 17;
+            }
             break;
         }
 

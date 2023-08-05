@@ -123,7 +123,7 @@ private: //Visualization
     void createTree();
     void insertAnimation();
     void deleteAnimation();
-    void searchAnimation() {}
+    void searchAnimation();
     void moveTreeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void changeNodeAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
     void nodeAppearAnimation(bool isAllowPause, float speed = 1.f, int animationStepAfterFinish = 0);
@@ -134,7 +134,6 @@ private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;
     bool mSearchAnimation = false;
-    bool mUpdateAnimation = false;
 private:
     std::vector<int> mInputData = {};
     int mInputSize = 10;

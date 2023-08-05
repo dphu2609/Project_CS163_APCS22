@@ -111,6 +111,15 @@ void MainMenu::buildScene() {
         mIsHovered.push_back(false);
     }
 
+    std::unique_ptr<RectangleButton> appName = std::make_unique<RectangleButton>();
+    appName->set(
+        sf::Vector2f(1800 * Constant::SCALE_X, 500 * Constant::SCALE_Y),
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 900 * Constant::SCALE_X, 0),
+        "DSVisual", ResourcesHolder::fontsHolder[Fonts::RussoOne],
+        sf::Color::Transparent, Color::NODE_EDGE_COLOR, sf::Color::Transparent, Color::NODE_EDGE_COLOR
+    );
+    mSceneLayers[AppName]->attachChild(std::move(appName));
+
     sf::Vector2f startPos = sf::Vector2f(500 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 - Size::DATA_STRUCTURE_BUTTON.y);
     float horizontalDistance = Size::DATA_STRUCTURE_BUTTON.x + (Constant::WINDOW_WIDTH - (1000 * Constant::SCALE_X) - 3 * Size::DATA_STRUCTURE_BUTTON.x) / 2;
     float verticalDistance = Size::DATA_STRUCTURE_BUTTON.y * 1.5;
@@ -344,7 +353,7 @@ void MainMenu::changeTheme() {
         Color::NODE_EDGE_COLOR = sf::Color::White;
         Color::NODE_LABEL_COLOR = sf::Color(232, 54, 0);
         Color::NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
-        Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
+        Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color(44, 54, 57);
         Color::NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
         Color::SETTINGS_BUTTON_COLOR = sf::Color(255, 244, 214);
         Color::SETTINGS_BUTTON_TEXT_COLOR = sf::Color::Black;
@@ -363,9 +372,9 @@ void MainMenu::changeTheme() {
         Color::MATRIX_SLOT_TEXT_COLOR = sf::Color::White;
         Color::MATRIX_SLOT_OUTLINE_COLOR = sf::Color::White;
 
-        Color::CODEBLOCK_BOX_COLOR = sf::Color(145, 174, 226);
+        Color::CODEBLOCK_BOX_COLOR = sf::Color(255, 244, 214);
         Color::CODEBLOCK_TEXT_COLOR = sf::Color::Black;
-        Color::CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
+        Color::CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(255, 217, 115);
         Color::CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
 
         Color::DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color::White;
@@ -379,7 +388,7 @@ void MainMenu::changeTheme() {
         Color::THEME_BUTTON_TEXT_COLOR = sf::Color::White;
         Color::THEME_BUTTON_OUTLINE_COLOR = sf::Color::White;
         Color::THEME_BUTTON_HOVERED_COLOR = sf::Color::White;
-        Color::THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::Black;
+        Color::THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color(116, 155, 194, 255);
         Color::THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::White;
         buildScene();
     }
@@ -388,9 +397,9 @@ void MainMenu::changeTheme() {
         Color::IS_DARK_THEME = false;
         Color::BACKGROUND_COLOR = sf::Color::White;
         Color::NODE_COLOR = sf::Color::White;
-        Color::NODE_TEXT_COLOR = sf::Color(133, 163, 137, 255);
-        Color::NODE_OUTLINE_COLOR = sf::Color(133, 163, 137, 255);
-        Color::NODE_EDGE_COLOR = sf::Color(133, 163, 137);
+        Color::NODE_TEXT_COLOR = sf::Color(116, 155, 194, 255);
+        Color::NODE_OUTLINE_COLOR = sf::Color(116, 155, 194, 255);
+        Color::NODE_EDGE_COLOR = sf::Color(116, 155, 194);
         Color::NODE_LABEL_COLOR = sf::Color(232, 54, 0);
         Color::NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
         Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
@@ -417,7 +426,7 @@ void MainMenu::changeTheme() {
         Color::CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
         Color::CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
 
-        Color::DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(133, 163, 137);
+        Color::DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(116, 155, 194);
         Color::DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
 
         Color::ERROR_MESSAGE_BOX_COLOR = sf::Color::White;
@@ -425,8 +434,8 @@ void MainMenu::changeTheme() {
         Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Transparent;
 
         Color::THEME_BUTTON_COLOR = sf::Color::White;
-        Color::THEME_BUTTON_TEXT_COLOR = sf::Color::Black;
-        Color::THEME_BUTTON_OUTLINE_COLOR = sf::Color::Black;
+        Color::THEME_BUTTON_TEXT_COLOR = sf::Color(116, 155, 194, 255);
+        Color::THEME_BUTTON_OUTLINE_COLOR = sf::Color(116, 155, 194, 255);
         Color::THEME_BUTTON_HOVERED_COLOR = sf::Color(44, 54, 57);
         Color::THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::White;
         Color::THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;

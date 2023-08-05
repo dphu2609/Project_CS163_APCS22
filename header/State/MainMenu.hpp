@@ -29,6 +29,7 @@ private:
 private: 
     enum SceneLayers {
         Background,
+        AppName,
         DataStructureButtons,
         AVLEdges,
         AVLNodes,

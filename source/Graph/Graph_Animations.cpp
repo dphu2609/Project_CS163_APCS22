@@ -254,6 +254,8 @@ void Graph::resetAnimation() {
     }
     mIsVisited.clear();
     mIsVisited.resize(11, false);
+    mPriorityQueue = std::priority_queue<std::pair<int, int>>();
+    mPriorityQueueForPrim = std::priority_queue<std::pair<int, std::pair<int, int>>>();
     if (mBackupGraph) {
         delete mBackupGraph;
         mBackupGraph = nullptr;

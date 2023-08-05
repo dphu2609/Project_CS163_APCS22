@@ -24,7 +24,6 @@ void Heap::update() {
     mSceneGraph.update();
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
-    // if (mUpdateAnimation && !mIsReversed) updateAnimation();
     if (mSearchAnimation && !mIsReversed) searchAnimation();
     mIsAnimationPaused = mIsStepByStepMode;
 }
@@ -75,6 +74,31 @@ void Heap::handleEvent(sf::Event &event) {
         }
     }
 
+    if (mSceneLayers[Buttons]->getChildren()[GetTop]->isLeftClicked(mWindow, event)) {
+        if (mNodeList.size() == 0) {
+            annouceError("Heap is empty");
+        }
+        else {
+            mInsertAnimation = false;
+            mDeleteAnimation = false;
+            mSearchAnimation = true;   
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
+        }
+    }
+
+    if (mSceneLayers[Buttons]->getChildren()[GetSize]->isLeftClicked(mWindow, event)) {
+        annouceError("Size: " + std::to_string(mNodeList.size()));
+    }
+
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
         if (mInputSize < 0 || mInputSize > 50) {
@@ -104,7 +128,6 @@ void Heap::handleEvent(sf::Event &event) {
             }
             mInsertAnimation = true;
             mDeleteAnimation = false;
-            mUpdateAnimation = false;
             mSearchAnimation = false;   
             mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
@@ -122,9 +145,13 @@ void Heap::handleEvent(sf::Event &event) {
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getIntArrayData();
         bool isInputValid = true;
+        if (mNodeList.size() == 0) {
+            annouceError("Heap is empty");
+            isInputValid = false;
+        }
         for (int input : inputList) {
-            if (input < -999999 || input > 999999) {
-                annouceError("Input must be in range [-999999, 999999]");
+            if (input < 0 || input > mNodeList.size()) {
+                annouceError("Input must be in range [0, " + std::to_string(mNodeList.size()) + "]");
                 isInputValid = false;
             }
         }
@@ -135,7 +162,6 @@ void Heap::handleEvent(sf::Event &event) {
             }
             mInsertAnimation = false;
             mDeleteAnimation = true;
-            mUpdateAnimation = false;
             mSearchAnimation = false;
             mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Pause]->activate();

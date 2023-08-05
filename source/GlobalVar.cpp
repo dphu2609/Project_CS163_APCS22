@@ -9,52 +9,52 @@ namespace Constant {
 };  
 
 namespace Color {
-    sf::Color BACKGROUND_COLOR = sf::Color::White;
-    sf::Color NODE_COLOR = sf::Color::White;
-    sf::Color NODE_TEXT_COLOR = sf::Color(133, 163, 137, 255);
-    sf::Color NODE_OUTLINE_COLOR = sf::Color(133, 163, 137, 255);
-    sf::Color NODE_EDGE_COLOR = sf::Color(133, 163, 137);
+    sf::Color BACKGROUND_COLOR = sf::Color(44, 54, 57);
+    sf::Color NODE_COLOR = sf::Color(44, 54, 57);
+    sf::Color NODE_TEXT_COLOR = sf::Color::White;
+    sf::Color NODE_OUTLINE_COLOR = sf::Color::White;
+    sf::Color NODE_EDGE_COLOR = sf::Color::White;
     sf::Color NODE_LABEL_COLOR = sf::Color(232, 54, 0);
     sf::Color NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
-    sf::Color NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
+    sf::Color NODE_HIGHLIGHT_TEXT_COLOR = sf::Color(44, 54, 57);
     sf::Color NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
-    sf::Color SETTINGS_BUTTON_COLOR = sf::Color(46, 196, 0);
+    sf::Color SETTINGS_BUTTON_COLOR = sf::Color(255, 244, 214);
     sf::Color SETTINGS_BUTTON_TEXT_COLOR = sf::Color::Black;
     sf::Color SETTINGS_BUTTON_OUTLINE_COLOR = sf::Color::Black;
     sf::Color SETTINGS_BUTTON_HOVERED_COLOR = sf::Color(224, 134, 7);
     sf::Color SETTINGS_BUTTON_HOVERED_TEXT_COLOR = sf::Color::Black;
     sf::Color SETTINGS_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
 
-    sf::Color INPUTBOX_COLOR = sf::Color::White;
-    sf::Color INPUTBOX_TEXT_COLOR = sf::Color::Black;
-    sf::Color INPUTBOX_OUTLINE_COLOR = sf::Color::Black;
-    sf::Color INPUTBOX_CURSOR_COLOR = sf::Color::Black;
+    sf::Color INPUTBOX_COLOR = sf::Color(44, 54, 57);
+    sf::Color INPUTBOX_TEXT_COLOR = sf::Color::White;
+    sf::Color INPUTBOX_OUTLINE_COLOR = sf::Color::White;
+    sf::Color INPUTBOX_CURSOR_COLOR = sf::Color::White;
 
 
-    sf::Color MATRIX_SLOT_COLOR = sf::Color::White;
-    sf::Color MATRIX_SLOT_TEXT_COLOR = sf::Color::Black;
-    sf::Color MATRIX_SLOT_OUTLINE_COLOR = sf::Color::Black;
+    sf::Color MATRIX_SLOT_COLOR = sf::Color(44, 54, 57);
+    sf::Color MATRIX_SLOT_TEXT_COLOR = sf::Color::White;
+    sf::Color MATRIX_SLOT_OUTLINE_COLOR = sf::Color::White;
 
-    sf::Color CODEBLOCK_BOX_COLOR = sf::Color(145, 174, 226);
+    sf::Color CODEBLOCK_BOX_COLOR = sf::Color(255, 244, 214);
     sf::Color CODEBLOCK_TEXT_COLOR = sf::Color::Black;
-    sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
+    sf::Color CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(255, 217, 115);
     sf::Color CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
 
-    sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(133, 163, 137);
+    sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color::White;
     sf::Color DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
 
-    sf::Color ERROR_MESSAGE_BOX_COLOR = sf::Color::White;
-    sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::Black;
+    sf::Color ERROR_MESSAGE_BOX_COLOR = sf::Color(44, 54, 57);
+    sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::White;
     sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Transparent;
 
-    sf::Color THEME_BUTTON_COLOR = sf::Color::White;
-    sf::Color THEME_BUTTON_TEXT_COLOR = sf::Color::Black;
-    sf::Color THEME_BUTTON_OUTLINE_COLOR = sf::Color::Black;
-    sf::Color THEME_BUTTON_HOVERED_COLOR = sf::Color(44, 54, 57);
-    sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::White;
-    sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
+    sf::Color THEME_BUTTON_COLOR = sf::Color(44, 54, 57);
+    sf::Color THEME_BUTTON_TEXT_COLOR = sf::Color::White;
+    sf::Color THEME_BUTTON_OUTLINE_COLOR = sf::Color::White;
+    sf::Color THEME_BUTTON_HOVERED_COLOR = sf::Color::White;
+    sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color(116, 155, 194, 255);
+    sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::White;
 
-    bool IS_DARK_THEME = false;
+    bool IS_DARK_THEME = true;
 };
 
 namespace Size {

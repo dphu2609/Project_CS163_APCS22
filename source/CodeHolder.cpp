@@ -41,24 +41,16 @@ void CodeHolder::load() {
 
     mCodeMap[Code::Delete234] = {
         "search node to delete",
-        "if root has two children and two children numKeys == 1",
-        "   merge root",
+        "if root has two children and two children numKeys == 1, merge root",
         "traverse to delete node",
         "if this is leaf",
         "   if this numKeys == 1",
-        "       if this is root",
-        "           delete this",
-        "       else",
-        "           if siblings have more than 1 key",
-        "               borrow from siblings",
-        "           else",
-        "               merge with siblings",
-        "   else",
-        "       delete node from this",
+        "       if this is root, delete this",
+        "       else, borrow from or merge with siblings",
+        "   else, delete node from this",
         "else",
-        "   find replacement leaf node",
-        "   replace node with replacement node",
-        "   delete replacement node as above if statement",
+            "find replacement leaf node, replace node with replacement node",
+            "delete replacement node as above if statement",
     };
 
     mCodeMap[Code::Search234] = {
@@ -126,6 +118,10 @@ void CodeHolder::load() {
         "delete last node",
         "while this < this.children",
         "   swap this and max of this.left and this.right",
+    };
+
+    mCodeMap[Code::GetTopHeap] = {
+        "return value of top node",
     };
 
     mCodeMap[Code::Djikstra] = {

@@ -190,6 +190,7 @@ void RectangleButton::handleCurrentEvent(sf::RenderWindow &window, sf::Event &ev
 }
 
 bool RectangleButton::isHovered(sf::RenderWindow &window, sf::Event& event) {
+    if (!isActive()) return false;
     sf::Vector2i localPosition(sf::Mouse::getPosition(window));
     sf::Vector2f localPositionF(static_cast<float>(localPosition.x), static_cast<float>(localPosition.y));
     localPositionF = window.mapPixelToCoords(localPosition);
@@ -207,6 +208,7 @@ bool RectangleButton::isHovered(sf::RenderWindow &window, sf::Event& event) {
 
 
 bool RectangleButton::isLeftClicked(sf::RenderWindow &window, sf::Event &event) {
+    if (!isActive()) return false;
     return (isHovered(window, event) && sf::Mouse::isButtonPressed(sf::Mouse::Left) && event.type == sf::Event::MouseButtonPressed);
 }
 

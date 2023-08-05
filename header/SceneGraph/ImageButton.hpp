@@ -13,7 +13,7 @@ private:
 public:
     void set(
         const sf::Texture &buttonTexture, const sf::Texture &buttonHoveredTexture, 
-        const sf::Vector2f &position, const sf::Vector2f &size = sf::Vector2f(50, 50)
+        const sf::Vector2f &position, const sf::Vector2f &size = sf::Vector2f(50 * Constant::SCALE_X, 50 * Constant::SCALE_Y)
     );
 public: 
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;

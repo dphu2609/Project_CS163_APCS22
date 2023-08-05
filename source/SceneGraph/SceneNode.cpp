@@ -18,8 +18,9 @@ void SceneNode::clearChildren() {
 }
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    if (!mIsActive) return;
     states.transform *= getTransform();
-    if (mIsActive) drawCurrent(target, states);
+    drawCurrent(target, states);
     for (const auto& child : mChildren) {
         if (child) 
             child->draw(target, states);
@@ -27,12 +28,14 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 }
 
 void SceneNode::update() {
-    if (mIsActive) updateCurrent();
+    if (!mIsActive) return;
+    updateCurrent();
     for (const auto& child : mChildren) child->update();
 }
 
 void SceneNode::handleEvent(sf::RenderWindow &window, sf::Event &event) {
-    if (mIsActive) handleCurrentEvent(window, event);
+    if (!mIsActive) return;
+    handleCurrentEvent(window, event);
     for (const auto& child : mChildren) child->handleEvent(window, event);
 }
 

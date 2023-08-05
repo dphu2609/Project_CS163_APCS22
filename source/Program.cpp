@@ -3,7 +3,7 @@
 Program::Program() : 
     mWindow(sf::VideoMode(
         sf::VideoMode::getDesktopMode().width - 35, sf::VideoMode::getDesktopMode().height - 70), 
-        "Data Visual", sf::Style::Default 
+        "DSVisual", sf::Style::Default 
     ) , mStateStack(mWindow)
 {
     mWindow.setPosition(sf::Vector2i(0, 0));
@@ -32,6 +32,7 @@ void Program::loadFonts() {
     ResourcesHolder::fontsHolder.load(Fonts::RobotoRegular, "resources/fonts/Roboto/Roboto-Regular.ttf");
     ResourcesHolder::fontsHolder.load(Fonts::RobotoBold, "resources/fonts/Roboto/Roboto-Bold.ttf");
     ResourcesHolder::fontsHolder.load(Fonts::FiraMonoRegular, "resources/fonts/Fira_Mono/FiraMono-Regular.ttf");
+    ResourcesHolder::fontsHolder.load(Fonts::RussoOne, "resources/fonts/RussoOne-Regular.ttf");
 }
 
 void Program::loadTextures() {

@@ -17,6 +17,7 @@ namespace Code {
         DeleteMaxHeap,
         InsertMinHeap,
         DeleteMinHeap,
+        GetTopHeap,
         Djikstra,
         Prim,
         InsertHashTable,

@@ -37,6 +37,7 @@ namespace Fonts {
         RobotoRegular,
         RobotoItalic,
         RobotoBold,
+        RussoOne,
         FiraMonoRegular
     };
 };

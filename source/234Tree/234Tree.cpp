@@ -124,6 +124,10 @@ void Tree234::handleEvent(sf::Event &event) {
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getIntArrayData();
         bool isInputValid = true;
+        if (mNodeList.size() == 0) {
+            annouceError("Tree is empty");
+            isInputValid = false;
+        }
         for (int input : inputList) {
             if (input < -999999 || input > 999999) {
                 annouceError("Input must be in range [-999999, 999999]");
@@ -156,6 +160,10 @@ void Tree234::handleEvent(sf::Event &event) {
     if (mSceneLayers[SearchOptions]->getChildren()[SearchStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getIntArrayData();
         bool isInputValid = true;
+        if (mNodeList.size() == 0) {
+            annouceError("Tree is empty");
+            isInputValid = false;
+        }
         for (int input : inputList) {
             if (input < -999999 || input > 999999) {
                 annouceError("Input must be in range [-999999, 999999]");

@@ -508,7 +508,6 @@ void Graph::buildScene() {
         Color::ERROR_MESSAGE_BOX_COLOR, Color::ERROR_MESSAGE_BOX_TEXT_COLOR, 5 * Constant::SCALE_X, Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR,
         Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR
     );
-    errorContainer->deactivate();   
     mSceneLayers[ErrorContainer]->attachChild(std::move(errorContainer));
 
     std::unique_ptr<RectangleButton> errorConfirmButton = std::make_unique<RectangleButton>();
@@ -518,7 +517,6 @@ void Graph::buildScene() {
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
-    errorConfirmButton->deactivate();
     mSceneLayers[ErrorConfirmButton]->attachChild(std::move(errorConfirmButton));
 
     std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();

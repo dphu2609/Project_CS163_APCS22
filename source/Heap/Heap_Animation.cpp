@@ -277,6 +277,37 @@ void Heap::deleteAnimation() {
     }
 }
 
+void Heap::searchAnimation() {
+    switch (mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createBackupTree();
+            createTree();
+            mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::GetTopHeap]);
+            mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
+            mAnimationStep = 2;
+            break;
+        }
+
+        case 2: {
+            mSceneLayers[Nodes]->getChildren()[0]->change3Color(Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2);
+            if (mSceneLayers[Nodes]->getChildren()[0]->isChange3ColorFinished()) {
+                mAnimationStep = 3;
+            }
+            break;
+        }
+
+        case 3: {
+            if (mInputQueue.size() > 1) {
+                mInputQueue.pop();
+                mAnimationStep = 1;
+            }
+            else mIsReplay = true;
+            break;
+        }
+    }
+}
+
 void Heap::nodeAppearAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (mSceneLayers[Nodes]->getChildren().size() < mNodeList.size() && !mIsReversed) {

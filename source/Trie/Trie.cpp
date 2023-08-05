@@ -101,34 +101,44 @@ void Trie::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
-        while (!mInputQueue.empty()) mInputQueue.pop();
-        mInputQueue.push(mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getContent());
-        mInsertAnimation = false;
-        mDeleteAnimation = true;
-        mUpdateAnimation = false;
-        mSearchAnimation = false;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
+        if (mNodeList.size() == 0) {
+            annouceError("Trie is empty");
+        }
+        else {
+            while (!mInputQueue.empty()) mInputQueue.pop();
+            mInputQueue.push(mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getContent());
+            mInsertAnimation = false;
+            mDeleteAnimation = true;
+            mUpdateAnimation = false;
+            mSearchAnimation = false;
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+        }
     }
 
     if (mSceneLayers[SearchOptions]->getChildren()[SearchStart]->isLeftClicked(mWindow, event)) {
-        while (!mInputQueue.empty()) mInputQueue.pop();
-        mInputQueue.push(mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getContent());
-        mInsertAnimation = false;
-        mDeleteAnimation = false;
-        mUpdateAnimation = false;
-        mSearchAnimation = true;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
+        if (mNodeList.size() == 0) {
+            annouceError("Trie is empty");
+        }
+        else {
+            while (!mInputQueue.empty()) mInputQueue.pop();
+            mInputQueue.push(mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getContent());
+            mInsertAnimation = false;
+            mDeleteAnimation = false;
+            mUpdateAnimation = false;
+            mSearchAnimation = true;
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+        }
     }
 
     //ControlBox
@@ -259,19 +269,11 @@ void Trie::buildScene() {
 
     std::unique_ptr<RectangleButton> updateButton = std::make_unique<RectangleButton>();
     updateButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Update", 
+        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Search", 
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(updateButton));
-
-    std::unique_ptr<RectangleButton> searchButton = std::make_unique<RectangleButton>();
-    searchButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 280 * Constant::SCALE_Y), "Search", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
-        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
-    );
-    mSceneLayers[Buttons]->attachChild(std::move(searchButton));   
 
     std::unique_ptr<RectangleButton> sizeButton = std::make_unique<RectangleButton>();
     sizeButton->set(
@@ -335,13 +337,13 @@ void Trie::buildScene() {
     mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
 
     std::unique_ptr<InputBox> searchInput = std::make_unique<InputBox>();
-    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 265 * Constant::SCALE_Y));
+    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 345 * Constant::SCALE_Y));
     searchInput->deactivate();
     mSceneLayers[SearchOptions]->attachChild(std::move(searchInput));
 
     std::unique_ptr<RectangleButton> startSearchButton = std::make_unique<RectangleButton>();
     startSearchButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 270 * Constant::SCALE_Y), "Start",
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 350 * Constant::SCALE_Y), "Start",
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
