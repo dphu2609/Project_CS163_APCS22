@@ -38,8 +38,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
-        SearchOptions,
         ControlBox,
         MatrixColumnIndex,
         MatrixRowIndex,
@@ -54,9 +52,7 @@ private:
     enum ButtonTypes {
         Create,
         Insert,
-        Delete,
-        Update,
-        Search
+        Delete
     };
 
     enum CreateOptions {
@@ -134,8 +130,8 @@ private: //Visualization
     void resetNodeState();
     void resetAnimation();
     void traverseAnimation(bool isAllowPause = true, float speed = 1.f, int animationStepAfterFinish = 0, int startNode = 0, int endNode = 0);
-    void initFromFile() {}
-    void annouceError(std::string error) {}
+    void initFromFile();
+    void annouceError(std::string error);
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;

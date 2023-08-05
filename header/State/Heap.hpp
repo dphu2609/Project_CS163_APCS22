@@ -42,8 +42,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
-        SearchOptions,
         ControlBox,
         CodeBox,
         ErrorContainer,
@@ -56,8 +54,8 @@ private:
         Create,
         Insert,
         Delete,
-        Update,
-        Search
+        GetTop,
+        GetSize 
     };
 
     enum CreateOptions {
@@ -119,8 +117,8 @@ private: //Algorithms
     std::vector<int> getTravelIndex(int index);
     void balanceTree();
     void returnToPreviousStep();
-    void initFromFile() {}
-    void annouceError(std::string error) {}
+    void initFromFile();
+    void annouceError(std::string error);
 private: //Visualization
     void createTree();
     void insertAnimation();

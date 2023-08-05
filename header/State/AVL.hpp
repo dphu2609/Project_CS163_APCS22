@@ -47,7 +47,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
         SearchOptions,
         ControlBox,
         CodeBox,
@@ -60,7 +59,6 @@ private:
         Create,
         Insert,
         Delete,
-        Update,
         Search
     };
 

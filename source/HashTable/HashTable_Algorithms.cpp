@@ -18,6 +18,14 @@ void HashTable::createRandomTree() {
     createTree();
 }
 
+void HashTable::insert(int val) {
+    int index = val % mInputSize;
+    while (mNodeList[index].val != -1) {
+        index = (index + 1) % mInputSize;
+    }
+    mNodeList[index].val = val;
+}
+
 void HashTable::setTreeScale(int size) {
     Size::NODE_RADIUS = 40.f * Constant::SCALE_X;
     Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;

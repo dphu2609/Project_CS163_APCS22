@@ -36,16 +36,22 @@ void Program::loadFonts() {
 
 void Program::loadTextures() {
     ResourcesHolder::texturesHolder.load(Textures::PlayButton, "resources/img/playButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PlayButtonWhite, "resources/img/playButton.png");
     ResourcesHolder::texturesHolder.load(Textures::PlayButtonHovered, "resources/img/playButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::PauseButton, "resources/img/pauseButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PauseButtonWhite, "resources/img/pauseButton.png");
     ResourcesHolder::texturesHolder.load(Textures::PauseButtonHovered, "resources/img/pauseButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::NextButton, "resources/img/nextButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::NextButtonWhite, "resources/img/nextButton.png");
     ResourcesHolder::texturesHolder.load(Textures::NextButtonHovered, "resources/img/nextButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::PrevButton, "resources/img/previousButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::PrevButtonWhite, "resources/img/prevButton.png");
     ResourcesHolder::texturesHolder.load(Textures::PrevButtonHovered, "resources/img/prevButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::ReplayButton, "resources/img/replayButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReplayButtonWhite, "resources/img/replayButton.png");
     ResourcesHolder::texturesHolder.load(Textures::ReplayButtonHovered, "resources/img/replayButtonHovered.png");
     ResourcesHolder::texturesHolder.load(Textures::ReturnButton, "resources/img/returnButtonBlack.png");
+    ResourcesHolder::texturesHolder.load(Textures::ReturnButtonWhite, "resources/img/returnButton.png");
     ResourcesHolder::texturesHolder.load(Textures::ReturnButtonHovered, "resources/img/returnButtonHovered.png");
 }
 

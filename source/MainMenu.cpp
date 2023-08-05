@@ -38,6 +38,10 @@ void MainMenu::handleEvent(sf::Event &event) {
         requestStackPush(States::Heap);
     }
 
+    if (mSceneLayers[ThemeButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        changeTheme();
+    }
+
     handleHoverOfDataStructureButtons(event, AVL, AVLNodes, AVLEdges);
     handleHoverOfDataStructureButtons(event, Tree234, Tree234Nodes, Tree234Edges);
     handleHoverOfDataStructureButtons(event, Trie, TrieNodes, TrieEdges);
@@ -95,6 +99,11 @@ void MainMenu::handleHoverOfDataStructureButtons(sf::Event &event, int indexOfDS
 }
 
 void MainMenu::buildScene() {
+    mSceneGraph.getChildren().clear();
+    for (int i = 0; i < LayerCount; i++) {
+        if (!mSceneLayers[i]) mSceneLayers[i]->getChildren().clear();
+        mSceneLayers[i] = nullptr;
+    }
     for (int i = 0; i < LayerCount; i++) {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();
@@ -311,6 +320,117 @@ void MainMenu::buildScene() {
         std::unique_ptr<Edge> edge = std::make_unique<Edge>();
         edge->set(heapEdgePos[i].first, heapEdgePos[i].second);
         mSceneLayers[HeapEdges]->attachChild(std::move(edge));
+    }
+
+    std::unique_ptr<RectangleButton> themeButton = std::make_unique<RectangleButton>();
+    themeButton->set(
+        sf::Vector2f(300 * Constant::SCALE_X, 60 * Constant::SCALE_Y),
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 150 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y),
+        "SWITCH THEME", ResourcesHolder::fontsHolder[Fonts::RobotoRegular],
+        Color::THEME_BUTTON_COLOR, Color::THEME_BUTTON_TEXT_COLOR,
+        Color::THEME_BUTTON_HOVERED_COLOR, Color::THEME_BUTTON_HOVERED_TEXT_COLOR,
+        5 * Constant::SCALE_Y, Color::THEME_BUTTON_OUTLINE_COLOR, Color::THEME_BUTTON_HOVERED_OUTLINE_COLOR
+    );
+    mSceneLayers[ThemeButton]->attachChild(std::move(themeButton));
+}
+
+void MainMenu::changeTheme() {
+    if (!Color::IS_DARK_THEME) {
+        Color::IS_DARK_THEME = true;
+        Color::BACKGROUND_COLOR = sf::Color(44, 54, 57);
+        Color::NODE_COLOR = sf::Color(44, 54, 57);
+        Color::NODE_TEXT_COLOR = sf::Color::White;
+        Color::NODE_OUTLINE_COLOR = sf::Color::White;
+        Color::NODE_EDGE_COLOR = sf::Color::White;
+        Color::NODE_LABEL_COLOR = sf::Color(232, 54, 0);
+        Color::NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
+        Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
+        Color::NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
+        Color::SETTINGS_BUTTON_COLOR = sf::Color(255, 244, 214);
+        Color::SETTINGS_BUTTON_TEXT_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_OUTLINE_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_HOVERED_COLOR = sf::Color(224, 134, 7);
+        Color::SETTINGS_BUTTON_HOVERED_TEXT_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
+
+        Color::INPUTBOX_COLOR = sf::Color(44, 54, 57);
+        Color::INPUTBOX_TEXT_COLOR = sf::Color::White;
+        Color::INPUTBOX_OUTLINE_COLOR = sf::Color::White;
+        Color::INPUTBOX_CURSOR_COLOR = sf::Color::White;
+
+
+        Color::MATRIX_SLOT_COLOR = sf::Color(44, 54, 57);
+        Color::MATRIX_SLOT_TEXT_COLOR = sf::Color::White;
+        Color::MATRIX_SLOT_OUTLINE_COLOR = sf::Color::White;
+
+        Color::CODEBLOCK_BOX_COLOR = sf::Color(145, 174, 226);
+        Color::CODEBLOCK_TEXT_COLOR = sf::Color::Black;
+        Color::CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
+        Color::CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
+
+        Color::DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color::White;
+        Color::DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
+
+        Color::ERROR_MESSAGE_BOX_COLOR = sf::Color(44, 54, 57);
+        Color::ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::White;
+        Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Transparent;
+
+        Color::THEME_BUTTON_COLOR = sf::Color(44, 54, 57);
+        Color::THEME_BUTTON_TEXT_COLOR = sf::Color::White;
+        Color::THEME_BUTTON_OUTLINE_COLOR = sf::Color::White;
+        Color::THEME_BUTTON_HOVERED_COLOR = sf::Color::White;
+        Color::THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::Black;
+        Color::THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::White;
+        buildScene();
+    }
+
+    else {
+        Color::IS_DARK_THEME = false;
+        Color::BACKGROUND_COLOR = sf::Color::White;
+        Color::NODE_COLOR = sf::Color::White;
+        Color::NODE_TEXT_COLOR = sf::Color(133, 163, 137, 255);
+        Color::NODE_OUTLINE_COLOR = sf::Color(133, 163, 137, 255);
+        Color::NODE_EDGE_COLOR = sf::Color(133, 163, 137);
+        Color::NODE_LABEL_COLOR = sf::Color(232, 54, 0);
+        Color::NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
+        Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
+        Color::NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
+        Color::SETTINGS_BUTTON_COLOR = sf::Color(46, 196, 0);
+        Color::SETTINGS_BUTTON_TEXT_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_OUTLINE_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_HOVERED_COLOR = sf::Color(224, 134, 7);
+        Color::SETTINGS_BUTTON_HOVERED_TEXT_COLOR = sf::Color::Black;
+        Color::SETTINGS_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
+
+        Color::INPUTBOX_COLOR = sf::Color::White;
+        Color::INPUTBOX_TEXT_COLOR = sf::Color::Black;
+        Color::INPUTBOX_OUTLINE_COLOR = sf::Color::Black;
+        Color::INPUTBOX_CURSOR_COLOR = sf::Color::Black;
+
+
+        Color::MATRIX_SLOT_COLOR = sf::Color::White;
+        Color::MATRIX_SLOT_TEXT_COLOR = sf::Color::Black;
+        Color::MATRIX_SLOT_OUTLINE_COLOR = sf::Color::Black;
+
+        Color::CODEBLOCK_BOX_COLOR = sf::Color(145, 174, 226);
+        Color::CODEBLOCK_TEXT_COLOR = sf::Color::Black;
+        Color::CODEBLOCK_BOX_ACTIVATED_COLOR = sf::Color(86, 114, 163);
+        Color::CODEBLOCK_TEXT_ACTIVATED_COLOR = sf::Color::Black;
+
+        Color::DATA_STRUCTURE_BUTTON_OUTLINE_COLOR = sf::Color(133, 163, 137);
+        Color::DATA_STRUCTURE_BUTTON_OUTLINE_HOVERED_COLOR = sf::Color(255, 171, 25);
+
+        Color::ERROR_MESSAGE_BOX_COLOR = sf::Color::White;
+        Color::ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::Black;
+        Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Transparent;
+
+        Color::THEME_BUTTON_COLOR = sf::Color::White;
+        Color::THEME_BUTTON_TEXT_COLOR = sf::Color::Black;
+        Color::THEME_BUTTON_OUTLINE_COLOR = sf::Color::Black;
+        Color::THEME_BUTTON_HOVERED_COLOR = sf::Color(44, 54, 57);
+        Color::THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::White;
+        Color::THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
+        buildScene();
     }
 }
 

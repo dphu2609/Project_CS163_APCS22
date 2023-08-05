@@ -22,8 +22,6 @@ void Graph::update() {
     mSceneGraph.update();
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
-    // if (mUpdateAnimation && !mIsReversed) updateAnimation();
-    if (mSearchAnimation && !mIsReversed) searchAnimation();
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
@@ -36,6 +34,21 @@ void Graph::handleEvent(sf::Event &event) {
                 child->deactivate();
             } else {
                 child->activate();
+            }
+        }
+
+        if (!mSceneLayers[CreateOptions]->getChildren()[FromMatrixButton]->isActive()) {
+            for (auto &child : mSceneLayers[Matrix]->getChildren()) {
+                child->deactivate();
+            }
+            for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) {
+                child->deactivate();
+            }
+            for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) {
+                child->deactivate();
+            }
+            for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) {
+                child->deactivate();
             }
         }
     }
@@ -60,15 +73,6 @@ void Graph::handleEvent(sf::Event &event) {
         }
     }
 
-    if (mSceneLayers[Buttons]->getChildren()[Search]->isLeftClicked(mWindow, event)) {
-        for (auto &child : mSceneLayers[SearchOptions]->getChildren()) {
-            if (child->isActive()) {
-                child->deactivate();
-            } else {
-                child->activate();
-            }
-        }
-    }
 
     if (mSceneLayers[CreateOptions]->getChildren()[FromMatrixButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
@@ -156,63 +160,81 @@ void Graph::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[CreateOptions]->getChildren()[RamdomButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
-        createRandomGraph();
+        if (mInputSize < 2 || mInputSize > 10) {
+            annouceError("Size must be in range [2, 10]");
+        }
+        else createRandomGraph();
+    }
+
+    if (mSceneLayers[CreateOptions]->getChildren()[FromFileButton]->isLeftClicked(mWindow, event)) {
+        annouceError("File format must be vertex1 vertex2 distance, each line is a edge");
+        mIsInitFromFile = true;
     }
 
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getIntArrayData();
-        while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
+        bool isInputValid = true;
+        for (int input : inputList) {
+            if (input < 0 || input > mInputSize - 1) {
+                annouceError("Input must be in range [0, " + std::to_string(mInputSize - 1) + "]");
+                isInputValid = false;
+            }
         }
-        mInsertAnimation = true;
-        mDeleteAnimation = false;
-        mUpdateAnimation = false;
-        mSearchAnimation = false;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
+        if (isInputValid) {
+            while (!mInputQueue.empty()) mInputQueue.pop();
+            for (auto &input : inputList) {
+                mInputQueue.push(input);
+            }
+            mInsertAnimation = true;
+            mDeleteAnimation = false; 
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[Matrix]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
+        }
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[DeleteOptions]->getChildren()[DeleteInput]->getIntArrayData();
-        while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
+        bool isInputValid = true;
+        for (int input : inputList) {
+            if (input < 0 || input > mInputSize - 1) {
+                annouceError("Input must be in range [0, " + std::to_string(mInputSize - 1) + "]");
+                isInputValid = false;
+            }
         }
-        mInsertAnimation = false;
-        mDeleteAnimation = true;
-        mUpdateAnimation = false;
-        mSearchAnimation = false;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
-    }
-
-    if (mSceneLayers[SearchOptions]->getChildren()[SearchStart]->isLeftClicked(mWindow, event)) {
-        std::vector<int> inputList = mSceneLayers[SearchOptions]->getChildren()[SearchInput]->getIntArrayData();
-        while (!mInputQueue.empty()) mInputQueue.pop();
-        for (auto &input : inputList) {
-            mInputQueue.push(input);
+        if (isInputValid) {
+            while (!mInputQueue.empty()) mInputQueue.pop();
+            for (auto &input : inputList) {
+                mInputQueue.push(input);
+            }
+            mInsertAnimation = false;
+            mDeleteAnimation = true;
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[Matrix]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
         }
-        mInsertAnimation = false;
-        mDeleteAnimation = false;
-        mUpdateAnimation = false;
-        mSearchAnimation = true;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
     }
 
     //ControlBox
@@ -298,6 +320,12 @@ void Graph::handleEvent(sf::Event &event) {
         applyGraphState(mBackupGraph);
     } 
 
+    if (mSceneLayers[ErrorConfirmButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        if (mIsInitFromFile) initFromFile();
+        mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
+        mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+    }
+
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         requestStackPop();
     }
@@ -331,23 +359,7 @@ void Graph::buildScene() {
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
-    mSceneLayers[Buttons]->attachChild(std::move(deleteButton));
-
-    std::unique_ptr<RectangleButton> updateButton = std::make_unique<RectangleButton>();
-    updateButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Update", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
-        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
-    );
-    mSceneLayers[Buttons]->attachChild(std::move(updateButton));
-
-    std::unique_ptr<RectangleButton> searchButton = std::make_unique<RectangleButton>();
-    searchButton->set(
-        Size::SETTINGS_BUTTON_SIZE, sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 280 * Constant::SCALE_Y), "Search", 
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
-        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
-    );
-    mSceneLayers[Buttons]->attachChild(std::move(searchButton));   
+    mSceneLayers[Buttons]->attachChild(std::move(deleteButton)); 
 
     std::unique_ptr<RectangleButton> sizeButton = std::make_unique<RectangleButton>();
     sizeButton->set(
@@ -419,63 +431,98 @@ void Graph::buildScene() {
     startDeleteButton->deactivate();
     mSceneLayers[DeleteOptions]->attachChild(std::move(startDeleteButton));
 
-    std::unique_ptr<InputBox> searchInput = std::make_unique<InputBox>();
-    searchInput->set(sf::Vector2f(100 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 265 * Constant::SCALE_Y));
-    searchInput->deactivate();
-    mSceneLayers[SearchOptions]->attachChild(std::move(searchInput));
+    std::unique_ptr<ImageButton> playButton = std::make_unique<ImageButton>();
+    std::unique_ptr<ImageButton> pauseButton = std::make_unique<ImageButton>();
+    std::unique_ptr<ImageButton> nextButton = std::make_unique<ImageButton>();
+    std::unique_ptr<ImageButton> prevButton = std::make_unique<ImageButton>();
+    std::unique_ptr<ImageButton> replayButton = std::make_unique<ImageButton>();
+    std::unique_ptr<ImageButton> returnButton = std::make_unique<ImageButton>();
 
-    std::unique_ptr<RectangleButton> startSearchButton = std::make_unique<RectangleButton>();
-    startSearchButton->set(
-        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), sf::Vector2f(430 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 270 * Constant::SCALE_Y), "Start",
+    if (!Color::IS_DARK_THEME) {
+        playButton->set(
+            ResourcesHolder::texturesHolder[Textures::PlayButton], ResourcesHolder::texturesHolder[Textures::PlayButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        pauseButton->set(
+            ResourcesHolder::texturesHolder[Textures::PauseButton], ResourcesHolder::texturesHolder[Textures::PauseButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        nextButton->set(
+            ResourcesHolder::texturesHolder[Textures::NextButton], ResourcesHolder::texturesHolder[Textures::NextButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        prevButton->set(
+            ResourcesHolder::texturesHolder[Textures::PrevButton], ResourcesHolder::texturesHolder[Textures::PrevButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        replayButton->set(
+            ResourcesHolder::texturesHolder[Textures::ReplayButton], ResourcesHolder::texturesHolder[Textures::ReplayButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        returnButton->set(
+            ResourcesHolder::texturesHolder[Textures::ReturnButton], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
+            sf::Vector2f(100 * Constant::SCALE_X, 100 * Constant::SCALE_Y)
+        );
+    }
+    else {
+        playButton->set(
+            ResourcesHolder::texturesHolder[Textures::PlayButtonWhite], ResourcesHolder::texturesHolder[Textures::PlayButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        pauseButton->set(
+            ResourcesHolder::texturesHolder[Textures::PauseButtonWhite], ResourcesHolder::texturesHolder[Textures::PauseButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        nextButton->set(
+            ResourcesHolder::texturesHolder[Textures::NextButtonWhite], ResourcesHolder::texturesHolder[Textures::NextButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        prevButton->set(
+            ResourcesHolder::texturesHolder[Textures::PrevButtonWhite], ResourcesHolder::texturesHolder[Textures::PrevButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        replayButton->set(
+            ResourcesHolder::texturesHolder[Textures::ReplayButtonWhite], ResourcesHolder::texturesHolder[Textures::ReplayButtonHovered],
+            sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
+        );
+        returnButton->set(
+            ResourcesHolder::texturesHolder[Textures::ReturnButtonWhite], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
+            sf::Vector2f(100 * Constant::SCALE_X, 100 * Constant::SCALE_Y)
+        );
+    }
+    mSceneLayers[ControlBox]->attachChild(std::move(playButton));
+    pauseButton->deactivate();
+    mSceneLayers[ControlBox]->attachChild(std::move(pauseButton));
+    mSceneLayers[ControlBox]->attachChild(std::move(nextButton));
+    mSceneLayers[ControlBox]->attachChild(std::move(prevButton));
+    replayButton->deactivate();
+    mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
+    mSceneLayers[ReturnButton]->attachChild(std::move(returnButton));
+
+    std::unique_ptr<RectangleButton> errorContainer = std::make_unique<RectangleButton>();
+    errorContainer->set(
+        sf::Vector2f(1200 * Constant::SCALE_X, 100 * Constant::SCALE_Y), 
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 600 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 - 50 * Constant::SCALE_Y), 
+        "Note: You can use mouse to move vertices!",
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::ERROR_MESSAGE_BOX_COLOR, Color::ERROR_MESSAGE_BOX_TEXT_COLOR,
+        Color::ERROR_MESSAGE_BOX_COLOR, Color::ERROR_MESSAGE_BOX_TEXT_COLOR, 5 * Constant::SCALE_X, Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR,
+        Color::ERROR_MESSAGE_BOX_OUTLINE_COLOR
+    );
+    errorContainer->deactivate();   
+    mSceneLayers[ErrorContainer]->attachChild(std::move(errorContainer));
+
+    std::unique_ptr<RectangleButton> errorConfirmButton = std::make_unique<RectangleButton>();
+    errorConfirmButton->set(
+        sf::Vector2f(150 * Constant::SCALE_X, 60 * Constant::SCALE_Y), 
+        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 60 * Constant::SCALE_X, Constant::WINDOW_HEIGHT / 2 + 70 * Constant::SCALE_Y), "OK",
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
-    startSearchButton->deactivate();
-    mSceneLayers[SearchOptions]->attachChild(std::move(startSearchButton));
+    errorConfirmButton->deactivate();
+    mSceneLayers[ErrorConfirmButton]->attachChild(std::move(errorConfirmButton));
 
-    std::unique_ptr<ImageButton> playButton = std::make_unique<ImageButton>();
-    playButton->set(
-        ResourcesHolder::texturesHolder[Textures::PlayButton], ResourcesHolder::texturesHolder[Textures::PlayButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
-    );
-    mSceneLayers[ControlBox]->attachChild(std::move(playButton));
-
-    std::unique_ptr<ImageButton> pauseButton = std::make_unique<ImageButton>();
-    pauseButton->set(
-        ResourcesHolder::texturesHolder[Textures::PauseButton], ResourcesHolder::texturesHolder[Textures::PauseButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
-    );
-    pauseButton->deactivate();
-    mSceneLayers[ControlBox]->attachChild(std::move(pauseButton));
-
-    std::unique_ptr<ImageButton> nextButton = std::make_unique<ImageButton>();
-    nextButton->set(
-        ResourcesHolder::texturesHolder[Textures::NextButton], ResourcesHolder::texturesHolder[Textures::NextButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2 + 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
-    );
-    mSceneLayers[ControlBox]->attachChild(std::move(nextButton));
-
-    std::unique_ptr<ImageButton> prevButton = std::make_unique<ImageButton>();
-    prevButton->set(
-        ResourcesHolder::texturesHolder[Textures::PrevButton], ResourcesHolder::texturesHolder[Textures::PrevButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
-    );
-    mSceneLayers[ControlBox]->attachChild(std::move(prevButton));
-
-    std::unique_ptr<ImageButton> replayButton = std::make_unique<ImageButton>();
-    replayButton->set(
-        ResourcesHolder::texturesHolder[Textures::ReplayButton], ResourcesHolder::texturesHolder[Textures::ReplayButtonHovered],
-        sf::Vector2f(Constant::WINDOW_WIDTH / 2, Constant::WINDOW_HEIGHT - 200 * Constant::SCALE_Y)
-    );
-    replayButton->deactivate();
-    mSceneLayers[ControlBox]->attachChild(std::move(replayButton));
-
-    std::unique_ptr<ImageButton> returnButton = std::make_unique<ImageButton>();
-    returnButton->set(
-        ResourcesHolder::texturesHolder[Textures::ReturnButton], ResourcesHolder::texturesHolder[Textures::ReturnButtonHovered],
-        sf::Vector2f(100 * Constant::SCALE_X, 100 * Constant::SCALE_Y)
-    );
-    mSceneLayers[ReturnButton]->attachChild(std::move(returnButton));
+    std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
+    mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));
 
     sf::Vector2f startPos = sf::Vector2f(Constant::WINDOW_WIDTH / 2 - 100 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 650 * Constant::SCALE_Y);
     for (int i = 0; i < 10; i++) {
@@ -524,11 +571,91 @@ void Graph::buildScene() {
     );
     clearButton->deactivate();
     mSceneLayers[MatrixOptions]->attachChild(std::move(clearButton));
-
-    std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
-    mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));
     //---------------
     createRandomGraph();
+}
+
+void Graph::annouceError(std::string error) {
+    mSceneLayers[ErrorContainer]->getChildren()[0]->activate();
+    mSceneLayers[ErrorConfirmButton]->getChildren()[0]->activate();
+    mSceneLayers[ErrorContainer]->getChildren()[0]->setContent(error);
+}
+
+void Graph::initFromFile() {
+    const char *path = tinyfd_openFileDialog(
+        "Open file", "", 0, nullptr, nullptr, 0
+    );
+    mIsInitFromFile = false;
+    std::ifstream fin;
+    fin.open(path);
+    if (!fin.is_open()) {
+        annouceError("Cannot open file");
+        return;
+    }
+    std::vector<std::pair<int, int>> edges;
+    std::vector<int> dis;
+    mInputSize = 0;
+    int maxLine = 0;
+    std::cout << "Start getting data" << std::endl;
+    while (!fin.eof()) {
+        int x, y, w;
+        fin >> x >> y >> w;
+        if (x < 0 || x > 9 || y < 0 || y > 9 || w < 0 || w > 100) {
+            annouceError("Invalid input, vertex must be in range [0, 9] and weight must be in range [0, 100]");
+            fin.close();
+            return;
+        }
+        mInputSize = std::max(mInputSize, std::max(x, y) + 1);
+        edges.push_back(std::make_pair(x, y));
+        dis.push_back(w);
+        if (maxLine > 1000) {
+            annouceError("Too many lines");
+            fin.close();
+            return;
+        }
+        maxLine++;
+    }
+    fin.close();
+    mConnections.clear();
+    mDistance.clear();
+    mEdgeIndex.clear();
+    mConnections.resize(mInputSize);
+    mDistance.resize(mInputSize);
+    mEdgeIndex.resize(mInputSize);
+    for (int i = 0; i < mInputSize; i++) {
+        mConnections[i].resize(mInputSize, false);
+        mDistance[i].resize(mInputSize, -1);
+        mEdgeIndex[i].resize(mInputSize, {-1, false});
+    } 
+    for (int i = 0; i < edges.size(); i++) {
+        int x = edges[i].first;
+        int y = edges[i].second;
+        int w = dis[i];
+        if (mConnections[x][y]) {
+            if (!mSceneLayers[ErrorContainer]->getChildren()[0]->isActive()) {
+                annouceError("Sorry, this graph is undirected, so some duplicate edges are removed");
+            }
+            continue;
+        }
+        mConnections[x][y] = true;  
+        mConnections[y][x] = true;
+        mDistance[x][y] = w;
+        mDistance[y][x] = w;
+    }
+    mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->setContent(std::to_string(mInputSize));
+    for (auto &child : mSceneLayers[Matrix]->getChildren()) child->setContent("");
+    for (int i = 0; i < mInputSize; i++) {
+        for (int j = 0; j < mInputSize; j++) {
+            if (i == j) mSceneLayers[Matrix]->getChildren()[i * 10 + j]->setContent("");
+            else {
+                mSceneLayers[Matrix]->getChildren()[i * 10 + j]->setContent(std::to_string(mDistance[i][j]));
+            }
+        }
+    }
+    initGraph();
+    setGraphScale(mInputSize);
+    balanceGraph();
+    createGraph();
 }
 
 

@@ -51,7 +51,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
         SearchOptions,
         ControlBox,
         CodeBox,
@@ -64,7 +63,6 @@ private:
         Create,
         Insert,
         Delete,
-        Update,
         Search
     };
 
@@ -139,8 +137,8 @@ private: //Algorithms
     void getSplitCheckpoint(Node* root, int data);
     void balanceTree();
     void returnToPreviousStep();
-    void initFromFile() {}
-    void annouceError(std::string error) {}
+    void initFromFile();
+    void annouceError(std::string error);
 private: //Visualization
     void createTree();
     void insertAnimation();

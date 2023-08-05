@@ -24,6 +24,8 @@ private:
 
     std::vector<bool> mIsHovered = {};
     void handleHoverOfDataStructureButtons(sf::Event &event, int indexOfDSLayer, int indexOfNodeLayer, int indexOfEdgeLayer = -1);
+    bool mIsDarkTheme = false;
+    void changeTheme();
 private: 
     enum SceneLayers {
         Background,
@@ -39,6 +41,7 @@ private:
         Tree234Nodes,
         TrieEdges,
         TrieNodes,
+        ThemeButton,
         ExitButton,
         LayerCount
     };

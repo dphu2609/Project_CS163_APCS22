@@ -32,7 +32,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
         SearchOptions,
         ControlBox,
         CodeBox,
@@ -45,7 +44,6 @@ private:
         Create,
         Insert,
         Delete,
-        Update,
         Search
     };
 
@@ -91,10 +89,11 @@ private:
 private: //Algorithms
     void createRandomTree();
     void setTreeScale(int treeSize);
+    void insert(int val);
     void balanceTree();
     void returnToPreviousStep();
-    void initFromFile() {}
-    void annouceError(std::string error) {}
+    void initFromFile();
+    void annouceError(std::string error);
 private: //Visualization
     void createTree();
 

@@ -53,6 +53,15 @@ namespace Color {
     extern sf::Color ERROR_MESSAGE_BOX_COLOR;
     extern sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR;
     extern sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR;
+
+    extern sf::Color THEME_BUTTON_COLOR;
+    extern sf::Color THEME_BUTTON_TEXT_COLOR;
+    extern sf::Color THEME_BUTTON_OUTLINE_COLOR;
+    extern sf::Color THEME_BUTTON_HOVERED_COLOR;
+    extern sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR;
+    extern sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR;
+
+    extern bool IS_DARK_THEME;
 };
 
 namespace Size {

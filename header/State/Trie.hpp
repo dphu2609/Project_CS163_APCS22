@@ -40,7 +40,6 @@ private:
         CreateOptions,
         InsertOptions,
         DeleteOptions,
-        UpdateOptions,
         SearchOptions,
         ControlBox,
         CodeBox,
@@ -53,7 +52,6 @@ private:
         Create,
         Insert,
         Delete,
-        Update,
         Search
     };
 
@@ -133,8 +131,8 @@ private: //Visualization
     bool isProcessingAnimation();
     void resetNodeState();
     void resetAnimation();
-    void initFromFile() {}
-    void annouceError(std::string error) {}
+    void initFromFile();
+    void annouceError(std::string error);
 private:
     bool mInsertAnimation = false;
     bool mDeleteAnimation = false;

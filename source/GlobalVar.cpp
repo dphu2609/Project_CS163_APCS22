@@ -13,7 +13,7 @@ namespace Color {
     sf::Color NODE_COLOR = sf::Color::White;
     sf::Color NODE_TEXT_COLOR = sf::Color(133, 163, 137, 255);
     sf::Color NODE_OUTLINE_COLOR = sf::Color(133, 163, 137, 255);
-    sf::Color NODE_EDGE_COLOR = sf::Color::Black;
+    sf::Color NODE_EDGE_COLOR = sf::Color(133, 163, 137);
     sf::Color NODE_LABEL_COLOR = sf::Color(232, 54, 0);
     sf::Color NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
     sf::Color NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
@@ -45,7 +45,16 @@ namespace Color {
 
     sf::Color ERROR_MESSAGE_BOX_COLOR = sf::Color::White;
     sf::Color ERROR_MESSAGE_BOX_TEXT_COLOR = sf::Color::Black;
-    sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Black;
+    sf::Color ERROR_MESSAGE_BOX_OUTLINE_COLOR = sf::Color::Transparent;
+
+    sf::Color THEME_BUTTON_COLOR = sf::Color::White;
+    sf::Color THEME_BUTTON_TEXT_COLOR = sf::Color::Black;
+    sf::Color THEME_BUTTON_OUTLINE_COLOR = sf::Color::Black;
+    sf::Color THEME_BUTTON_HOVERED_COLOR = sf::Color(44, 54, 57);
+    sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color::White;
+    sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::Black;
+
+    bool IS_DARK_THEME = false;
 };
 
 namespace Size {
