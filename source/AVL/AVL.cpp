@@ -85,6 +85,10 @@ void AVL::handleEvent(sf::Event &event) {
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
         std::vector<int> inputList = mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getIntArrayData();
         bool isInputValid = true;
+        if (mNodeList.size() >= 50) {
+            annouceError("Sorry, we do not support more than 50 nodes");
+            isInputValid = false;
+        }
         for (int input : inputList) {
             if (input < -999999 || input > 999999) {
                 annouceError("Input must be in range [-999999, 999999]");
@@ -257,6 +261,10 @@ void AVL::handleEvent(sf::Event &event) {
         mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
     } 
+
+    if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && !mIsReplay) {
+        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+    }
 
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
         resetNodeState();

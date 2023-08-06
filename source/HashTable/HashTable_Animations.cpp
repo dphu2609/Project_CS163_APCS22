@@ -46,12 +46,12 @@ void HashTable::insertAnimation() {
         }
 
         case 3: {
-            changeNodeAnimation(true, 2, 6);
+            changeNodeAnimation(true, 1.5, 6);
             break;
         }
 
         case 4: {
-            traverseAnimation(true, 2, 5);
+            traverseAnimation(true, 1.5, 5);
             break;
         }
 
@@ -113,12 +113,12 @@ void HashTable::deleteAnimation() {
         }
 
         case 3: {
-            changeNodeAnimation(true, 2, 6);
+            changeNodeAnimation(true, 1.5, 6);
             break;
         }
 
         case 4: {
-            traverseAnimation(true, 2, 5);
+            traverseAnimation(true, 1.5, 5);
             break;
         }
 
@@ -180,12 +180,12 @@ void HashTable::searchAnimation() {
         }
 
         case 3: {
-            changeNodeAnimation(true, 2, 6);
+            changeNodeAnimation(true, 1.5, 6);
             break;
         }
 
         case 4: {
-            traverseAnimation(true, 2, 5);
+            traverseAnimation(true, 1.5, 5);
             break;
         }
 

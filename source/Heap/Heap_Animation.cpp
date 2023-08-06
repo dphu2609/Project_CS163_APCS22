@@ -67,8 +67,8 @@ void Heap::insertAnimation() {
         }
 
         case 3: {
-            nodeAppearAnimation(true, 1.5);
-            moveTreeAnimation(true, 1.5, 4);
+            nodeAppearAnimation(true, 1);
+            moveTreeAnimation(true, 1, 4);
             break;
         }
 
@@ -90,7 +90,7 @@ void Heap::insertAnimation() {
         }
 
         case 5: {
-            moveTreeAnimation(true, 1.5, 4);
+            moveTreeAnimation(true, 1, 4);
             break;
         }
 
@@ -113,6 +113,14 @@ void Heap::deleteAnimation() {
             createTree();
             if (mIsMaxHeap) mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteMaxHeap]);
             else mSceneLayers[CodeBox]->getChildren()[0]->setMultipleContent(CodeContainer::codeHolder[Code::DeleteMinHeap]);
+            if (mIsMaxHeap) {
+                mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val + 1));
+                mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val + 1;
+            }
+            else {
+                mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val - 1));
+                mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val - 1;
+            }
             mAnimationStep = 2;
             break;
         }
@@ -122,14 +130,6 @@ void Heap::deleteAnimation() {
             mSceneLayers[CodeBox]->getChildren()[0]->activateLine({0});
             mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->change3Color(Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 2);
             if (mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->isChange3ColorFinished() && !mIsAnimationPaused) {
-                if (mIsMaxHeap) {
-                    mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val + 1));
-                    mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val + 1;
-                }
-                else {
-                    mSceneLayers[Nodes]->getChildren()[mInputQueue.front() - 1]->setContent(std::to_string(mNodeList.front()->val - 1));
-                    mNodeList[mInputQueue.front() - 1]->val = mNodeList.front()->val - 1;
-                }
                 mOperationNode = mNodeList[mInputQueue.front() - 1];
                 resetNodeState();
                 mAnimationStep = 3;
@@ -153,7 +153,7 @@ void Heap::deleteAnimation() {
         }
 
         case 4: {
-            moveTreeAnimation(true, 1.5, 3);
+            moveTreeAnimation(true, 1, 3);
             break;
         }
         
@@ -173,7 +173,7 @@ void Heap::deleteAnimation() {
         }
 
         case 6: {
-            moveTreeAnimation(true, 1.5, 7);
+            moveTreeAnimation(true, 1, 7);
             break;
         }
 
@@ -392,7 +392,7 @@ void Heap::moveTreeAnimation(bool isAllowPause, float speed, int animationStepAf
 void Heap::changeNodeAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
     if (!isAllowPause) mIsAnimationPaused = false;
     mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->change3Color(
-        Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, 3
+        Color::NODE_HIGHLIGHT_COLOR, Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::NODE_HIGHLIGHT_OUTLINE_COLOR, speed
     );
 
     if (mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->isChange3ColorFinished() && !mIsAnimationPaused) {

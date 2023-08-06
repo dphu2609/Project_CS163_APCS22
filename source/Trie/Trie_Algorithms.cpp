@@ -316,8 +316,8 @@ Trie::TreeState* Trie::createTreeState(int animationIndex) {
     TreeState* newTreeState = new TreeState{newRoot, nodeForOperation, operationIndex, isEdgeHighlighted, newNodeList, animationIndex};
     return newTreeState;
 }
-
 void Trie::returnToPreviousStep() {
+    if (mTreeForBackward.empty()) return;
     resetNodeState();
     clear(mRoot);
     mNodeList.clear();

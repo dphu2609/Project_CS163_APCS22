@@ -248,6 +248,7 @@ Heap::TreeState* Heap::createTreeState(int animationIndex) {
 }
 
 void Heap::returnToPreviousStep() {
+    if (mTreeForBackward.empty()) return;
     resetNodeState();
     clear(mRoot);
     mNodeList.clear();

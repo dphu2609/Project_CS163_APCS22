@@ -54,6 +54,7 @@ void HashTable::applyTreeState(TreeState* treeState) {
 }
 
 void HashTable::returnToPreviousStep() {
+    if (mTreeForBackward.empty()) return;
     applyTreeState(mTreeForBackward.top());
     mTreeForBackward.pop();
     createTree();

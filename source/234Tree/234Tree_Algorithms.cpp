@@ -843,6 +843,7 @@ void Tree234::restoreTree() {
 }
 
 void Tree234::returnToPreviousStep() {
+    if (mTreeForBackward.empty()) return;
     resetNodeState();
     clear(mRoot);
     mNodeList.clear();

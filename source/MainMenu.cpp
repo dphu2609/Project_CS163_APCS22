@@ -99,11 +99,15 @@ void MainMenu::handleHoverOfDataStructureButtons(sf::Event &event, int indexOfDS
 }
 
 void MainMenu::buildScene() {
-    mSceneGraph.getChildren().clear();
-    for (int i = 0; i < LayerCount; i++) {
-        if (!mSceneLayers[i]) mSceneLayers[i]->getChildren().clear();
-        mSceneLayers[i] = nullptr;
+    if (mFirstInit) {
+        for (int i = 0; i < LayerCount; i++) {
+            if (mSceneLayers[i] != nullptr) mSceneLayers[i]->getChildren().clear();
+            mSceneLayers[i] = nullptr;
+        }
+        mSceneGraph.getChildren().clear();
+        mIsHovered.clear();
     }
+    else mFirstInit = true;
     for (int i = 0; i < LayerCount; i++) {
         SceneNode::Ptr layer = std::make_unique<SceneNode>();
         mSceneLayers[i] = layer.get();

@@ -590,26 +590,26 @@ void Tree234::setTreeScale(int treeSize) {
         Size::NODE_RADIUS_X = 40.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 40.f * Constant::SCALE_Y;
     }
-    else if (treeSize < 21) {
-        NODE_DISTANCE_HORIZONTAL = 240.f * Constant::SCALE_X;
+    else if (treeSize < 20) {
+        NODE_DISTANCE_HORIZONTAL = 260.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 180.f * Constant::SCALE_Y;
         Size::NODE_RADIUS = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_X = 30.f * Constant::SCALE_X;
         Size::NODE_RADIUS_Y = 30.f * Constant::SCALE_Y;
     }
-    else if (treeSize < 30) {
-        NODE_DISTANCE_HORIZONTAL = 190.f * Constant::SCALE_X;
-        NODE_DISTANCE_VERTICAL = 150.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 25.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_X = 25.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_Y = 25.f * Constant::SCALE_Y;
-    }
-    else {
+    else if (treeSize < 25) {
         NODE_DISTANCE_HORIZONTAL = 180.f * Constant::SCALE_X;
         NODE_DISTANCE_VERTICAL = 150.f * Constant::SCALE_Y;
-        Size::NODE_RADIUS = 18.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_X = 18.f * Constant::SCALE_X;
-        Size::NODE_RADIUS_Y = 18.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 23.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 23.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 23.f * Constant::SCALE_Y;
+    }
+    else {
+        NODE_DISTANCE_HORIZONTAL = 150.f * Constant::SCALE_X;
+        NODE_DISTANCE_VERTICAL = 150.f * Constant::SCALE_Y;
+        Size::NODE_RADIUS = 22.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_X = 22.f * Constant::SCALE_X;
+        Size::NODE_RADIUS_Y = 22.f * Constant::SCALE_Y;
     }
 }
 
@@ -630,6 +630,7 @@ void Tree234::resetAnimation() {
         mTreeForBackward.pop();
     }
     setTreeScale(mNodeList.size());
+    balanceTree();
 }
 
 bool Tree234::isProcessingAnimation() {

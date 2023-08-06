@@ -242,6 +242,10 @@ void HashTable::handleEvent(sf::Event &event) {
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
     } 
 
+    if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && !mIsReplay) {
+        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+    }
+
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
         mAnimationStep = 1;
         mIsReplay = false;

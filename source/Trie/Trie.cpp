@@ -85,19 +85,36 @@ void Trie::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[InsertOptions]->getChildren()[InsertStart]->isLeftClicked(mWindow, event)) {
+        bool isInputValid = true;
+        int wordCount = 0;
+        for (auto &node : mNodeList) if (node->isEndOfWord) wordCount++;
+        if (wordCount >= 20) {
+            annouceError("Sorry, we do not support more than 20 words");
+            isInputValid = false;
+        }
         while (!mInputQueue.empty()) mInputQueue.pop();
         mInputQueue.push(mSceneLayers[InsertOptions]->getChildren()[InsertInput]->getContent());
-        mInsertAnimation = true;
-        mDeleteAnimation = false;
-        mUpdateAnimation = false;
-        mSearchAnimation = false;
-        mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
-        mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
-        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
-        mIsAnimationPaused = false;
-        mIsStepByStepMode = false;
-        mIsReplay = false;
-        mAnimationStep = 1;
+        if (mInputQueue.front().size() == 0) {
+            annouceError("Input must not be empty");
+            isInputValid = false;
+        }
+        if (mInputQueue.front().size() > 12) {
+            annouceError("Sorry, we do not support word longer than 12 characters");
+            isInputValid = false;
+        }
+        if (isInputValid) {
+            mInsertAnimation = true;
+            mDeleteAnimation = false;
+            mUpdateAnimation = false;
+            mSearchAnimation = false;
+            mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
+            mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
+            mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+            mIsAnimationPaused = false;
+            mIsStepByStepMode = false;
+            mIsReplay = false;
+            mAnimationStep = 1;
+        }
     }
 
     if (mSceneLayers[DeleteOptions]->getChildren()[DeleteStart]->isLeftClicked(mWindow, event)) {
@@ -213,6 +230,10 @@ void Trie::handleEvent(sf::Event &event) {
         mSceneLayers[ControlBox]->getChildren()[Pause]->deactivate();
         mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
     } 
+
+    if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && !mIsReplay) {
+        mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
+    }
 
     if (mSceneLayers[ControlBox]->getChildren()[Replay]->isActive() && mSceneLayers[ControlBox]->getChildren()[Replay]->isLeftClicked(mWindow, event)) {
         resetNodeState();

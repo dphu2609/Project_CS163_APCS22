@@ -489,6 +489,7 @@ AVL::TreeState* AVL::createTreeState(int animationIndex) {
 }
 
 void AVL::returnToPreviousStep() {
+    if (mTreeForBackward.empty()) return;
     resetNodeState();
     clear(mRoot);
     mNodeList.clear();
