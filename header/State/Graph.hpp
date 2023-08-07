@@ -47,6 +47,8 @@ private:
         ErrorContainer,
         ErrorConfirmButton,
         ReturnButton,
+        SpeedButton,
+        SpeedOptions,
         LayerCount
     };
     enum ButtonTypes {
@@ -89,6 +91,13 @@ private:
     enum MatrixOptions {
         ConfirmMatrix,
         ClearMatrix
+    };
+
+    enum SpeedOptions {
+        Speed05,
+        Speed1,
+        Speed15,
+        Speed2
     };
 private:
     std::vector<std::vector<bool>> mConnections = {};

@@ -72,6 +72,7 @@ namespace Size {
     extern sf::Vector2f SETTINGS_BUTTON_SIZE;
     extern sf::Vector2f MATRIX_SLOT_SIZE;
     extern sf::Vector2f DATA_STRUCTURE_BUTTON;
+    extern sf::Vector2f SPEED_BUTTON_SIZE;
     extern float DATA_STRUCTURE_BUTTON_EDGE_THICKNESS;
 };
 

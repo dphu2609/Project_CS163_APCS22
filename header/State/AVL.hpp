@@ -53,6 +53,8 @@ private:
         ErrorContainer,
         ErrorConfirmButton,
         ReturnButton,
+        SpeedButton,
+        SpeedOptions,
         LayerCount
     };
     enum ButtonTypes {
@@ -90,6 +92,13 @@ private:
         Next,
         Previous,
         Replay
+    };
+
+    enum SpeedOptions {
+        Speed05,
+        Speed1,
+        Speed15,
+        Speed2
     };
 private:
     Node* mRoot = nullptr;

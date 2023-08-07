@@ -278,6 +278,48 @@ void Heap::handleEvent(sf::Event &event) {
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         requestStackPop();
     }
+
+    if (mSceneLayers[SpeedButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
+        for (auto &child : mSceneLayers[SpeedOptions]->getChildren()) {
+            if (child->isActive()) {
+                child->deactivate();
+            } else {
+                child->activate();
+            }
+        }
+    }
+
+    if (mSceneLayers[SpeedOptions]->getChildren()[Speed05]->isLeftClicked(mWindow, event)) {
+        Animation::SPEED = 0.5;
+        mSceneLayers[SpeedButton]->getChildren()[0]->setContent("Speed: 0.5x");
+        for (auto &child : mSceneLayers[SpeedOptions]->getChildren()) {
+            child->deactivate();
+        }
+    }
+
+    if (mSceneLayers[SpeedOptions]->getChildren()[Speed1]->isLeftClicked(mWindow, event)) {
+        Animation::SPEED = 1;
+        mSceneLayers[SpeedButton]->getChildren()[0]->setContent("Speed: 1x");
+        for (auto &child : mSceneLayers[SpeedOptions]->getChildren()) {
+            child->deactivate();
+        }
+    }
+
+    if (mSceneLayers[SpeedOptions]->getChildren()[Speed15]->isLeftClicked(mWindow, event)) {
+        Animation::SPEED = 1.5;
+        mSceneLayers[SpeedButton]->getChildren()[0]->setContent("Speed: 1.5x");
+        for (auto &child : mSceneLayers[SpeedOptions]->getChildren()) {
+            child->deactivate();
+        }
+    }
+
+    if (mSceneLayers[SpeedOptions]->getChildren()[Speed2]->isLeftClicked(mWindow, event)) {
+        Animation::SPEED = 2;
+        mSceneLayers[SpeedButton]->getChildren()[0]->setContent("Speed: 2x");
+        for (auto &child : mSceneLayers[SpeedOptions]->getChildren()) {
+            child->deactivate();
+        }
+    }
 }
 
 void Heap::buildScene() {
@@ -487,6 +529,33 @@ void Heap::buildScene() {
 
     std::unique_ptr<CodeBlock> codeBlock = std::make_unique<CodeBlock>();
     mSceneLayers[CodeBox]->attachChild(std::move(codeBlock));
+
+    std::string speedButtonContent = "";
+    if (Animation::SPEED == 0.5) speedButtonContent = "Speed: 0.5x";
+    else if (Animation::SPEED == 1) speedButtonContent = "Speed: 1.x";
+    else if (Animation::SPEED == 1.5) speedButtonContent = "Speed: 1.5x";
+    else if (Animation::SPEED == 2) speedButtonContent = "Speed: 2.x";
+
+    std::unique_ptr<RectangleButton> speedButton = std::make_unique<RectangleButton>();
+    speedButton->set(
+        Size::SPEED_BUTTON_SIZE, sf::Vector2f(Constant::WINDOW_WIDTH - 400 * Constant::SCALE_X, 60 * Constant::SCALE_Y), speedButtonContent, 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
+    );
+    mSceneLayers[SpeedButton]->attachChild(std::move(speedButton));
+
+    sf::Vector2f speedOptionsPos = sf::Vector2f(Constant::WINDOW_WIDTH - 400 * Constant::SCALE_X, 140 * Constant::SCALE_Y);
+    std::vector<std::string> speedOptionsContent = {"0.5x", "1x", "1.5x", "2x"};
+    for (int i = 0; i < 4; i++) {
+        std::unique_ptr<RectangleButton> speedOptionButton = std::make_unique<RectangleButton>();
+        speedOptionButton->set(
+            Size::SPEED_BUTTON_SIZE, speedOptionsPos + sf::Vector2f(0, i * Size::SPEED_BUTTON_SIZE.y), speedOptionsContent[i], 
+            ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+            Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
+        );
+        speedOptionButton->deactivate();
+        mSceneLayers[SpeedOptions]->attachChild(std::move(speedOptionButton));
+    }
     //---------------
     createRandomTree();
 }

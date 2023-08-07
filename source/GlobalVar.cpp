@@ -65,6 +65,7 @@ namespace Size {
     sf::Vector2f SETTINGS_BUTTON_SIZE = sf::Vector2f(400.f * Constant::SCALE_X, 80.f * Constant::SCALE_Y);
     sf::Vector2f MATRIX_SLOT_SIZE = sf::Vector2f(70.f * Constant::SCALE_X, 50.f * Constant::SCALE_Y);
     sf::Vector2f DATA_STRUCTURE_BUTTON = sf::Vector2f(500.f * Constant::SCALE_X, 400.f * Constant::SCALE_Y);
+    sf::Vector2f SPEED_BUTTON_SIZE = sf::Vector2f(300.f * Constant::SCALE_X, 60.f * Constant::SCALE_Y);
     float DATA_STRUCTURE_BUTTON_EDGE_THICKNESS = 5.f * Constant::SCALE_Y;
 };
 
