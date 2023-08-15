@@ -54,7 +54,8 @@ private:
     enum ButtonTypes {
         Create,
         Insert,
-        Delete
+        Delete,
+        Update
     };
 
     enum CreateOptions {
@@ -128,17 +129,20 @@ private: //Algorithms
     void setGraphScale(int GraphSize);
     void balanceGraph();
     void createRandomGraph();
+    std::vector<std::vector<int>> getConnectedComponents();
     void returnToPreviousStep();
 private: //Visualization
     void createGraph();
     void updateGraphByMouse(sf::Event &event);
     void insertAnimation();
     void deleteAnimation();
+    void updateAnimation();
     void searchAnimation() {}
     bool isProcessingAnimation();
     void resetNodeState();
     void resetAnimation();
     void traverseAnimation(bool isAllowPause = true, float speed = 1.f, int animationStepAfterFinish = 0, int startNode = 0, int endNode = 0);
+    void connectedComponetsAnimation(bool isAllowPause = true, float speed = 1.f, int animationStepAfterFinish = 0);
     void initFromFile();
     void annouceError(std::string error);
 private:
@@ -158,6 +162,7 @@ private:
     std::priority_queue<std::pair<int, int>> mPriorityQueue = {};
     std::priority_queue<std::pair<int, std::pair<int, int>>> mPriorityQueueForPrim = {};
     std::vector<int> mIsVisited = {};
+    std::vector<std::vector<int>> mConnectedComponents = {};
     int mSubGraphSize = 0;
     int mCurrentIndex = 0;
     int mCheckIndex = 0;

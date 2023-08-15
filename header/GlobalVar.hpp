@@ -1,6 +1,7 @@
 #ifndef GLOBALVAR_HPP
 #define GLOBALVAR_HPP
 
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include <ResourceHolder.hpp>
 #include <CodeHolder.hpp>
@@ -60,6 +61,8 @@ namespace Color {
     extern sf::Color THEME_BUTTON_HOVERED_COLOR;
     extern sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR;
     extern sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR;
+
+    extern std::vector<sf::Color> CONNECTED_COMPONENTS_COLOR;
 
     extern bool IS_DARK_THEME;
 };

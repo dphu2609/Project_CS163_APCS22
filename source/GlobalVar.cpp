@@ -54,6 +54,13 @@ namespace Color {
     sf::Color THEME_BUTTON_HOVERED_TEXT_COLOR = sf::Color(116, 155, 194, 255);
     sf::Color THEME_BUTTON_HOVERED_OUTLINE_COLOR = sf::Color::White;
 
+    std::vector<sf::Color> CONNECTED_COMPONENTS_COLOR = {
+        sf::Color(5, 247, 183), sf::Color(2, 170, 247), sf::Color(133, 2, 247),
+        sf::Color(247, 2, 145), sf::Color(247, 2, 35), sf::Color(230, 153, 0),
+        sf::Color(222, 230, 0), sf::Color(29, 219, 0), sf::Color(255, 119, 0), 
+        sf::Color(120, 83, 252)
+    };
+
     bool IS_DARK_THEME = true;
 };
 

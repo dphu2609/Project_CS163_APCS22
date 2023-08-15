@@ -144,6 +144,32 @@ void Graph::balanceGraph() {
     }
 }
 
+std::vector<std::vector<int>> Graph::getConnectedComponents() {
+    std::vector<std::vector<int>> connectedComponents;
+    std::vector<bool> visited(mInputSize, false);
+    for (int i = 0; i < mInputSize; i++) {
+        if (!visited[i]) {
+            std::vector<int> connectedComponent;
+            std::queue<int> q;
+            q.push(i);
+            visited[i] = true;
+            while (!q.empty()) {
+                int temp = q.front();
+                q.pop();
+                connectedComponent.push_back(temp);
+                for (int j = 0; j < mConnections[temp].size(); j++) {
+                    if (mConnections[temp][j] && !visited[j]) {
+                        visited[j] = true;
+                        q.push(j);
+                    }
+                }
+            }
+            connectedComponents.push_back(connectedComponent);
+        }
+    }
+    return connectedComponents;
+}
+
 Graph::GraphState* Graph::createGraphState(int animationIndex) {
     GraphState* graphState = new GraphState;
     graphState->nodeList.resize(mNodeList.size());

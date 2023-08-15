@@ -191,6 +191,66 @@ void Graph::deleteAnimation() {
     }
 }
 
+void Graph::updateAnimation() {
+    switch (mAnimationStep) {
+        case 1: {
+            resetAnimation();
+            createGraph();
+            mBackupGraph = createGraphState(1);
+            mAnimationStep = 2;
+            break;
+        }
+
+        case 2: {
+            mConnectedComponents = getConnectedComponents();
+            mAnimationStep = 3;
+            break;
+        }
+
+        case 3: {
+            connectedComponetsAnimation(true, 1, 4);
+            break;
+        }
+
+        case 4: {
+            mIsReplay = true;
+            break;
+        }
+    }
+}
+
+void Graph::connectedComponetsAnimation(bool isAllowPause, float speed, int animationStepAfterFinish) {
+    if (!isAllowPause) mIsAnimationPaused = false;
+    int colorIndex = 0;
+    for (auto &subGraph : mConnectedComponents) {
+        for (auto &node : subGraph) {
+            mSceneLayers[Nodes]->getChildren()[node]->change3Color(
+                Color::NODE_HIGHLIGHT_TEXT_COLOR, Color::CONNECTED_COMPONENTS_COLOR[colorIndex],  Color::CONNECTED_COMPONENTS_COLOR[colorIndex], speed
+            );
+            for (auto &child : mNodeList[node]->child) {
+                mSceneLayers[Edges]->getChildren()[mEdgeIndex[node][child].first]->change1Color(
+                    Color::CONNECTED_COMPONENTS_COLOR[colorIndex], speed
+                );
+            }
+        }
+        colorIndex++;
+    }
+
+    bool isFinished = true;
+    for (auto &node : mNodeList) {
+        if (!mSceneLayers[Nodes]->getChildren()[node->nodeIndex]->isChange3ColorFinished()) {
+            isFinished = false;
+            break;
+        }
+    }
+
+    if (isFinished) {
+        mAnimationStep = animationStepAfterFinish;
+        resetNodeState();
+    }
+
+}
+
 void Graph::traverseAnimation(bool isAllowPause, float speed, int animationStepAfterFinish, int startNode, int endNode) {
     if (!isAllowPause) mIsAnimationPaused = false;
     if (!mTraverseControler.first) {

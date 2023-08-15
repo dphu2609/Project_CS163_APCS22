@@ -6,12 +6,6 @@ Graph::Graph(StateStack &stack, sf::RenderWindow &window) : State(stack, window)
 
 Graph::~Graph() {
     clear();
-    // clear(mRootForBackup);
-    // while (!mGraphForBackward.empty()) {
-    //     clear(mGraphForBackward.top()->root);
-    //     delete mGraphForBackward.top();
-    //     mGraphForBackward.pop();
-    // }
 }
 
 void Graph::draw() {
@@ -22,6 +16,7 @@ void Graph::update() {
     mSceneGraph.update();
     if (mInsertAnimation && !mIsReversed) insertAnimation();
     if (mDeleteAnimation && !mIsReversed) deleteAnimation();
+    if (mUpdateAnimation && !mIsReversed) updateAnimation();
     mIsAnimationPaused = mIsStepByStepMode;
 }
 
@@ -71,6 +66,20 @@ void Graph::handleEvent(sf::Event &event) {
                 child->activate();
             }
         }
+    }
+
+    if (mSceneLayers[Buttons]->getChildren()[Update]->isLeftClicked(mWindow, event)) {
+        mInsertAnimation = false;
+        mDeleteAnimation = false;
+        mUpdateAnimation = true;
+        mAnimationStep = 1;
+        for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[Matrix]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+        for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
     }
 
 
@@ -187,6 +196,7 @@ void Graph::handleEvent(sf::Event &event) {
             }
             mInsertAnimation = true;
             mDeleteAnimation = false; 
+            mUpdateAnimation = false;
             mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
             mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
@@ -220,6 +230,7 @@ void Graph::handleEvent(sf::Event &event) {
             }
             mInsertAnimation = false;
             mDeleteAnimation = true;
+            mUpdateAnimation = false;
             mSceneLayers[ControlBox]->getChildren()[Play]->deactivate();
             mSceneLayers[ControlBox]->getChildren()[Pause]->activate();
             mSceneLayers[ControlBox]->getChildren()[Replay]->deactivate();
@@ -406,6 +417,14 @@ void Graph::buildScene() {
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
     mSceneLayers[Buttons]->attachChild(std::move(deleteButton)); 
+
+    std::unique_ptr<RectangleButton> updateButton = std::make_unique<RectangleButton>();
+    updateButton->set(
+        Size::SETTINGS_BUTTON_SIZE - sf::Vector2f(0, 20), sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Connected Components", 
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
+        Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
+    );
+    mSceneLayers[Buttons]->attachChild(std::move(updateButton));
 
     std::unique_ptr<RectangleButton> sizeButton = std::make_unique<RectangleButton>();
     sizeButton->set(
