@@ -410,8 +410,8 @@ void Graph::buildScene() {
     std::unique_ptr<RectangleButton> sizeButton = std::make_unique<RectangleButton>();
     sizeButton->set(
         sf::Vector2f(60 * Constant::SCALE_X, 80 * Constant::SCALE_Y), sf::Vector2f(80 * Constant::SCALE_X + Size::SETTINGS_BUTTON_SIZE.x, Constant::WINDOW_HEIGHT - 600 * Constant::SCALE_Y), "N =",
-        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color::Transparent, sf::Color::Black,
-        sf::Color::Transparent, sf::Color::Black
+        ResourcesHolder::fontsHolder[Fonts::RobotoRegular], sf::Color::Transparent, (!Color::IS_DARK_THEME ? sf::Color::Black : sf::Color::White),
+        sf::Color::Transparent, (!Color::IS_DARK_THEME ? sf::Color::Black : sf::Color::White)
     );
     sizeButton->deactivate();
     mSceneLayers[CreateOptions]->attachChild(std::move(sizeButton)); 

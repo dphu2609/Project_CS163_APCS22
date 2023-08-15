@@ -89,7 +89,7 @@ private:
     virtual void setVarForChange1Color(const sf::Color &objectColorAfterChange, const float speed) {}
     virtual void setVarForChange2Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const float speed) {}
     virtual void setVarForChange3Color(const sf::Color &objectColorAfterChange, const sf::Color &textColorAfterChange, const sf::Color &objectOutlineColorAfterChange, const float speed) {}
-public: //var for animations
+protected: //var for animations
     sf::Vector2f mStartSize;
     sf::Vector2f mCurrentSize;
     sf::Vector2f mDeltaSize;

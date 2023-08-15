@@ -114,6 +114,10 @@ void Trie::handleEvent(sf::Event &event) {
             mIsStepByStepMode = false;
             mIsReplay = false;
             mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[SearchOptions]->getChildren()) child->deactivate();
         }
     }
 
@@ -135,6 +139,10 @@ void Trie::handleEvent(sf::Event &event) {
             mIsStepByStepMode = false;
             mIsReplay = false;
             mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[SearchOptions]->getChildren()) child->deactivate();
         }
     }
 
@@ -155,6 +163,10 @@ void Trie::handleEvent(sf::Event &event) {
             mIsStepByStepMode = false;
             mIsReplay = false;
             mAnimationStep = 1;
+            for (auto &child : mSceneLayers[CreateOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[InsertOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[DeleteOptions]->getChildren()) child->deactivate();
+            for (auto &child : mSceneLayers[SearchOptions]->getChildren()) child->deactivate();
         }
     }
 

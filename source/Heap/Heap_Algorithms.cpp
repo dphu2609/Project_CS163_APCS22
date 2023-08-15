@@ -58,6 +58,7 @@ void Heap::moveTree(Node* root, bool isLeft) {
 }
 
 void Heap::balanceTree() {
+    if (!mRoot) return;
     std::vector<Node*> nodeList;
     std::queue<Node*> q;
     q.push(mRoot);

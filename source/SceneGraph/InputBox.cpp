@@ -80,7 +80,7 @@ void InputBox::handleCurrentEvent(sf::RenderWindow &window, sf::Event &event) {
     }
     if (mIsActivated) {
         if (event.type == sf::Event::TextEntered) {
-            if (event.text.unicode < 128 && event.text.unicode != 8) {
+            if (event.text.unicode < 128 && event.text.unicode != 8 && event.text.unicode != 13) {
                 mData += static_cast<char>(event.text.unicode);
                 if (mContent.getLocalBounds().width >= mBox.getSize().x - mContent.getCharacterSize()) {
                     mOverBoundChar++;

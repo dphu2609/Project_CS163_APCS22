@@ -408,7 +408,7 @@ void MainMenu::changeTheme() {
         Color::NODE_HIGHLIGHT_COLOR = sf::Color(255, 171, 25);
         Color::NODE_HIGHLIGHT_TEXT_COLOR = sf::Color::White;
         Color::NODE_HIGHLIGHT_OUTLINE_COLOR = sf::Color(255, 181, 25);
-        Color::SETTINGS_BUTTON_COLOR = sf::Color(46, 196, 0);
+        Color::SETTINGS_BUTTON_COLOR = sf::Color(145, 174, 226);
         Color::SETTINGS_BUTTON_TEXT_COLOR = sf::Color::Black;
         Color::SETTINGS_BUTTON_OUTLINE_COLOR = sf::Color::Black;
         Color::SETTINGS_BUTTON_HOVERED_COLOR = sf::Color(224, 134, 7);

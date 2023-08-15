@@ -290,6 +290,7 @@ void Tree234::deleteAnimation() {
             if (mReplaceNode->depth > mOperationNode->depth + 1 || (mReplaceNode->isAttached) || (!mReplaceNode->isAttached && mReplaceNode->numKeys != 1)) {
                 std::swap(mOperationNode->val, mReplaceNode->val);
                 std::swap(mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex], mSceneLayers[Nodes]->getChildren()[mReplaceNode->nodeIndex]);
+                mOperationNode = mReplaceNode;
             }
             if ((!mReplaceNode->isAttached && mReplaceNode->numKeys == 1)) mAnimationStep = 15;
             else {
@@ -307,7 +308,6 @@ void Tree234::deleteAnimation() {
         case 16: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(16));
             handleLeafNodeWith1NumKeys(mReplaceNode);
-            mOperationNode = mReplaceNode;
             balanceTree();
             mAnimationStep = 17;
         }

@@ -139,6 +139,10 @@ void Heap::deleteAnimation() {
 
         case 3: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mNodeList.size() == 1) {
+                mAnimationStep = 7;
+                break;
+            }
             mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
             if (mOperationNode->parent && ((mIsMaxHeap && mOperationNode->val > mOperationNode->parent->val) || (!mIsMaxHeap && mOperationNode->val < mOperationNode->parent->val))) {
                 std::swap(mOperationNode->val, mOperationNode->parent->val);
@@ -190,6 +194,7 @@ void Heap::deleteAnimation() {
             }
             Node* temp = mNodeList.back();
             mNodeList.pop_back();
+            if (mNodeList.size() == 0) mRoot = nullptr;
             delete temp;
             balanceTree();
             mAnimationStep = 8;
@@ -203,7 +208,8 @@ void Heap::deleteAnimation() {
                 mSceneLayers[Nodes]->getChildren().pop_back();
                 mSceneLayers[LeftEdges]->getChildren().pop_back();
                 mSceneLayers[RightEdges]->getChildren().pop_back();
-                if (mOperationNode) mAnimationStep = 9;
+                if (!mRoot) mAnimationStep = 11;
+                else if (mOperationNode) mAnimationStep = 9;
                 else mAnimationStep = 11;
                 resetNodeState();
             }
