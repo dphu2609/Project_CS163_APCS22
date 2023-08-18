@@ -66,6 +66,7 @@ void Program::run() {
     sf::Clock clock;    
     sf::Time timeSinceLastUpdate = sf::Time::Zero;  
     while(mWindow.isOpen()) {
+        std::cout << "FPS: " << 1.f / clock.getElapsedTime().asSeconds() << std::endl;
         processEvents();
         sf::Time elapsedTime = clock.restart();
         timeSinceLastUpdate += elapsedTime;

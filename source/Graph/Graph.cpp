@@ -430,7 +430,7 @@ void Graph::buildScene() {
 
     std::unique_ptr<RectangleButton> updateButton = std::make_unique<RectangleButton>();
     updateButton->set(
-        Size::SETTINGS_BUTTON_SIZE - sf::Vector2f(0, 20), sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Connected Components", 
+        Size::SETTINGS_BUTTON_SIZE - sf::Vector2f(0, 20 * Constant::SCALE_Y), sf::Vector2f(50 * Constant::SCALE_X, Constant::WINDOW_HEIGHT - 360 * Constant::SCALE_Y), "Connected Components", 
         ResourcesHolder::fontsHolder[Fonts::RobotoRegular], Color::SETTINGS_BUTTON_COLOR, sf::Color::Black,
         Color::SETTINGS_BUTTON_HOVERED_COLOR, sf::Color::Black
     );
