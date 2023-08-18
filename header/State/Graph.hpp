@@ -175,6 +175,7 @@ private: //Control box
     bool mIsReplay = false;
     bool mIsAnnouncingError = false;
     bool mIsInitFromFile = false;
+    bool mIsInitFromFileValid = true;
 };
 
 #endif

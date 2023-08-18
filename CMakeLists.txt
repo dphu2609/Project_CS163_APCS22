@@ -26,7 +26,6 @@ set(SOURCES ${STATESTACK_SOURCES} ${AVL_SOURCES} ${TREE234_SOURCES} ${HEAP_SOURC
 
 add_executable(Project_CS163_APCS22 ${SOURCES})
 
-
 # Add include directories
 target_include_directories(Project_CS163_APCS22 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/header")
 

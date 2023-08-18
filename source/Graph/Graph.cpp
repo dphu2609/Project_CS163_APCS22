@@ -85,48 +85,53 @@ void Graph::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[CreateOptions]->getChildren()[FromMatrixButton]->isLeftClicked(mWindow, event)) {
         mInputSize = mSceneLayers[CreateOptions]->getChildren()[SizeInputBox]->getIntArrayData()[0];
-        if (mInputSize != mPrevInputSize) {
-            mPrevInputSize = mInputSize;
-            for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) child->deactivate();
-            for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) child->deactivate();
-            for (auto &child : mSceneLayers[Matrix]->getChildren()) child->deactivate();
-            for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) child->deactivate();
-        }
-        int index = 0;
-        for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) {
-            if (index >= mInputSize) break;
-            if (child->isActive()) {
-                child->deactivate();
-            } else {
-                child->activate();
+        if (mInputSize >= 2 && mInputSize <= 10) {
+            if (mInputSize != mPrevInputSize) {
+                mPrevInputSize = mInputSize;
+                for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) child->deactivate();
+                for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) child->deactivate();
+                for (auto &child : mSceneLayers[Matrix]->getChildren()) child->deactivate();
+                for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) child->deactivate();
             }
-            index++;
-        }
-        index = 0;
-        for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) {
-            if (index >= mInputSize) break;
-            if (child->isActive()) {
-                child->deactivate();
-            } else {
-                child->activate();
-            }
-            index++;
-        }
-        for (int i = 0; i < mInputSize; i++) {
-            for (int j = 0; j < mInputSize; j++) {
-                if (mSceneLayers[Matrix]->getChildren()[i * 10 + j]->isActive()) {
-                    mSceneLayers[Matrix]->getChildren()[i * 10 + j]->deactivate();
+            int index = 0;
+            for (auto &child : mSceneLayers[MatrixColumnIndex]->getChildren()) {
+                if (index >= mInputSize) break;
+                if (child->isActive()) {
+                    child->deactivate();
                 } else {
-                    mSceneLayers[Matrix]->getChildren()[i * 10 + j]->activate();
+                    child->activate();
+                }
+                index++;
+            }
+            index = 0;
+            for (auto &child : mSceneLayers[MatrixRowIndex]->getChildren()) {
+                if (index >= mInputSize) break;
+                if (child->isActive()) {
+                    child->deactivate();
+                } else {
+                    child->activate();
+                }
+                index++;
+            }
+            for (int i = 0; i < mInputSize; i++) {
+                for (int j = 0; j < mInputSize; j++) {
+                    if (mSceneLayers[Matrix]->getChildren()[i * 10 + j]->isActive()) {
+                        mSceneLayers[Matrix]->getChildren()[i * 10 + j]->deactivate();
+                    } else {
+                        mSceneLayers[Matrix]->getChildren()[i * 10 + j]->activate();
+                    }
+                }
+            }
+            for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) {
+                if (child->isActive()) {
+                    child->deactivate();
+                } else {
+                    child->activate();
                 }
             }
         }
-        for (auto &child : mSceneLayers[MatrixOptions]->getChildren()) {
-            if (child->isActive()) {
-                child->deactivate();
-            } else {
-                child->activate();
-            }
+        else {
+            annouceError("Size must be in range [2, 10]");
         }
     }
 
@@ -176,7 +181,7 @@ void Graph::handleEvent(sf::Event &event) {
     }
 
     if (mSceneLayers[CreateOptions]->getChildren()[FromFileButton]->isLeftClicked(mWindow, event)) {
-        annouceError("File format must be vertex1 vertex2 distance, each line is a edge");
+        annouceError("File format must be vertex1 vertex2 distance, each line is an edge");
         mIsInitFromFile = true;
     }
 
@@ -337,8 +342,13 @@ void Graph::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[ErrorConfirmButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         if (mIsInitFromFile) initFromFile();
-        mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
-        mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        if (mIsInitFromFileValid) {
+            mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
+            mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        }
+        else {
+            mIsInitFromFileValid = true;
+        }
     }
 
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
@@ -672,6 +682,7 @@ void Graph::annouceError(std::string error) {
 }
 
 void Graph::initFromFile() {
+    mIsInitFromFileValid = true;
     const char *path = tinyfd_openFileDialog(
         "Open file", "", 0, nullptr, nullptr, 0
     );
@@ -680,18 +691,19 @@ void Graph::initFromFile() {
     fin.open(path);
     if (!fin.is_open()) {
         annouceError("Cannot open file");
+        mIsInitFromFileValid = false;
         return;
     }
     std::vector<std::pair<int, int>> edges;
     std::vector<int> dis;
     mInputSize = 0;
     int maxLine = 0;
-    std::cout << "Start getting data" << std::endl;
     while (!fin.eof()) {
         int x, y, w;
         fin >> x >> y >> w;
         if (x < 0 || x > 9 || y < 0 || y > 9 || w < 0 || w > 100) {
             annouceError("Invalid input, vertex must be in range [0, 9] and weight must be in range [0, 100]");
+            mIsInitFromFileValid = false;
             fin.close();
             return;
         }
@@ -700,6 +712,7 @@ void Graph::initFromFile() {
         dis.push_back(w);
         if (maxLine > 1000) {
             annouceError("Too many lines");
+            mIsInitFromFileValid = false;
             fin.close();
             return;
         }
@@ -724,6 +737,7 @@ void Graph::initFromFile() {
         if (mConnections[x][y]) {
             if (!mSceneLayers[ErrorContainer]->getChildren()[0]->isActive()) {
                 annouceError("Sorry, this graph is undirected, so some duplicate edges are removed");
+                mIsInitFromFileValid = false;
             }
             continue;
         }

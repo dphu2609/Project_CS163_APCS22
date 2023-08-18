@@ -271,8 +271,13 @@ void Heap::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[ErrorConfirmButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         if (mIsInitFromFile) initFromFile();
-        mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
-        mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        if (mIsInitFromFileValid) {
+            mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
+            mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        }
+        else {
+            mIsInitFromFileValid = true;
+        }
     }
 
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
@@ -567,6 +572,7 @@ void Heap::annouceError(std::string error) {
 }
 
 void Heap::initFromFile() {
+    mIsInitFromFileValid = true;
     const char *path = tinyfd_openFileDialog(
         "Open file", "", 0, nullptr, nullptr, 0
     );
@@ -575,6 +581,7 @@ void Heap::initFromFile() {
     fin.open(path);
     if (!fin.is_open()) {
         annouceError("Cannot open file");
+        mIsInitFromFileValid = false;
         return;
     }
     mInputData.clear();
@@ -583,11 +590,13 @@ void Heap::initFromFile() {
         fin >> x;
         if (fin.fail()) {
             annouceError("Invalid input");
+            mIsInitFromFileValid = false;
             return;
         }
         mInputData.push_back(x);
         if (mInputData.size() > 50) {
             annouceError("Too many input, maximum is 50");
+            mIsInitFromFileValid = false;
             break;
         }
     }

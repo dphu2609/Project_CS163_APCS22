@@ -261,10 +261,15 @@ void Trie::handleEvent(sf::Event &event) {
 
     if (mSceneLayers[ErrorConfirmButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         if (mIsInitFromFile) initFromFile();
-        mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
-        mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        if (mIsInitFromFileValid) {
+            mSceneLayers[ErrorContainer]->getChildren()[0]->deactivate();
+            mSceneLayers[ErrorConfirmButton]->getChildren()[0]->deactivate();
+        }
+        else {
+            mIsInitFromFileValid = true;
+        }
     }
-
+    
     if (mSceneLayers[ReturnButton]->getChildren()[0]->isLeftClicked(mWindow, event)) {
         requestStackPop();
     }
@@ -554,6 +559,7 @@ void Trie::annouceError(std::string error) {
 }
 
 void Trie::initFromFile() {
+    mIsInitFromFileValid = true;
     const char *path = tinyfd_openFileDialog(
         "Open file", "", 0, nullptr, nullptr, 0
     );
@@ -562,6 +568,7 @@ void Trie::initFromFile() {
     fin.open(path);
     if (!fin.is_open()) {
         annouceError("Cannot open file");
+        mIsInitFromFileValid = false;
         return;
     }
     mInputData.clear();
@@ -570,11 +577,18 @@ void Trie::initFromFile() {
         std::getline(fin, str);
         if (fin.fail()) {
             annouceError("Invalid input");
+            mIsInitFromFileValid = false;
             return;
+        }
+        if (str.size() > 12) {
+            annouceError("Too long word, maximum length is 12");
+            mIsInitFromFileValid = false;
+            break;
         }
         mInputData.push_back(str);
         if (mInputData.size() > 20) {
             annouceError("Too many input, maximum words is 20");
+            mIsInitFromFileValid = false;
             break;
         }
     }

@@ -303,6 +303,11 @@ void AVL::deleteAnimation() {
 
         case 4: {
             if (!mIsReversed) mTreeForBackward.push(createTreeState(4));
+            if (mNodeList.size() == 1) {
+                mOperationNode = mRoot;
+                mAnimationStep = 7;
+                break;
+            }
             find2NodesForDelete(mInputQueue.front());
             if (mReplaceNode) {
                 getTravelPath(mOperationNode, mReplaceNode->val);
@@ -329,9 +334,17 @@ void AVL::deleteAnimation() {
         }
 
         case 7: {
-            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeListForBackup[mOperationNode->nodeIndex]->position, 1.5);            
-            mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
-            moveTreeAnimation(true, 1.5, 8);
+            if (mOperationNode == mRoot && mNodeList.size() == 1) {
+                mSceneLayers[Nodes]->getChildren()[0]->zoom(sf::Vector2f(0, 0), 1.5);
+                if (mSceneLayers[Nodes]->getChildren()[0]->isZoomFinished()) {
+                    mAnimationStep = 8;
+                }
+            }
+            else {
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->move(mNodeList[mOperationNode->nodeIndex]->position, 1.5);          
+                mSceneLayers[Nodes]->getChildren()[mOperationNode->nodeIndex]->zoom(sf::Vector2f(0, 0), 1.5);
+                moveTreeAnimation(true, 1.5, 8);
+            }
             break;
         }
 

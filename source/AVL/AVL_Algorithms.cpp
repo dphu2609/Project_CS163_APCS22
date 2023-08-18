@@ -148,6 +148,9 @@ AVL::Node* AVL::copyNode(Node* root) {
     newNode->isLeftEdgeHighlighted = root->isLeftEdgeHighlighted;
     newNode->isRightEdgeHighlighted = root->isRightEdgeHighlighted;
     newNode->isInsertNode = root->isInsertNode;
+    newNode->parent = nullptr;
+    newNode->left = nullptr;
+    newNode->right = nullptr;
     return newNode;
 }
 
@@ -341,6 +344,7 @@ void AVL::deleteNode() {
         mSceneLayers[Nodes]->getChildren().clear();
         mSceneLayers[LeftEdges]->getChildren().clear();
         mSceneLayers[RightEdges]->getChildren().clear();
+        return;
     }
     if (mReplaceNode) {
         mOperationNode->val = mReplaceNode->val;
@@ -449,8 +453,6 @@ void AVL::createBackupTree() {
 }
 
 void AVL::restoreTree() {
-    int indexOfOperationNode = mOperationIndex;
-    int indexOfReplaceNode = mReplaceIndex;
     clear(mRoot);
     mNodeList.clear();
 
@@ -458,9 +460,6 @@ void AVL::restoreTree() {
     for (auto &child : mNodeListForBackup) {
         mNodeList.push_back(findNode(mRoot, child->val));
     }
-
-    mOperationNode = ((indexOfOperationNode == -1 || indexOfOperationNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfOperationNode]);
-    mReplaceNode = ((indexOfReplaceNode == -1 || indexOfReplaceNode >= mNodeList.size()) ? nullptr : mNodeList[indexOfReplaceNode]);
     balanceTree();
 }
 

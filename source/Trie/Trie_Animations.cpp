@@ -196,6 +196,7 @@ void Trie::deleteAnimation() {
                 }
                 else {
                     mSceneLayers[CodeBox]->getChildren()[0]->activateLine({1, 2});
+                    mOperationNode->isEndOfWord = false;
                     mAnimationStep = 7;
                 }
             }
